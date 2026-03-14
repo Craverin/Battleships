@@ -1,4 +1,4 @@
-package gamestudio;
+package gamestudio.cli;
 
 import gamestudio.domain.*;
 import gamestudio.dto.CellStateView;
