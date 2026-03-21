@@ -1,5 +1,7 @@
 package gamestudio.entity;
 
+import gamestudio.repository.exception.RatingException;
+
 import java.util.Date;
 
 public class Rating
@@ -11,9 +13,13 @@ public class Rating
 
    public Rating(String player, String game, int rating, Date ratedOn)
    {
-       this.player = player;
-       this.game = game;
+       this.player = player.trim();
+       this.game = game.trim();
+       if (player.isEmpty() || game.isEmpty()) throw new RatingException("Invalid player or game");
+
        this.rating = rating;
+       if (rating <= 0 || rating > 5) throw new RatingException("Invalid rating");
+
        this.ratedOn = ratedOn;
    }
 

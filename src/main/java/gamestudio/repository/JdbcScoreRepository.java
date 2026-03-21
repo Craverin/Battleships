@@ -2,6 +2,7 @@ package gamestudio.repository;
 
 import gamestudio.entity.Score;
 import gamestudio.repository.exception.ScoreException;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -14,9 +15,9 @@ public class JdbcScoreRepository implements ScoreRepository
 {
     private final DataSource dataSource;
 
-    private static final String SELECT_TOP10_SCORES = "SELECT game, player, points, playedOn FROM score WHERE game = ? ORDER BY points DESC LIMIT 10";
+    private static final String SELECT_TOP10_SCORES = "SELECT player, game, points, playedOn FROM score WHERE game = ? ORDER BY points DESC LIMIT 10";
     private static final String SELECT_TOP_SCORE = "SELECT MAX(points) FROM score WHERE game = ? AND player = ?";
-    private static final String INSERT = "INSERT INTO score (game, player, points, playedOn) VALUES (?, ?, ?, ?)";
+    private static final String INSERT = "INSERT INTO score (player, game, points, playedOn) VALUES (?, ?, ?, ?)";
 
     public JdbcScoreRepository(DataSource dataSource)
     {
@@ -26,23 +27,24 @@ public class JdbcScoreRepository implements ScoreRepository
     @Override
     public void addScore(Score score)
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(INSERT))
         {
-            statement.setString(1, score.getGame());
-            statement.setString(2, score.getPlayer());
+            statement.setString(1, score.getPlayer());
+            statement.setString(2, score.getGame());
             statement.setInt(3, score.getPoints());
             statement.setTimestamp(4, new Timestamp(score.getPlayedOn().getTime()));
             statement.executeUpdate();
         }
         catch (SQLException e) { throw new ScoreException("Failed to insert score", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
     @Override
     public List<Score> getTopScores(String game)
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SELECT_TOP10_SCORES))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_TOP10_SCORES))
         {
             statement.setString(1, game);
             try (ResultSet rs = statement.executeQuery())
@@ -59,13 +61,14 @@ public class JdbcScoreRepository implements ScoreRepository
             }
         }
         catch (SQLException e) { throw new ScoreException("Failed to select score", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
     @Override
     public int getTopScore(String game, String player)
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SELECT_TOP_SCORE))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_TOP_SCORE))
         {
             statement.setString(1, game);
             statement.setString(2, player);
@@ -75,19 +78,21 @@ public class JdbcScoreRepository implements ScoreRepository
                if (rs.next()) return rs.getInt(1);
             }
 
-            return -1;
+            return 0;
         }
         catch (SQLException e) { throw new ScoreException("Failed to select score", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
     @Override
     public void reset()
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("DELETE FROM score"))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM score"))
         {
             statement.executeUpdate();
         }
         catch (SQLException e) { throw new ScoreException("Failed to delete score", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 }

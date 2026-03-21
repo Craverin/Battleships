@@ -12,11 +12,13 @@ public class Game
     private Map<UUID, Board> boards;
     private Map<UUID, Integer> scores;
     private Map<UUID, Integer> hitStreaks;
+    private GamePhase gamePhase;
 
     public UUID createGame()
     {
         gameId = UUID.randomUUID();
         hostToken = UUID.randomUUID();
+        gamePhase = GamePhase.PLACEMENT;
         boards = new HashMap<>();
         scores = new HashMap<>();
         hitStreaks = new HashMap<>();
@@ -68,10 +70,10 @@ public class Game
 
     public GamePhase getPhase()
     {
-        if (getBoard(hostToken).getShips().isEmpty() || getBoard(opponentToken).getShips().isEmpty())
-            return GamePhase.FINISHED;
+        if (opponentToken != null && (getBoard(hostToken).getShips().isEmpty() || getBoard(opponentToken).getShips().isEmpty()))
+            gamePhase = GamePhase.FINISHED;
 
-        return GamePhase.COMBAT;
+        return gamePhase;
     }
 
     public UUID getWinner()
@@ -103,4 +105,8 @@ public class Game
         if (shotResult.equals(ShotResult.SUNK)) scores.put(playerToken, scores.get(playerToken) + 15);
     }
 
+    public void changeToCombatPhase()
+    {
+        gamePhase = GamePhase.COMBAT;
+    }
 }

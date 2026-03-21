@@ -25,18 +25,18 @@ import java.util.regex.Pattern;
 @Component
 public class CliRunner implements CommandLineRunner
 {
-    private static final int BOARD_SIZE = 10;
-    private static final char[] columns = "ABCDEFGHIJ".toCharArray();
-    private static GamePhase gamePhase = GamePhase.PLACEMENT;
-    private static UUID gameId, hostToken, opponentToken;
-    private static Board board;
-    private static final boolean[][] occupiedCells = new boolean[BOARD_SIZE][BOARD_SIZE];
-    private static final GameService gameService = new GameService();
+    private final char[] columns = "ABCDEFGHIJ".toCharArray();
+    private Game game;
+    private UUID gameId, hostToken, opponentToken;
+    private Board board;
+    private final boolean[][] occupiedCells = new boolean[Board.SIZE][Board.SIZE];
+    private final GameService gameService = new GameService();
     private final ScoreRepository scoreRep;
     private final RatingRepository ratingRep;
     private final CommentRepository commentRep;
     private CombatViewResponse hostCombatView = null, botCombatView = null;
-    private static final Map<CellStateView, String> cellMarkers = new HashMap<>(){
+    private final Map<CellStateView, String> cellMarkers = new HashMap<>()
+    {
         {
             put(CellStateView.EMPTY, " ");
             put(CellStateView.UNKNOWN, " ");
@@ -66,10 +66,10 @@ public class CliRunner implements CommandLineRunner
         new SpringApplicationBuilder(CliRunner.class).web(WebApplicationType.NONE).run(args);
     }
 
+    @Override
     public void run(String... args) throws InterruptedException
     {
         boolean running = true;
-
         printRules();
 
         while (running)
@@ -110,7 +110,7 @@ public class CliRunner implements CommandLineRunner
         var resp = gameService.createGame();
 
         gameId = resp.gameId();
-        Game game = gameService.getGame(gameId);
+        game = gameService.getGame(gameId);
         hostToken = resp.hostToken();
         board = game.getBoard(hostToken);
 
@@ -135,12 +135,12 @@ public class CliRunner implements CommandLineRunner
         Matcher matcher;
         Pattern placementPattern = Pattern.compile("((?:10|[1-9])[a-j])\\s((?:10|[1-9])[a-j])\\s*([HhVv])?", Pattern.CASE_INSENSITIVE);
 
-        while (gamePhase.equals(GamePhase.PLACEMENT))
+        while (game.getPhase().equals(GamePhase.PLACEMENT))
         {
             input = sc.nextLine().toLowerCase();
             if (input.equals("start"))
             {
-                gamePhase = GamePhase.COMBAT;
+                game.changeToCombatPhase();
                 opponentToken = gameService.joinGame(gameId);
                 break;
             }
@@ -158,7 +158,10 @@ public class CliRunner implements CommandLineRunner
         Pattern combatPattern = Pattern.compile("((?:10|[1-9])[a-j])", Pattern.CASE_INSENSITIVE);
 
         Bot bot = new Bot();
-        while (gamePhase.equals(GamePhase.COMBAT))
+        Coordinate firstHitCell = null;
+
+        System.out.println("PHASE: " + game.getPhase());
+        while (game.getPhase().equals(GamePhase.COMBAT))
         {
             System.out.print("Enter coordinates: ");
             input = sc.nextLine().toLowerCase();
@@ -179,26 +182,27 @@ public class CliRunner implements CommandLineRunner
             if (hostCombatView.phase().equals(GamePhase.FINISHED)) break;
             if (hostCombatView.shotResult().equals(ShotResult.HIT)) continue;
 
+            ShotResult shotResult;
             do
             {
-                Coordinate attackedCell;
+                Coordinate targetCell;
                 if (botCombatView == null)
-                {
-                    Random rnd = new Random();
-                    attackedCell = new Coordinate(rnd.nextInt(BOARD_SIZE), rnd.nextInt(BOARD_SIZE));
-                }
-                else attackedCell = bot.getTargetCell(botCombatView.opponentBoard());
+                    botCombatView = gameService.getCombatView(gameId, opponentToken);
 
-                System.out.println("ATTACKING (" + attackedCell.row() + ", " + attackedCell.col() + ")");
+                targetCell = bot.getTargetCell(botCombatView.opponentBoard(), firstHitCell);
 
-                botCombatView = gameService.shoot(gameId, opponentToken, attackedCell);
-                gamePhase = botCombatView.phase();
+                botCombatView = gameService.shoot(gameId, opponentToken, targetCell);
+                shotResult = botCombatView.shotResult();
+
+                if (firstHitCell == null && shotResult.equals(ShotResult.HIT)) firstHitCell = targetCell;
+                else if (firstHitCell != null && shotResult.equals(ShotResult.SUNK)) firstHitCell = null;
+
+                System.out.println("ATTACKING (" + targetCell.row() + ", " + targetCell.col() + ")");
 
                 printBotMessages();
                 drawCombatBoard(botCombatView.opponentBoard(), -1);
 
-
-            } while (botCombatView.shotResult().equals(ShotResult.HIT) && gamePhase.equals(GamePhase.COMBAT));
+            } while (!shotResult.equals(ShotResult.MISS) && botCombatView.phase().equals(GamePhase.COMBAT));
 
             System.out.println("\n\t\t\t\t\t\tOpponent's board");
             TimeUnit.MILLISECONDS.sleep(1500);
@@ -293,7 +297,7 @@ public class CliRunner implements CommandLineRunner
         return new Coordinate(row, col);
     }
 
-    private static boolean isMoveValid(Matcher matcher)
+    private boolean isMoveValid(Matcher matcher)
     {
         if (!matcher.matches())
         {
@@ -350,21 +354,21 @@ public class CliRunner implements CommandLineRunner
         System.out.println("\nWhen ready, just enter \"start\". Good luck!\n");
     }
 
-    private static void drawPlacementBoard()
+    private void drawPlacementBoard()
     {
         printColumns();
         List<ShipResponse> ships = gameService.getShips(gameId, hostToken);
         fillOccupiedCells(ships);
 
-        for (int i = 0; i < BOARD_SIZE; i++)
+        for (int i = 0; i < Board.SIZE; i++)
         {
             System.out.println("  ");
             printBorderLine();
 
-            if (i < BOARD_SIZE - 1) System.out.print(" ");
+            if (i < Board.SIZE - 1) System.out.print(" ");
             System.out.print(i + 1 + " ");
 
-            for (int k = 0; k < BOARD_SIZE; k++) System.out.print("|  " + (occupiedCells[i][k] ? "O" : " ") + "  ");
+            for (int k = 0; k < Board.SIZE; k++) System.out.print("|  " + (occupiedCells[i][k] ? "O" : " ") + "  ");
             System.out.print("|");
         }
 
@@ -372,20 +376,20 @@ public class CliRunner implements CommandLineRunner
         printBorderLine();
     }
 
-    private static void drawCombatBoard(CellStateView[][] board, int score)
+    private void drawCombatBoard(CellStateView[][] board, int score)
     {
         // Score -1 is designed exclusively for the bot, there's no sense in printing it.
         if (score != -1) System.out.println("Score: " + score + "\n");
         printColumns();
-        for (int i = 0; i < BOARD_SIZE; i++)
+        for (int i = 0; i < Board.SIZE; i++)
         {
             System.out.println("  ");
             printBorderLine();
 
-            if (i < BOARD_SIZE - 1) System.out.print(" ");
+            if (i < Board.SIZE - 1) System.out.print(" ");
             System.out.print(i + 1 + " ");
 
-            for (int k = 0; k < BOARD_SIZE; k++)
+            for (int k = 0; k < Board.SIZE; k++)
             {
                 System.out.print("|  ");
 
@@ -402,7 +406,7 @@ public class CliRunner implements CommandLineRunner
         printBorderLine();
     }
 
-    private static void fillOccupiedCells(List<ShipResponse> ships)
+    private void fillOccupiedCells(List<ShipResponse> ships)
     {
         resetOccupiedCells();
         for (ShipResponse ship : ships)
@@ -412,16 +416,16 @@ public class CliRunner implements CommandLineRunner
         }
     }
 
-    private static void resetOccupiedCells()
+    private void resetOccupiedCells()
     {
-        for (int i = 0; i < BOARD_SIZE; i++)
+        for (int i = 0; i < Board.SIZE; i++)
         {
-            for (int j = 0; j < BOARD_SIZE; j++)
+            for (int j = 0; j < Board.SIZE; j++)
                 occupiedCells[i][j] = false;
         }
     }
 
-    private static List<Coordinate> getShipCoordinates(ShipResponse ship)
+    private List<Coordinate> getShipCoordinates(ShipResponse ship)
     {
         List<Coordinate> coordinates = new ArrayList<>();
         coordinates.add(new Coordinate(ship.row(), ship.col()));
@@ -437,23 +441,23 @@ public class CliRunner implements CommandLineRunner
         return coordinates;
     }
 
-    private static void printBorderLine()
+    private void printBorderLine()
     {
         System.out.print("   ");
-        for (int i = 0; i < BOARD_SIZE; i++)
+        for (int i = 0; i < Board.SIZE; i++)
         {
             System.out.print("+-----");
         }
         System.out.println("+");
     }
 
-    private static void printColumns()
+    private void printColumns()
     {
         System.out.print("      " + columns[0]);
         for (int i = 1; i < columns.length; i++) System.out.print("     " + columns[i]);
     }
 
-    private static UUID getShipId(Coordinate cell)
+    private UUID getShipId(Coordinate cell)
     {
         List<Ship> ships = board.getShips();
         for (Ship ship : ships)

@@ -6,26 +6,14 @@ import java.util.*;
 
 public class Bot
 {
-    private Coordinate lastHitCell;
+    private Coordinate lastHitCell, firstHitCell;
     private HitDirection hitDirection;
     private EnumSet<HitDirection> possibleDirections = EnumSet.allOf(HitDirection.class);
 
-    public Coordinate getTargetCell(CellStateView[][] cells)
+    public Coordinate getTargetCell(CellStateView[][] cells, Coordinate firstHitCell)
     {
-        for (int i = 0; i < cells.length; i++)
-        {
-            for (int j = 0; j < cells[i].length; j++)
-            {
-                if (cells[i][j].equals(CellStateView.HIT))
-                {
-                    System.out.println("Found HIT cell (" + i + ", " + j + ")");
-                    Coordinate cell = getPossibleCell(cells, new Coordinate(i, j));
-                    if (cell != null) return cell;
-                }
-            }
-        }
-
-        return findEmptyCell(cells);
+        if (firstHitCell != null) return getPossibleCell(cells, firstHitCell);
+        else return findEmptyCell(cells);
     }
 
     private Coordinate getPossibleCell(CellStateView[][] cells, Coordinate cell)
@@ -35,7 +23,7 @@ public class Bot
             if (cells[lastHitCell.row()][lastHitCell.col()].equals(CellStateView.MISS))
             {
                 System.out.println("MISS: (" + lastHitCell.row() + ", " + lastHitCell.col() + ")");
-                lastHitCell = findFirstHitCell(cells, cell, hitDirection);
+                lastHitCell = firstHitCell;
                 System.out.println("First hit cell: (" + lastHitCell.row() + ", " + lastHitCell.col() + ")");
 
                 System.out.println("CURRENT POSSIBLE DIRECTIONS:");
@@ -52,18 +40,24 @@ public class Bot
 
             Coordinate shift = hitDirection.coordinate;
             if (!isHitCellValid(cells, lastHitCell.row() + shift.row(), lastHitCell.col() + shift.col()))
+            {
+                lastHitCell = firstHitCell;
                 hitDirection = pickHitDirection(cells);
+                shift = hitDirection.coordinate;
+            }
 
             lastHitCell = new Coordinate(lastHitCell.row() + shift.row(), lastHitCell.col() + shift.col());
             return lastHitCell;
         }
+
+        firstHitCell = new Coordinate(cell.row(), cell.col());
 
         for (HitDirection shift : possibleDirections)
         {
             int row = cell.row() + shift.coordinate.row();
             int col = cell.col() + shift.coordinate.col();
 
-            if (isValid(row, col) && cells[row][col].equals(CellStateView.UNKNOWN))
+            if (isHitCellValid(cells, row, col) && cells[row][col].equals(CellStateView.UNKNOWN))
             {
                 lastHitCell = new Coordinate(row, col);
                 hitDirection = shift;
@@ -88,6 +82,7 @@ public class Bot
         {
             possibleDirections = EnumSet.allOf(HitDirection.class);
             lastHitCell = null;
+            firstHitCell = null;
         }
 
         int row, col;
@@ -104,31 +99,12 @@ public class Bot
        return null;
     }
 
-    private Coordinate findFirstHitCell(CellStateView[][] cells, Coordinate cell, HitDirection hitDirection)
-    {
-        Coordinate shift = hitDirection.coordinate;
-        int row = cell.row(), col = cell.col();
-
-        while (isValid(row - shift.row(), col - shift.col()) && cells[row - shift.row()][col - shift.col()].equals(CellStateView.HIT))
-        {
-            row -= shift.row();
-            col -= shift.col();
-        }
-
-        return new Coordinate(row, col);
-    }
-
-    private boolean isValid(int row, int col)
-    {
-        return row >= 0 && row <= 9 && col >= 0 && col <= 9;
-    }
-
     private boolean isHitCellValid(CellStateView[][] cells, int row, int col)
     {
-        if (!isValid(row, col) || !cells[row][col].equals(CellStateView.UNKNOWN)) return false;
+        if (!Coordinate.isValid(row, col) || !cells[row][col].equals(CellStateView.UNKNOWN)) return false;
 
-        int startRow = row > 0 ? row - 1 : row, endRow = row < 9 ? row + 1 : row;
-        int startCol = col > 0 ? col - 1 : col, endCol = col < 9 ? col + 1 : col;
+        int startRow = row > 0 ? row - 1 : row, endRow = row < Board.SIZE - 1 ? row + 1 : row;
+        int startCol = col > 0 ? col - 1 : col, endCol = col < Board.SIZE - 1 ? col + 1 : col;
 
         for (int i = startRow; i <= endRow; i++)
         {
@@ -143,17 +119,22 @@ public class Bot
 
     private HitDirection pickHitDirection(CellStateView[][] cells)
     {
+        System.out.println("TRYING TO FIND HIT DIRECTION");
         var hitDirs = possibleDirections.toArray(new HitDirection[0]);
         hitDirection = hitDirs[new Random().nextInt(hitDirs.length)];
+        System.out.println("LENGTH OF POSSIBLE DIRECTIONS ARRAY: " + hitDirs.length);
+        System.out.println("PICKING " + hitDirection.name());
 
-        Coordinate firstHitCell, hitCell = Coordinate.addCoordinates(lastHitCell, hitDirection.coordinate);
+        Coordinate hitCell = Coordinate.addCoordinates(lastHitCell, hitDirection.coordinate);
 
         while (!isHitCellValid(cells, hitCell.row(), hitCell.col()))
         {
+            System.out.print(hitDirection.name() + " wasn't valid. Trying ");
             possibleDirections.remove(hitDirection);
-            firstHitCell = findFirstHitCell(cells, lastHitCell, hitDirection);
 
+            hitDirs = possibleDirections.toArray(new HitDirection[0]);
             hitDirection = hitDirs[new Random().nextInt(hitDirs.length)];
+            System.out.println(hitDirection.name());
             hitCell = Coordinate.addCoordinates(firstHitCell, hitDirection.coordinate);
         }
 

@@ -97,23 +97,14 @@ public class GameService
     public CombatViewResponse shoot(UUID gameId, UUID playerToken, Coordinate cell)
     {
         Game game = getGame(gameId);
-        CellState[][] cells = game.getOpponentBoard(playerToken).shoot(cell);
+        Board opponentBoard = game.getOpponentBoard(playerToken);
+        opponentBoard.shoot(cell);
+        CellState[][] cells = opponentBoard.getCells();
 
         ShotResult shotResult = getShotResult(cells, cell);
         game.addScore(shotResult, playerToken, 10);
-        CellStateView[][] hostBoard = new CellStateView[10][10];
-        CellStateView[][] opponentBoard = new CellStateView[10][10];
 
-       for (int i = 0; i < cells.length; i++)
-       {
-           for (int j = 0; j < cells[i].length; j++)
-           {
-               hostBoard[i][j] = hostCellStateMap.get(cells[i][j]);
-               opponentBoard[i][j] = opponentCellStateMap.get(cells[i][j]);
-           }
-       }
-
-      return new CombatViewResponse(game.getPhase(), shotResult, game.getScore(playerToken), hostBoard, opponentBoard);
+        return new CombatViewResponse(game.getPhase(), shotResult, game.getScore(playerToken), cells, transform(cells));
     }
 
     private ShotResult getShotResult(CellState[][] cells, Coordinate cell)
@@ -126,4 +117,23 @@ public class GameService
         return ShotResult.HIT;
     }
 
+    public CombatViewResponse getCombatView(UUID gameId, UUID playerToken)
+    {
+        Game game = getGame(gameId);
+        CellState[][] cells = game.getOpponentBoard(playerToken).getCells();
+
+        return new CombatViewResponse(game.getPhase(), null, game.getScore(playerToken), cells, transform(cells));
+    }
+
+    private CellStateView[][] transform(CellState[][] cells)
+    {
+        CellStateView[][] cellsView = new CellStateView[10][10];
+        for (int i = 0; i < cells.length; i++)
+        {
+            for (int j = 0; j < cells[i].length; j++)
+                cellsView[i][j] = opponentCellStateMap.get(cells[i][j]);
+        }
+
+        return cellsView;
+    }
 }

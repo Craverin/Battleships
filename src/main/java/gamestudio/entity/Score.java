@@ -1,5 +1,7 @@
 package gamestudio.entity;
 
+import gamestudio.repository.exception.ScoreException;
+
 import java.util.Date;
 
 public class Score
@@ -12,10 +14,14 @@ public class Score
 
     private Date playedOn;
 
-    public Score(String game, String player, int points, Date playedOn)
+    public Score(String player, String game, int points, Date playedOn)
     {
-        this.game = game;
-        this.player = player;
+        this.game = game.trim();
+        this.player = player.trim();
+
+        if (game.isEmpty() || player.isEmpty()) throw new ScoreException("Invalid game or player");
+        if (points < 0) throw new ScoreException("Invalid score");
+
         this.points = points;
         this.playedOn = playedOn;
     }

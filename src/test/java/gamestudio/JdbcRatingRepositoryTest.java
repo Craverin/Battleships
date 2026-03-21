@@ -1,0 +1,100 @@
+package gamestudio;
+
+import gamestudio.entity.Rating;
+import gamestudio.repository.JdbcRatingRepository;
+import gamestudio.repository.exception.RatingException;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
+
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@JdbcTest
+@Testcontainers
+@Import(JdbcRatingRepository.class)
+public class JdbcRatingRepositoryTest
+{
+    @Autowired
+    private JdbcRatingRepository repository;
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer postgres = new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"));
+
+    @Test
+    public void getRating_threeRatingsAdded_returnsCorrectRatings()
+    {
+        repository.setRating(new Rating("p1", "battleships", 5, new Date()));
+        repository.setRating(new Rating("p2", "numberLink", 2, new Date()));
+        repository.setRating(new Rating("p3", "sudoku", 3, new Date()));
+
+        assertEquals(5, repository.getRating("p1", "battleships"));
+        assertEquals(2, repository.getRating("p2", "numberLink"));
+        assertEquals(3, repository.getRating("p3", "sudoku"));
+    }
+
+    @Test
+    public void getRating_noRatings_throwsRatingException()
+    {
+        assertThrows(RatingException.class, () -> repository.getRating("p1", "battleships"));
+    }
+
+    @Test
+    public void setRating_ratingDoesNotExist_savesRating()
+    {
+        repository.setRating(new Rating("p1", "battleships", 4, new Date()));
+
+        int rating = repository.getRating("p1", "battleships");
+        assertEquals(4, rating);
+    }
+
+    @Test
+    public void setRating_ratingAlreadyExists_updatesRating()
+    {
+        repository.setRating(new Rating("p1", "battleships", 4, new Date()));
+        repository.setRating(new Rating("p1", "battleships", 2, new Date()));
+        repository.setRating(new Rating("p1", "battleships", 5, new Date()));
+
+        assertEquals(5, repository.getRating("p1", "battleships"));
+    }
+
+    @Test
+    public void getAverageRating_ratingsDoNotExist_returnsZero()
+    {
+        assertEquals(0, repository.getAverageRating("battleships"));
+    }
+
+    @Test
+    public void getAverageRating_ratingsAlreadyExist_returnsAverageRating()
+    {
+        int r1 = 1, r2 = 3, r3 = 4, r4 = 2, r5 = 5, r6 = 5;
+        int average = (r1 + r2 + r3 + r4 + r5 + r6) / 6;
+
+        repository.setRating(new Rating("p1", "battleships", r1, new Date()));
+        repository.setRating(new Rating("p2", "battleships", r2, new Date()));
+        repository.setRating(new Rating("p3", "battleships", r3, new Date()));
+        repository.setRating(new Rating("p4", "battleships", r4, new Date()));
+        repository.setRating(new Rating("p5", "battleships", r5, new Date()));
+        repository.setRating(new Rating("p6", "battleships", r6, new Date()));
+
+        assertEquals(average, repository.getAverageRating("battleships"));
+    }
+
+    @Test
+    public void reset_afterAddingRatings_deletesAllRatings()
+    {
+        repository.setRating(new Rating("p1", "battleships", 4, new Date()));
+        assertEquals(4, repository.getRating("p1", "battleships"));
+
+        repository.reset();
+        assertThrows(RatingException.class, () -> repository.getRating("battleships", "p1"));
+    }
+}

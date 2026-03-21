@@ -9,13 +9,19 @@ public class Board
 {
     private final CellState[][] cells;
     private final List<Ship> ships;
-    private final int BOARD_SIZE = 10;
+    public static final int SIZE = 10;
 
     public Board()
     {
         this.ships = new ArrayList<>();
-        this.cells = new CellState[BOARD_SIZE][BOARD_SIZE];
+        this.cells = new CellState[SIZE][SIZE];
         resetCellStates();
+    }
+
+    public Board(CellState[][] cells, List<Ship> ships)
+    {
+        this.cells = cells;
+        this.ships = ships;
     }
 
     public void generateShips()
@@ -25,16 +31,15 @@ public class Board
 
         // TODO Test values. Should be changed when done
 
-        for (int length = 4, j = 4; j > 0 ; j--)
+        for (int length = 4; length > 0; length--)
         {
-            for (int quantity = 6 - length; quantity > 0; quantity--)
+            for (int quantity = 5 - length; quantity > 0; quantity--)
             {
                 for (int i = 0; i < 10000; i++)
                 {
-                    Coordinate start = new Coordinate(rand.nextInt(10), rand.nextInt(10));
-                    Orientation orientation = (rand.nextInt(2) == 0)
-                            ? Orientation.HORIZONTAL
-                            : Orientation.VERTICAL;
+                    Coordinate start = new Coordinate(rand.nextInt(SIZE), rand.nextInt(SIZE));
+                    Orientation orientation = Orientation.values()[rand.nextInt(Orientation.values().length)];
+
                     Ship ship = new Ship(UUID.randomUUID(), start, orientation, length);
                     canLand = canLand(ship);
 
@@ -45,7 +50,6 @@ public class Board
                         break;
                     }
                 }
-                //TODO
                 if (!canLand) throw new RuntimeException();
             }
         }
@@ -55,7 +59,7 @@ public class Board
     {
         for (Coordinate cell : ship.getCells())
         {
-            if (!inBounds(cell) || !cells[cell.row()][cell.col()].equals(CellState.EMPTY)) return false;
+            if (!Coordinate.isValid(cell) || !cells[cell.row()][cell.col()].equals(CellState.EMPTY)) return false;
         }
 
         return true;
@@ -98,14 +102,14 @@ public class Board
 
     private void resetCellStates()
     {
-        for (int i = 0; i < BOARD_SIZE; i++)
+        for (int i = 0; i < SIZE; i++)
         {
-            for (int j = 0; j < BOARD_SIZE; j++)
+            for (int j = 0; j < SIZE; j++)
                 cells[i][j] = CellState.EMPTY;
         }
     }
 
-    public CellState[][] shoot(Coordinate coordinate)
+    public void shoot(Coordinate coordinate)
     {
         blockNearbyCells(coordinate);
         for (Ship ship : ships)
@@ -119,12 +123,11 @@ public class Board
                         cells[cell.row()][cell.col()] = CellState.SUNK;
                     ships.remove(ship);
                 }
-                return cells;
+                return;
             }
         }
 
         cells[coordinate.row()][coordinate.col()] = CellState.MISS;
-        return cells;
     }
 
     private void blockNearbyCells(Coordinate coordinate)
@@ -133,26 +136,11 @@ public class Board
         {
             for (int c = -1; c <= 1; c += 2)
             {
-                try
-                {
-                    Coordinate cell = new Coordinate(coordinate.row() + r, coordinate.col() + c);
-                    if (inBounds(cell) && isEmpty(cell))
-                        cells[cell.row()][cell.col()] = CellState.BLOCKED;
-                }
-                catch (IllegalArgumentException ignored) {  }
+                int row  = coordinate.row() + r, col = coordinate.col() + c;
+                if (Coordinate.isValid(row, col) && cells[row][col].equals(CellState.EMPTY))
+                    cells[row][col] = CellState.BLOCKED;
             }
         }
-    }
-
-    private boolean inBounds(Coordinate coordinate)
-    {
-        int row = coordinate.row(), col = coordinate.col();
-        return row >= 0 && row < 10 && col >= 0 && col < 10;
-    }
-
-    private boolean isEmpty(Coordinate coordinate)
-    {
-        return cells[coordinate.row()][coordinate.col()] == CellState.EMPTY;
     }
 
     public CellState[][] getCells()

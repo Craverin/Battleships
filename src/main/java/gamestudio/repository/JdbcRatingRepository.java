@@ -2,6 +2,7 @@ package gamestudio.repository;
 
 import gamestudio.entity.Rating;
 import gamestudio.repository.exception.RatingException;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -13,7 +14,7 @@ public class JdbcRatingRepository implements RatingRepository
     private final DataSource dataSource;
 
     private static final String SELECT_ALL_RATINGS = "SELECT rating FROM rating WHERE game = ?";
-    private static final String SELECT_RATING = "SELECT rating FROM rating WHERE game = ? AND player = ?";
+    private static final String SELECT_RATING = "SELECT rating FROM rating WHERE player = ? AND game = ?";
     private static final String INSERT = "INSERT INTO rating (player, game, rating, ratedOn) VALUES (?, ?, ?, ?) ON CONFLICT (player, game) DO UPDATE SET rating = EXCLUDED.rating, ratedOn = EXCLUDED.ratedOn";
 
     public JdbcRatingRepository(DataSource dataSource)
@@ -24,10 +25,9 @@ public class JdbcRatingRepository implements RatingRepository
     @Override
     public void setRating(Rating rating)
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(INSERT))
         {
-            System.out.println("Setting rating in database... (" + rating.getRating() + ")");
             statement.setString(1, rating.getPlayer());
             statement.setString(2, rating.getGame());
             statement.setInt(3, rating.getRating());
@@ -36,13 +36,14 @@ public class JdbcRatingRepository implements RatingRepository
             statement.executeUpdate();
         }
         catch (SQLException e) { throw new RatingException("Failed to insert rating", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
     @Override
     public int getAverageRating(String game)
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SELECT_ALL_RATINGS))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_ALL_RATINGS))
         {
             statement.setString(1, game);
             try (ResultSet result = statement.executeQuery())
@@ -54,20 +55,22 @@ public class JdbcRatingRepository implements RatingRepository
                     counter++;
                 }
 
+                if (counter == 0) return 0;
                 return totalScore / counter;
             }
         }
         catch (SQLException e) { throw new RatingException("Failed to select ratings", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
     @Override
-    public int getRating(String game, String player)
+    public int getRating(String player, String game)
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SELECT_RATING))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_RATING))
         {
-            statement.setString(1, game);
-            statement.setString(2, player);
+            statement.setString(1, player);
+            statement.setString(2, game);
 
             try (ResultSet result = statement.executeQuery())
             {
@@ -76,16 +79,18 @@ public class JdbcRatingRepository implements RatingRepository
             }
         }
         catch (SQLException e) { throw new RatingException("Failed to select rating", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
     @Override
     public void reset() throws RatingException
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("DELETE FROM score"))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM score"))
         {
             statement.executeUpdate();
         }
         catch (SQLException e) { throw new RatingException("Failed to reset rating", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 }

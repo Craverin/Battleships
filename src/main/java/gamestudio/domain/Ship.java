@@ -7,10 +7,10 @@ import java.util.UUID;
 public class Ship
 {
     private final UUID id;
-    private Coordinate start;
-    private Orientation orientation;
-    private int length;
-    private boolean[] hit;
+    private final Coordinate start;
+    private final Orientation orientation;
+    private final int length;
+    private final boolean[] hit;
 
     public Ship(UUID id, Coordinate start, Orientation orientation, int length)
     {
@@ -49,80 +49,47 @@ public class Ship
         return false;
     }
 
-//    public boolean bordersWith(Coordinate start, Orientation orientation, int length)
-//    {
-//        int dRow, dCol;
-//
-//        if (orientation == Orientation.HORIZONTAL)
-//        {
-//            dRow = start.getRow() - this.start.getRow();
-//            for (int i = 0; i < length; i++)
-//            {
-//                dCol = start.getCol() + i - this.start.getCol();
-//                if (Math.abs(dRow) <= 1 && dCol >= -1 && dCol <= this.length) return true;
-//            }
-//        }
-//
-//        else
-//        {
-//            dCol = start.getCol() - this.start.getCol();
-//            for (int i = 0; i < length; i++)
-//            {
-//                dRow = start.getRow() + i - this.start.getRow();
-//                if (Math.abs(dCol) <= 1 && dRow >= -1 && dRow <= this.length) return true;
-//            }
-//        }
-//
-//        return false;
-//    }
-
     public List<Coordinate> getBorderCells()
     {
+        List<Coordinate> shipCells = getCells();
         List<Coordinate> borderCells = new ArrayList<>();
-        Coordinate startCell;
-        Coordinate endCell;
+        Coordinate rightBorderCell;
+
+        Coordinate leftBorderCell = new Coordinate(
+                start.row() > 0 ? start.row() - 1 : 0,
+                start.col() > 0 ? start.col() - 1 : 0
+        );
 
         if (orientation.equals(Orientation.HORIZONTAL))
         {
             int endCol = start.col() + length - 1;
-
-            startCell = new Coordinate(
-                    start.row() > 0 ? start.row() - 1 : 0,
-                    start.col() > 0 ? start.col() - 1 : 0
-            );
-
-            endCell = new Coordinate(
-                    start.row() < 9 ? start.row() + 1 : 9,
-                    endCol < 9 ? endCol + 1 : endCol
+            rightBorderCell = new Coordinate(
+                    start.row() < Board.SIZE - 1 ? start.row() + 1 : start.row(),
+                    endCol < Board.SIZE - 1 ? endCol + 1 : endCol
             );
         }
 
         else
         {
             int endRow = start.row() + length - 1;
-
-            startCell = new Coordinate(
-                    start.row() > 0 ? start.row() - 1 : 0,
-                    start.col() > 0 ? start.col() - 1 : 0
-            );
-
-            endCell = new Coordinate(
-                    endRow < 9 ? endRow + 1 : endRow,
-                    start.col() < 9 ? start.col() + 1 : 9
+            rightBorderCell = new Coordinate(
+                    endRow < Board.SIZE - 1 ? endRow + 1 : endRow,
+                    start.col() < Board.SIZE - 1 ? start.col() + 1 : start.col()
             );
         }
 
-        for (int i = startCell.row(); i <= endCell.row(); i++)
+        for (int i = leftBorderCell.row(); i <= rightBorderCell.row(); i++)
         {
-            for (int j = startCell.col(); j <= endCell.col(); j++) borderCells.add(new Coordinate(i, j));
+            for (int j = leftBorderCell.col(); j <= rightBorderCell.col(); j++)
+            {
+                Coordinate cell = new Coordinate(i, j);
+                if (shipCells.contains(cell)) continue;
+
+                borderCells.add(new Coordinate(i, j));
+            }
         }
 
         return borderCells;
-    }
-
-    private boolean inBounds(int row, int col)
-    {
-        return row >= 0 && row < 10 && col >= 0 && col < 10;
     }
 
     public boolean hit(Coordinate coordinate)

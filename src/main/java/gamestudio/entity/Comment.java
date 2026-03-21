@@ -1,5 +1,7 @@
 package gamestudio.entity;
 
+import gamestudio.repository.exception.CommentException;
+
 import java.util.Date;
 
 public class Comment
@@ -11,16 +13,15 @@ public class Comment
 
     public Comment(String player, String game, String comment, Date commentedOn)
     {
-        this.player = player;
-        this.game = game;
-        this.comment = comment;
+        this.player = player.trim();
+        this.game = game.trim();
+        this.comment = comment.trim();
+        if (player.isEmpty() || game.isEmpty() || comment.isEmpty()) throw new CommentException("Invalid comment");
         this.commentedOn = commentedOn;
     }
 
 
-    public String getPlayer() {
-        return player;
-    }
+    public String getPlayer() { return player; }
 
     public void setPlayer(String player) {
         this.player = player;

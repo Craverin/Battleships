@@ -2,6 +2,8 @@ package gamestudio.repository;
 
 import gamestudio.entity.Comment;
 import gamestudio.repository.exception.CommentException;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -14,35 +16,38 @@ public class JdbcCommentRepository implements CommentRepository
 {
     private final DataSource dataSource;
 
-    private static final String INSERT_COMMENT = "INSERT INTO comment (game, player, comment, commentedOn) VALUES (?, ?, ?, ?)";
-    private static final String SELECT_COMMENTS = "SELECT comment from comment WHERE game = ?";
+    private static final String INSERT_COMMENT = "INSERT INTO comment (player, game, comment, commentedOn) VALUES (?, ?, ?, ?)";
+    private static final String SELECT_COMMENTS = "SELECT player, game, comment, commentedOn from comment WHERE game = ?";
+    private final ConnectionDetails connectionDetails;
 
-    public JdbcCommentRepository(DataSource dataSource)
+    public JdbcCommentRepository(DataSource dataSource, ConnectionDetails connectionDetails)
     {
         this.dataSource = dataSource;
+        this.connectionDetails = connectionDetails;
     }
 
     @Override
     public void addComment(Comment comment)
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT_COMMENT))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(INSERT_COMMENT))
         {
-            statement.setString(1, comment.getGame());
-            statement.setString(2, comment.getPlayer());
+            statement.setString(1, comment.getPlayer());
+            statement.setString(2, comment.getGame());
             statement.setString(3, comment.getComment());
             statement.setTimestamp(4, new Timestamp(comment.getCommentedOn().getTime()));
 
             statement.executeUpdate();
         }
         catch (SQLException e) { throw new CommentException("Failed to insert comment'", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
     @Override
     public List<Comment> getComments(String game)
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(SELECT_COMMENTS))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_COMMENTS))
         {
             statement.setString(1, game);
             try (ResultSet rs = statement.executeQuery())
@@ -60,16 +65,18 @@ public class JdbcCommentRepository implements CommentRepository
             }
         }
         catch (SQLException e) { throw new CommentException("Failed to select comments", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
     @Override
     public void reset()
     {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("DELETE FROM comment"))
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM comment"))
         {
             statement.executeUpdate();
         }
         catch (SQLException e) { throw new CommentException("Failed to delete score", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 }
