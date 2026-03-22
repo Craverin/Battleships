@@ -1,5 +1,7 @@
 package gamestudio.domain;
 
+import gamestudio.dto.ShotResult;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,13 +11,18 @@ public class Board
 {
     private final CellState[][] cells;
     private final List<Ship> ships;
+    private ShotResult lastShotResult;
     public static final int SIZE = 10;
 
     public Board()
     {
         this.ships = new ArrayList<>();
         this.cells = new CellState[SIZE][SIZE];
-        resetCellStates();
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE; j++)
+                cells[i][j] = CellState.EMPTY;
+        }
     }
 
     public Board(CellState[][] cells, List<Ship> ships)
@@ -26,32 +33,10 @@ public class Board
 
     public void generateShips()
     {
-        Random rand = new Random();
-        boolean canLand = false;
-
-        // TODO Test values. Should be changed when done
-
         for (int length = 4; length > 0; length--)
         {
             for (int quantity = 5 - length; quantity > 0; quantity--)
-            {
-                for (int i = 0; i < 10000; i++)
-                {
-                    Coordinate start = new Coordinate(rand.nextInt(SIZE), rand.nextInt(SIZE));
-                    Orientation orientation = Orientation.values()[rand.nextInt(Orientation.values().length)];
-
-                    Ship ship = new Ship(UUID.randomUUID(), start, orientation, length);
-                    canLand = canLand(ship);
-
-                    if (canLand)
-                    {
-                        ships.add(ship);
-                        recalculateCellStates();
-                        break;
-                    }
-                }
-                if (!canLand) throw new RuntimeException();
-            }
+                generateShip(length);
         }
     }
 
@@ -65,53 +50,66 @@ public class Board
         return true;
     }
 
-    public boolean moveShip(Ship ship, Coordinate newStart, Orientation newOrientation)
+    public boolean moveShip(Ship oldShip, Coordinate newStart, Orientation newOrientation)
     {
-        Ship newShip = new Ship(ship.getId(), newStart, newOrientation, ship.getLength());
-
-        ships.remove(ship);
-        recalculateCellStates();
-        ships.add(newShip);
+        Ship newShip = new Ship(oldShip.getId(), newStart, newOrientation, oldShip.getLength());
+        removeShip(oldShip);
 
         if (!canLand(newShip))
         {
-            ships.remove(newShip);
-            ships.add(ship);
-            recalculateCellStates();
-            System.out.println("Failed to move. Returning false");
+            addShip(oldShip);
             return false;
         }
 
-      //  recalculateCellStates();
-        System.out.println("Successfully moved. Returning true");
+        addShip(newShip);
         return true;
     }
 
-    private void recalculateCellStates()
+    private void generateShip(int length)
     {
-        resetCellStates();
-        for (Ship ship : ships)
+        Random rnd = new Random();
+        for (int i = 0; i < 10000; i++)
         {
-            for (Coordinate c : ship.getCells())
-                cells[c.row()][c.col()] = CellState.OCCUPIED;
+            Coordinate start = new Coordinate(rnd.nextInt(SIZE), rnd.nextInt(SIZE));
+            Orientation orientation = Orientation.values()[rnd.nextInt(Orientation.values().length)];
 
-            for (Coordinate c : ship.getBorderCells())
-                cells[c.row()][c.col()] = CellState.INDIRECTLY_OCCUPIED;
+            Ship ship = new Ship(UUID.randomUUID(), start, orientation, length);
+
+            if (canLand(ship))
+            {
+                addShip(ship);
+                return;
+            }
         }
+
+        throw new RuntimeException();
     }
 
-    private void resetCellStates()
+    private void removeShip(Ship ship)
     {
-        for (int i = 0; i < SIZE; i++)
-        {
-            for (int j = 0; j < SIZE; j++)
-                cells[i][j] = CellState.EMPTY;
-        }
+        ships.remove(ship);
+
+        for (Coordinate cell : ship.getCells()) cells[cell.row()][cell.col()] = CellState.EMPTY;
+        for (Coordinate cell : ship.getBorderCells()) cells[cell.row()][cell.col()] = CellState.EMPTY;
     }
 
-    public void shoot(Coordinate coordinate)
+    private void addShip(Ship ship)
     {
-        blockNearbyCells(coordinate);
+        ships.add(ship);
+
+        for (Coordinate cell : ship.getCells()) cells[cell.row()][cell.col()] = CellState.OCCUPIED;
+        for (Coordinate cell : ship.getBorderCells()) cells[cell.row()][cell.col()] = CellState.INDIRECTLY_OCCUPIED;
+    }
+
+    private boolean isAlreadyShot(Coordinate coordinate)
+    {
+        CellState cellState = cells[coordinate.row()][coordinate.col()];
+        return cellState.equals(CellState.MISS) || cellState.equals(CellState.HIT) || cellState.equals(CellState.SUNK);
+    }
+
+    public ShotResult shoot(Coordinate coordinate)
+    {
+        if (isAlreadyShot(coordinate)) return ShotResult.NONE;
         for (Ship ship : ships)
         {
             if (ship.hit(coordinate))
@@ -119,27 +117,43 @@ public class Board
                 cells[coordinate.row()][coordinate.col()] = CellState.HIT;
                 if (ship.isSunk())
                 {
+                    removeShip(ship);
+
+                    markNearbyCellsAsBlocked(coordinate, ship.getBorderCells());
                     for (Coordinate cell : ship.getCells())
                         cells[cell.row()][cell.col()] = CellState.SUNK;
-                    ships.remove(ship);
+                    return ShotResult.SUNK;
                 }
-                return;
+                markNearbyCellsAsBlocked(coordinate, null);
+                return ShotResult.HIT;
             }
         }
 
         cells[coordinate.row()][coordinate.col()] = CellState.MISS;
+        return ShotResult.MISS;
     }
 
-    private void blockNearbyCells(Coordinate coordinate)
+    public void setLastShotResult(ShotResult shotResult) { this.lastShotResult = shotResult; }
+    public ShotResult getLastShotResult() { return lastShotResult; }
+
+    private void markNearbyCellsAsBlocked(Coordinate coordinate, List<Coordinate> sunkShipBorderCells)
     {
         for (int r = -1; r <= 1; r += 2)
         {
             for (int c = -1; c <= 1; c += 2)
             {
-                int row  = coordinate.row() + r, col = coordinate.col() + c;
-                if (Coordinate.isValid(row, col) && cells[row][col].equals(CellState.EMPTY))
+                int row = coordinate.row() + r, col = coordinate.col() + c;
+                if (!Coordinate.isValid(row, col)) continue;
+
+                CellState currCellState = cells[row][col];
+                if (currCellState.equals(CellState.EMPTY) || currCellState.equals(CellState.INDIRECTLY_OCCUPIED))
                     cells[row][col] = CellState.BLOCKED;
             }
+        }
+
+        if (sunkShipBorderCells != null)
+        {
+            for (Coordinate cell : sunkShipBorderCells) cells[cell.row()][cell.col()] = CellState.BLOCKED;
         }
     }
 

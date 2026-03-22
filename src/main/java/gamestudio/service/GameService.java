@@ -12,19 +12,6 @@ public class GameService
 {
     private final Map<UUID, Game> games;
 
-    private static final Map<CellState, CellStateView> hostCellStateMap = new HashMap<>()
-    {
-        {
-            put(CellState.EMPTY, CellStateView.EMPTY);
-            put(CellState.OCCUPIED, CellStateView.SHIP);
-            put(CellState.INDIRECTLY_OCCUPIED, CellStateView.EMPTY);
-            put(CellState.MISS,  CellStateView.MISS);
-            put(CellState.HIT,  CellStateView.HIT);
-            put(CellState.SUNK,  CellStateView.SUNK);
-            put(CellState.BLOCKED, CellStateView.BLOCKED);
-        }
-    };
-
     private static final Map<CellState, CellStateView> opponentCellStateMap = new HashMap<>()
     {
         {
@@ -97,32 +84,29 @@ public class GameService
     public CombatViewResponse shoot(UUID gameId, UUID playerToken, Coordinate cell)
     {
         Game game = getGame(gameId);
+        Board hostBoard = game.getBoard(playerToken);
         Board opponentBoard = game.getOpponentBoard(playerToken);
-        opponentBoard.shoot(cell);
-        CellState[][] cells = opponentBoard.getCells();
+        ShotResult shotResult = opponentBoard.shoot(cell);
 
-        ShotResult shotResult = getShotResult(cells, cell);
-        game.addScore(shotResult, playerToken, 10);
+        CellState[][] hostCells = game.getBoard(playerToken).getCells();
+        CellStateView[][] opponentCells = transform(opponentBoard.getCells());
 
-        return new CombatViewResponse(game.getPhase(), shotResult, game.getScore(playerToken), cells, transform(cells));
+        hostBoard.setLastShotResult(shotResult);
+        game.updateScore(shotResult, playerToken, 10);
+
+        return new CombatViewResponse(game.getPhase(), shotResult, game.getScore(playerToken), hostCells, opponentCells);
     }
 
-    private ShotResult getShotResult(CellState[][] cells, Coordinate cell)
-    {
-        CellState state = cells[cell.row()][cell.col()];
-
-        if (state.equals(CellState.MISS)) return ShotResult.MISS;
-        else if (state.equals(CellState.SUNK)) return ShotResult.SUNK;
-
-        return ShotResult.HIT;
-    }
 
     public CombatViewResponse getCombatView(UUID gameId, UUID playerToken)
     {
         Game game = getGame(gameId);
-        CellState[][] cells = game.getOpponentBoard(playerToken).getCells();
+        Board hostBoard = game.getBoard(playerToken);
 
-        return new CombatViewResponse(game.getPhase(), null, game.getScore(playerToken), cells, transform(cells));
+        CellState[][] hostCells = hostBoard.getCells();
+        CellStateView[][] opponentCells = transform(game.getOpponentBoard(playerToken).getCells());
+
+        return new CombatViewResponse(game.getPhase(), hostBoard.getLastShotResult(), game.getScore(playerToken), hostCells, opponentCells);
     }
 
     private CellStateView[][] transform(CellState[][] cells)

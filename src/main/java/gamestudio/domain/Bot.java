@@ -22,16 +22,16 @@ public class Bot
         {
             if (cells[lastHitCell.row()][lastHitCell.col()].equals(CellStateView.MISS))
             {
-                System.out.println("MISS: (" + lastHitCell.row() + ", " + lastHitCell.col() + ")");
+              //  System.out.println("MISS: (" + lastHitCell.row() + ", " + lastHitCell.col() + ")");
                 lastHitCell = firstHitCell;
-                System.out.println("First hit cell: (" + lastHitCell.row() + ", " + lastHitCell.col() + ")");
+              //  System.out.println("First hit cell: (" + lastHitCell.row() + ", " + lastHitCell.col() + ")");
 
-                System.out.println("CURRENT POSSIBLE DIRECTIONS:");
-                for (HitDirection direction : possibleDirections) System.out.println("d: " + direction.name());
+               // System.out.println("CURRENT POSSIBLE DIRECTIONS:");
+               // for (HitDirection direction : possibleDirections) System.out.println("d: " + direction.name());
 
                 hitDirection = pickHitDirection(cells);
 
-                System.out.println("\nPicked new hit direction: " + hitDirection.name());
+              //  System.out.println("\nPicked new hit direction: " + hitDirection.name());
                 possibleDirections.remove(hitDirection);
             }
 
@@ -65,7 +65,7 @@ public class Bot
                 for (HitDirection h : possibleDirections) System.out.println(h.name());
                 possibleDirections.remove(hitDirection);
 
-                System.out.println("Picked (" + lastHitCell.row() +  ", " + lastHitCell.col() + ") as target cell. Direction " + hitDirection.name());
+             //   System.out.println("Picked (" + lastHitCell.row() +  ", " + lastHitCell.col() + ") as target cell. Direction " + hitDirection.name());
 
                 return lastHitCell;
             }
@@ -119,22 +119,22 @@ public class Bot
 
     private HitDirection pickHitDirection(CellStateView[][] cells)
     {
-        System.out.println("TRYING TO FIND HIT DIRECTION");
+     //   System.out.println("TRYING TO FIND HIT DIRECTION");
         var hitDirs = possibleDirections.toArray(new HitDirection[0]);
         hitDirection = hitDirs[new Random().nextInt(hitDirs.length)];
-        System.out.println("LENGTH OF POSSIBLE DIRECTIONS ARRAY: " + hitDirs.length);
-        System.out.println("PICKING " + hitDirection.name());
+      //  System.out.println("LENGTH OF POSSIBLE DIRECTIONS ARRAY: " + hitDirs.length);
+      //  System.out.println("PICKING " + hitDirection.name());
 
         Coordinate hitCell = Coordinate.addCoordinates(lastHitCell, hitDirection.coordinate);
 
         while (!isHitCellValid(cells, hitCell.row(), hitCell.col()))
         {
-            System.out.print(hitDirection.name() + " wasn't valid. Trying ");
+            // System.out.print(hitDirection.name() + " wasn't valid. Trying ");
             possibleDirections.remove(hitDirection);
 
             hitDirs = possibleDirections.toArray(new HitDirection[0]);
             hitDirection = hitDirs[new Random().nextInt(hitDirs.length)];
-            System.out.println(hitDirection.name());
+        //    System.out.println(hitDirection.name());
             hitCell = Coordinate.addCoordinates(firstHitCell, hitDirection.coordinate);
         }
 

@@ -12,6 +12,7 @@ import gamestudio.repository.CommentRepository;
 import gamestudio.repository.RatingRepository;
 import gamestudio.repository.ScoreRepository;
 import gamestudio.service.GameService;
+import jakarta.annotation.Nullable;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -21,6 +22,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static gamestudio.cli.Colours.*;
 
 @Component
 public class CliRunner implements CommandLineRunner
@@ -34,17 +37,29 @@ public class CliRunner implements CommandLineRunner
     private final ScoreRepository scoreRep;
     private final RatingRepository ratingRep;
     private final CommentRepository commentRep;
-    private CombatViewResponse hostCombatView = null, botCombatView = null;
-    private final Map<CellStateView, String> cellMarkers = new HashMap<>()
+    private CombatViewResponse hostCombatView;
+    private final Map<CellStateView, String> opponentCellMarkers = new HashMap<>()
     {
         {
-            put(CellStateView.EMPTY, " ");
             put(CellStateView.UNKNOWN, " ");
-            put(CellStateView.SHIP, "O");
-            put(CellStateView.BLOCKED, " ");
-            put(CellStateView.HIT, "X");
-            put(CellStateView.MISS, "*");
-            put(CellStateView.SUNK, "#");
+            put(CellStateView.SHIP, ANSI_CYAN.unicode + "■" + ANSI_RESET.unicode);
+            put(CellStateView.BLOCKED, ANSI_WHITE.unicode + "." + ANSI_RESET.unicode);
+            put(CellStateView.HIT, ANSI_RED.unicode + "X" + ANSI_RESET.unicode);
+            put(CellStateView.MISS, ANSI_YELLOW.unicode + "*" + ANSI_RESET.unicode);
+            put(CellStateView.SUNK, ANSI_PURPLE.unicode + "#" + ANSI_RESET.unicode);
+        }
+    };
+
+    private final Map<CellState, String> hostCellMarkers = new HashMap<>()
+    {
+        {
+            put(CellState.EMPTY, " ");
+            put(CellState.OCCUPIED, ANSI_CYAN.unicode + "■" + ANSI_RESET.unicode);
+            put(CellState.INDIRECTLY_OCCUPIED, " ");
+            put(CellState.BLOCKED, " ");
+            put(CellState.HIT, ANSI_RED.unicode + "X" + ANSI_RESET.unicode);
+            put(CellState.MISS, ANSI_YELLOW.unicode + "*" + ANSI_RESET.unicode);
+            put(CellState.SUNK, ANSI_PURPLE.unicode + "#" + ANSI_RESET.unicode);
         }
     };
 
@@ -67,7 +82,7 @@ public class CliRunner implements CommandLineRunner
     }
 
     @Override
-    public void run(String... args) throws InterruptedException
+    public void run(@Nullable String... args) throws InterruptedException
     {
         boolean running = true;
         printRules();
@@ -89,19 +104,19 @@ public class CliRunner implements CommandLineRunner
 
         while (true)
         {
-            String inp = sc.nextLine();
+            String input = sc.nextLine();
 
-            if (inp.trim().equalsIgnoreCase("exit")) return Action.EXIT;
-            else if (inp.trim().equalsIgnoreCase("restart")) return Action.RESTART;
+            if (input.trim().equalsIgnoreCase("exit")) return Action.EXIT;
+            else if (input.trim().equalsIgnoreCase("restart")) return Action.RESTART;
 
-            if (!inp.contains(" "))
+            if (!input.contains(" "))
             {
                 System.out.println("Invalid command");
                 continue;
             }
 
-            String command = inp.substring(0, inp.indexOf(" "));
-            parseQuery(command, inp.substring(command.length() + 1));
+            String command = input.substring(0, input.indexOf(" "));
+            parseQuery(command, input.substring(command.length() + 1));
         }
     }
 
@@ -120,7 +135,6 @@ public class CliRunner implements CommandLineRunner
         System.out.println("\nGame started! Your turn!\n");
         System.out.println("\n\t\t\t\t\t\tOpponent's board");
 
-        drawCombatBoard(null, 0);
         playCombatPhase();
 
         String winner = game.getWinner().equals(hostToken) ? "You" : "Opponent";
@@ -160,7 +174,9 @@ public class CliRunner implements CommandLineRunner
         Bot bot = new Bot();
         Coordinate firstHitCell = null;
 
-        System.out.println("PHASE: " + game.getPhase());
+        CombatViewResponse botCombatView = gameService.getCombatView(gameId, opponentToken);
+        drawCombatBoard(opponentToken);
+
         while (game.getPhase().equals(GamePhase.COMBAT))
         {
             System.out.print("Enter coordinates: ");
@@ -177,17 +193,15 @@ public class CliRunner implements CommandLineRunner
             hostCombatView = gameService.shoot(gameId, hostToken, cell);
 
             System.out.println("\n\t\t\t\t\t\tOpponent's board");
-            drawCombatBoard(hostCombatView.opponentBoard(), hostCombatView.score());
+            drawCombatBoard(opponentToken);
 
             if (hostCombatView.phase().equals(GamePhase.FINISHED)) break;
-            if (hostCombatView.shotResult().equals(ShotResult.HIT)) continue;
+            if (!hostCombatView.shotResult().equals(ShotResult.MISS)) continue;
 
             ShotResult shotResult;
             do
             {
                 Coordinate targetCell;
-                if (botCombatView == null)
-                    botCombatView = gameService.getCombatView(gameId, opponentToken);
 
                 targetCell = bot.getTargetCell(botCombatView.opponentBoard(), firstHitCell);
 
@@ -200,13 +214,13 @@ public class CliRunner implements CommandLineRunner
                 System.out.println("ATTACKING (" + targetCell.row() + ", " + targetCell.col() + ")");
 
                 printBotMessages();
-                drawCombatBoard(botCombatView.opponentBoard(), -1);
+                drawCombatBoard(hostToken);
 
             } while (!shotResult.equals(ShotResult.MISS) && botCombatView.phase().equals(GamePhase.COMBAT));
 
             System.out.println("\n\t\t\t\t\t\tOpponent's board");
             TimeUnit.MILLISECONDS.sleep(1500);
-            drawCombatBoard(hostCombatView.opponentBoard(), hostCombatView.score());
+            drawCombatBoard(opponentToken);
         }
     }
 
@@ -368,7 +382,9 @@ public class CliRunner implements CommandLineRunner
             if (i < Board.SIZE - 1) System.out.print(" ");
             System.out.print(i + 1 + " ");
 
-            for (int k = 0; k < Board.SIZE; k++) System.out.print("|  " + (occupiedCells[i][k] ? "O" : " ") + "  ");
+            for (int k = 0; k < Board.SIZE; k++)
+                System.out.print("|  " + (occupiedCells[i][k] ? ANSI_CYAN.unicode + "■" + ANSI_RESET.unicode : " ") + "  ");
+
             System.out.print("|");
         }
 
@@ -376,10 +392,13 @@ public class CliRunner implements CommandLineRunner
         printBorderLine();
     }
 
-    private void drawCombatBoard(CellStateView[][] board, int score)
+    private void drawCombatBoard(UUID playerToken)
     {
-        // Score -1 is designed exclusively for the bot, there's no sense in printing it.
-        if (score != -1) System.out.println("Score: " + score + "\n");
+        hostCombatView = gameService.getCombatView(gameId, hostToken);
+        boolean hostBoard = playerToken.equals(hostToken);
+        if (!hostBoard)
+            System.out.println(ANSI_BLUE.unicode + "Score: " + game.getScore(hostToken) + ANSI_RESET.unicode);
+
         printColumns();
         for (int i = 0; i < Board.SIZE; i++)
         {
@@ -393,8 +412,10 @@ public class CliRunner implements CommandLineRunner
             {
                 System.out.print("|  ");
 
-                if (board != null) System.out.print(cellMarkers.get(board[i][k]));
-                else System.out.print(" ");
+                if (hostBoard)
+                    System.out.print(hostCellMarkers.get(hostCombatView.hostBoard()[i][k]));
+                else
+                    System.out.print(opponentCellMarkers.get(hostCombatView.opponentBoard()[i][k]));
 
                 System.out.print("  ");
             }

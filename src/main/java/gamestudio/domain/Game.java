@@ -88,18 +88,18 @@ public class Game
         return scores.get(playerToken);
     }
 
-    public void addScore(ShotResult shotResult, UUID playerToken, int score)
+    public void updateScore(ShotResult shotResult, UUID playerToken, int baseScore)
     {
         int multiplier;
 
-        if (!shotResult.equals(ShotResult.MISS)) multiplier = hitStreaks.get(playerToken) + 1;
+        if (shotResult.equals(ShotResult.HIT) || shotResult.equals(ShotResult.SUNK)) multiplier = hitStreaks.get(playerToken) + 1;
         else
         {
             hitStreaks.put(playerToken, 0);
             return;
         }
 
-        scores.put(playerToken, scores.get(playerToken) + score * multiplier);
+        scores.put(playerToken, scores.get(playerToken) + baseScore * multiplier);
         hitStreaks.put(playerToken, multiplier);
 
         if (shotResult.equals(ShotResult.SUNK)) scores.put(playerToken, scores.get(playerToken) + 15);

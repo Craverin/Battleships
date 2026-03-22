@@ -2,7 +2,6 @@ package gamestudio.repository;
 
 import gamestudio.entity.Comment;
 import gamestudio.repository.exception.CommentException;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
@@ -18,12 +17,10 @@ public class JdbcCommentRepository implements CommentRepository
 
     private static final String INSERT_COMMENT = "INSERT INTO comment (player, game, comment, commentedOn) VALUES (?, ?, ?, ?)";
     private static final String SELECT_COMMENTS = "SELECT player, game, comment, commentedOn from comment WHERE game = ?";
-    private final ConnectionDetails connectionDetails;
 
-    public JdbcCommentRepository(DataSource dataSource, ConnectionDetails connectionDetails)
+    public JdbcCommentRepository(DataSource dataSource)
     {
         this.dataSource = dataSource;
-        this.connectionDetails = connectionDetails;
     }
 
     @Override
