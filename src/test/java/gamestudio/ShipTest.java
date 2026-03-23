@@ -3,7 +3,6 @@ package gamestudio;
 import gamestudio.domain.Coordinate;
 import gamestudio.domain.Orientation;
 import gamestudio.domain.Ship;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

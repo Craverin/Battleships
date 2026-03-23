@@ -211,8 +211,6 @@ public class CliRunner implements CommandLineRunner
                 if (firstHitCell == null && shotResult.equals(ShotResult.HIT)) firstHitCell = targetCell;
                 else if (firstHitCell != null && shotResult.equals(ShotResult.SUNK)) firstHitCell = null;
 
-                System.out.println("ATTACKING (" + targetCell.row() + ", " + targetCell.col() + ")");
-
                 printBotMessages();
                 drawCombatBoard(hostToken);
 

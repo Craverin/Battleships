@@ -23,12 +23,14 @@ public class Board
             for (int j = 0; j < SIZE; j++)
                 cells[i][j] = CellState.EMPTY;
         }
+        lastShotResult = ShotResult.NONE;
     }
 
     public Board(CellState[][] cells, List<Ship> ships)
     {
         this.cells = cells;
         this.ships = ships;
+        lastShotResult = ShotResult.NONE;
     }
 
     public void generateShips()
@@ -54,6 +56,7 @@ public class Board
     {
         Ship newShip = new Ship(oldShip.getId(), newStart, newOrientation, oldShip.getLength());
         removeShip(oldShip);
+        recalculateBorderCells();
 
         if (!canLand(newShip))
         {
@@ -63,6 +66,15 @@ public class Board
 
         addShip(newShip);
         return true;
+    }
+
+    private void recalculateBorderCells()
+    {
+        for (Ship ship : ships)
+        {
+            for (Coordinate cell : ship.getBorderCells())
+                cells[cell.row()][cell.col()] = CellState.INDIRECTLY_OCCUPIED;
+        }
     }
 
     private void generateShip(int length)

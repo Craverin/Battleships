@@ -119,7 +119,7 @@ class GameTest
         game.createGame();
         UUID createdHostToken = game.getHostToken();
 
-        game.addScore(ShotResult.MISS, createdHostToken, 10);
+        game.updateScore(ShotResult.MISS, createdHostToken, 10);
         assertEquals(0, game.getScore(createdHostToken));
     }
 
@@ -129,7 +129,7 @@ class GameTest
         game.createGame();
         UUID createdHostToken = game.getHostToken();
 
-        game.addScore(ShotResult.HIT, createdHostToken, 10);
+        game.updateScore(ShotResult.HIT, createdHostToken, 10);
         assertEquals(10, game.getScore(createdHostToken));
     }
 
@@ -139,8 +139,8 @@ class GameTest
         game.createGame();
         UUID createdHostToken = game.getHostToken();
 
-        game.addScore(ShotResult.HIT, createdHostToken, 10);
-        game.addScore(ShotResult.HIT, createdHostToken, 10);
+        game.updateScore(ShotResult.HIT, createdHostToken, 10);
+        game.updateScore(ShotResult.HIT, createdHostToken, 10);
 
         assertEquals(30, game.getScore(createdHostToken));
     }
@@ -151,10 +151,10 @@ class GameTest
         game.createGame();
         UUID createdHostToken = game.getHostToken();
 
-        game.addScore(ShotResult.HIT, createdHostToken, 10);
-        game.addScore(ShotResult.HIT, createdHostToken, 10);
-        game.addScore(ShotResult.MISS, createdHostToken, 10);
-        game.addScore(ShotResult.HIT, createdHostToken, 10);
+        game.updateScore(ShotResult.HIT, createdHostToken, 10);
+        game.updateScore(ShotResult.HIT, createdHostToken, 10);
+        game.updateScore(ShotResult.MISS, createdHostToken, 10);
+        game.updateScore(ShotResult.HIT, createdHostToken, 10);
 
         assertEquals(40, game.getScore(createdHostToken));
     }
@@ -165,8 +165,8 @@ class GameTest
         game.createGame();
         UUID createdHostToken = game.getHostToken();
 
-        game.addScore(ShotResult.HIT, createdHostToken, 10);
-        game.addScore(ShotResult.SUNK, createdHostToken, 10);
+        game.updateScore(ShotResult.HIT, createdHostToken, 10);
+        game.updateScore(ShotResult.SUNK, createdHostToken, 10);
 
         assertEquals(45, game.getScore(createdHostToken));
     }

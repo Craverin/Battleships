@@ -39,9 +39,23 @@ public class GameService
         return new CreateGameResponse(gameId, game.getHostToken());
     }
 
+    public CreateGameResponse createGame(CellState[][] cells, List<Ship> ships)
+    {
+        Game game = new Game();
+        UUID gameId = game.createGame(cells, ships);
+
+        games.put(gameId, game);
+        return new CreateGameResponse(gameId, game.getHostToken());
+    }
+
     public UUID joinGame(UUID gameId)
     {
         return games.get(gameId).addPlayer();
+    }
+
+    public UUID joinGame(UUID gameId, CellState[][] cells, List<Ship> ships)
+    {
+        return games.get(gameId).addPlayer(cells, ships);
     }
 
     public boolean moveShip(UUID gameId,
@@ -53,7 +67,7 @@ public class GameService
         Game game = games.get(gameId);
         Board board = game.getBoard(playerToken);
 
-        Orientation orientation = newOrientation == null
+        Orientation orientation = (newOrientation == null)
                                   ? board.getShipById(shipId).getOrientation()
                                   : newOrientation;
 
@@ -101,6 +115,8 @@ public class GameService
     public CombatViewResponse getCombatView(UUID gameId, UUID playerToken)
     {
         Game game = getGame(gameId);
+        if (game.getPhase().equals(GamePhase.PLACEMENT)) return null;
+
         Board hostBoard = game.getBoard(playerToken);
 
         CellState[][] hostCells = hostBoard.getCells();
@@ -111,7 +127,7 @@ public class GameService
 
     private CellStateView[][] transform(CellState[][] cells)
     {
-        CellStateView[][] cellsView = new CellStateView[10][10];
+        CellStateView[][] cellsView = new CellStateView[Board.SIZE][Board.SIZE];
         for (int i = 0; i < cells.length; i++)
         {
             for (int j = 0; j < cells[i].length; j++)

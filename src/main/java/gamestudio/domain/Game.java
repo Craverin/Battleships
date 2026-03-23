@@ -3,6 +3,7 @@ package gamestudio.domain;
 import gamestudio.dto.ShotResult;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,6 +17,20 @@ public class Game
 
     public UUID createGame()
     {
+        Board board = new Board();
+        board.generateShips();
+
+        return initializeGame(board);
+    }
+
+    public UUID createGame(CellState[][] cells, List<Ship> ships)
+    {
+        Board board = new Board(cells, ships);
+        return initializeGame(board);
+    }
+
+    private UUID initializeGame(Board board)
+    {
         gameId = UUID.randomUUID();
         hostToken = UUID.randomUUID();
         gamePhase = GamePhase.PLACEMENT;
@@ -23,15 +38,12 @@ public class Game
         scores = new HashMap<>();
         hitStreaks = new HashMap<>();
 
-        Board board = new Board();
-        board.generateShips();
         boards.put(hostToken, board);
         scores.put(hostToken, 0);
         hitStreaks.put(hostToken, 0);
 
         return gameId;
     }
-
 
     public Board getBoard(UUID playerToken) { return boards.get(playerToken); }
     public Board getOpponentBoard(UUID playerToken)
@@ -51,6 +63,18 @@ public class Game
 
         Board board = new Board();
         board.generateShips();
+        boards.put(opponentToken, board);
+        scores.put(opponentToken, 0);
+        hitStreaks.put(opponentToken, 0);
+
+        return opponentToken;
+    }
+
+    public UUID addPlayer(CellState[][] cells, List<Ship> ships)
+    {
+        this.opponentToken = UUID.randomUUID();
+
+        Board board = new Board(cells, ships);
         boards.put(opponentToken, board);
         scores.put(opponentToken, 0);
         hitStreaks.put(opponentToken, 0);
