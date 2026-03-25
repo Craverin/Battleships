@@ -62,7 +62,7 @@ public class Bot
                 lastHitCell = new Coordinate(row, col);
                 hitDirection = shift;
 
-                for (HitDirection h : possibleDirections) System.out.println(h.name());
+             //   for (HitDirection h : possibleDirections) System.out.println(h.name());
                 possibleDirections.remove(hitDirection);
 
                 //System.out.println("Picked (" + lastHitCell.row() +  ", " + lastHitCell.col() + ") as target cell. Direction " + hitDirection.name());

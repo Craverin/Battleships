@@ -309,8 +309,8 @@ public class CliRunner implements CommandLineRunner
         Coordinate firstHitCell = null;
 
         CombatViewResponse botCombatView = gameService.getCombatView(gameId, opponentToken);
-       // drawCombatBoard(opponentToken);
-        DEBUG_drawBotBoard(botCombatView);
+        drawCombatBoard(opponentToken);
+
 
         while (game.getPhase().equals(GamePhase.COMBAT))
         {
@@ -472,13 +472,13 @@ public class CliRunner implements CommandLineRunner
 
         if (shipId == null)
         {
-            System.out.println("Invalid cell!");
+            System.out.println(ANSI_RED.unicode + "Invalid cell!" + ANSI_RESET.unicode);
             return false;
         }
 
         if (!gameService.moveShip(gameId, shipId, hostToken, newStart, newOrientation))
         {
-            System.out.println("Unable to move ship!");
+            System.out.println(ANSI_RED.unicode + "Unable to move ship!" + ANSI_RESET.unicode);
             return false;
         }
 
@@ -495,16 +495,19 @@ public class CliRunner implements CommandLineRunner
 
     private static void printRules()
     {
-        System.out.println("\nWelcome to Battleships!\n");
-        System.out.println("To move a ship, enter two coordinates separated by a space:");
+        System.out.println(ANSI_CYAN.unicode + "\nWelcome to Battleships!" + ANSI_RESET.unicode);
+        System.out.println("\nTo move a ship, enter two coordinates separated by a space:");
         System.out.println("1) the ship's current start cell, 2) the new start cell.");
-        System.out.println("Optionally add the new orientation at the end (H or V).");
-        System.out.println();
-        System.out.println("Format: <oldStart> <newStart> [H|V]");
-        System.out.println("Examples:");
-        System.out.println("  5A 3C");
-        System.out.println("  8B 3D V");
-        System.out.println("\nWhen ready, just enter \"start\". Good luck!\n");
+        System.out.println("Optionally add the new orientation at the end (" + ANSI_YELLOW.unicode
+                           + "H" + ANSI_RESET.unicode + " or " + ANSI_YELLOW.unicode + "V"
+                           + ANSI_RESET.unicode + ").");
+        System.out.println(ANSI_CYAN.unicode + "\nFormat:" + ANSI_RESET.unicode + " "
+                           + ANSI_GREEN.unicode + "<oldStart> <newStart> [H|V]" + ANSI_RESET.unicode);
+        System.out.println(ANSI_CYAN.unicode + "Examples:" + ANSI_RESET.unicode);
+        System.out.println("  " + ANSI_GREEN.unicode + "5A 3C" + ANSI_RESET.unicode);
+        System.out.println("  " + ANSI_GREEN.unicode + "8B 3D V" + ANSI_RESET.unicode);
+        System.out.println("\nWhen ready, just enter " + ANSI_YELLOW.unicode
+                           + "\"start\"" + ANSI_RESET.unicode + ". Good luck!\n");
     }
 
     private void drawPlacementBoard()
@@ -560,31 +563,6 @@ public class CliRunner implements CommandLineRunner
             }
             System.out.print("|");
 
-        }
-
-        System.out.println();
-        printBorderLine();
-    }
-
-    private void DEBUG_drawBotBoard(CombatViewResponse botCombatView)
-    {
-        printColumns();
-        for (int i = 0; i < Board.SIZE; i++)
-        {
-            System.out.println("  ");
-            printBorderLine();
-
-            if (i < Board.SIZE - 1) System.out.print(" ");
-            System.out.print(i + 1 + " ");
-
-            for (int k = 0; k < Board.SIZE; k++)
-            {
-                System.out.print("|  ");
-                System.out.print(hostCellMarkers.get(botCombatView.hostBoard()[i][k]));
-                System.out.print("  ");
-            }
-
-            System.out.print("|");
         }
 
         System.out.println();
@@ -653,5 +631,4 @@ public class CliRunner implements CommandLineRunner
 
         return null;
     }
-
 }

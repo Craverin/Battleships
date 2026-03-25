@@ -100,7 +100,10 @@ public class Menu
         else System.out.println("Your rating: " + ANSI_YELLOW.unicode + userRating + "/5" + ANSI_RESET.unicode);
 
         if (averageRating == 0) System.out.println(ANSI_YELLOW.unicode + "No ratings yet." + ANSI_RESET.unicode);
-        else System.out.println("Average rating: " + ANSI_YELLOW.unicode + averageRating + "/5" + ANSI_RESET.unicode);
+        else System.out.println("Average rating: " + ANSI_YELLOW.unicode + averageRating + "/5"
+                                + ANSI_RESET.unicode + " (" + ANSI_BLUE.unicode
+                                + ratingRepository.getRatingCount("battleships") + ANSI_RESET.unicode
+                                + " votes)");
     }
 
     void showScoresPage(String player)
@@ -113,7 +116,7 @@ public class Menu
         if (userScore == -1) System.out.println(ANSI_YELLOW.unicode + "You don't have a score yet." + ANSI_RESET.unicode);
         else System.out.println("Your best score: " + ANSI_YELLOW.unicode + userScore + ANSI_RESET.unicode);
 
-        if (scores == null)
+        if (scores.isEmpty())
         {
             System.out.println(ANSI_YELLOW.unicode + "No scores yet." + ANSI_RESET.unicode);
             return;

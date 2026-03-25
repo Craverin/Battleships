@@ -16,6 +16,7 @@ public class JdbcRatingRepository implements RatingRepository
     private static final String SELECT_ALL_RATINGS = "SELECT rating FROM rating WHERE game = ?";
     private static final String SELECT_RATING = "SELECT rating FROM rating WHERE player = ? AND game = ?";
     private static final String INSERT = "INSERT INTO rating (player, game, rating, ratedOn) VALUES (?, ?, ?, ?) ON CONFLICT (player, game) DO UPDATE SET rating = EXCLUDED.rating, ratedOn = EXCLUDED.ratedOn";
+    private static final String RATING_COUNT = "SELECT COUNT(*) FROM rating WHERE game = ?";
 
     public JdbcRatingRepository(DataSource dataSource)
     {
@@ -83,10 +84,30 @@ public class JdbcRatingRepository implements RatingRepository
     }
 
     @Override
+    public int getRatingCount(String game)
+    {
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(RATING_COUNT))
+        {
+            statement.setString(1, game);
+
+            try (ResultSet result = statement.executeQuery())
+            {
+                int ratingCount = 0;
+
+                if (result.next()) ratingCount = result.getInt(1);
+                return ratingCount;
+            }
+        }
+        catch (SQLException e) { throw new RatingException("Failed to select rating", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
+    }
+
+    @Override
     public void reset() throws RatingException
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
-        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM score"))
+        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM rating"))
         {
             statement.executeUpdate();
         }

@@ -74,10 +74,16 @@ public class JdbcScoreRepository implements ScoreRepository
 
             try (ResultSet rs = statement.executeQuery())
             {
-               if (rs.next()) return rs.getInt(1);
+               if (rs.next())
+               {
+                   int score = rs.getInt(1);
+                   if (rs.wasNull()) return -1;
+
+                   return score;
+               }
+               return -1;
             }
 
-            return -1;
         }
         catch (SQLException e) { throw new ScoreException("Failed to select score", e); }
         finally { DataSourceUtils.releaseConnection(connection, dataSource); }
