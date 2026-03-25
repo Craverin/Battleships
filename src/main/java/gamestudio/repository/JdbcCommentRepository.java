@@ -17,6 +17,7 @@ public class JdbcCommentRepository implements CommentRepository
 
     private static final String INSERT_COMMENT = "INSERT INTO comment (player, game, comment, commentedOn) VALUES (?, ?, ?, ?)";
     private static final String SELECT_COMMENTS = "SELECT player, game, comment, commentedOn from comment WHERE game = ?";
+    private static final String SELECT_COMMENT = "SELECT player, game, comment, commentedOn from comment WHERE game = ? AND player = ?";
 
     public JdbcCommentRepository(DataSource dataSource)
     {
@@ -52,13 +53,43 @@ public class JdbcCommentRepository implements CommentRepository
                 List<Comment> comments = new ArrayList<>();
                 while (rs.next())
                 {
-                    comments.add(new Comment(rs.getString(1),
-                                 rs.getString(2),
-                                 rs.getString(3),
-                                 rs.getTimestamp(4)));
+                    comments.add(new Comment(
+                            rs.getString(1),
+                            rs.getString(2),
+                            rs.getString(3),
+                            rs.getTimestamp(4))
+                    );
                 }
 
                 return comments;
+            }
+        }
+        catch (SQLException e) { throw new CommentException("Failed to select comments", e); }
+        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
+    }
+
+    @Override
+    public Comment getComment(String game, String player)
+    {
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_COMMENT))
+        {
+            statement.setString(1, game);
+            statement.setString(2, player);
+
+            try (ResultSet rs = statement.executeQuery())
+            {
+                if (rs.next())
+                {
+                    return new Comment(
+                           rs.getString(1),
+                           rs.getString(2),
+                           rs.getString(3),
+                           rs.getTimestamp(4)
+                    );
+                }
+
+                return null;
             }
         }
         catch (SQLException e) { throw new CommentException("Failed to select comments", e); }

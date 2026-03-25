@@ -75,7 +75,7 @@ public class JdbcRatingRepository implements RatingRepository
             try (ResultSet result = statement.executeQuery())
             {
                 if (result.next()) return result.getInt("rating");
-                throw new RatingException("Rating not found");
+                return -1;
             }
         }
         catch (SQLException e) { throw new RatingException("Failed to select rating", e); }

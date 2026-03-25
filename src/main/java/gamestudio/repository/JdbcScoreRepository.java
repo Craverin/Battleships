@@ -64,7 +64,6 @@ public class JdbcScoreRepository implements ScoreRepository
         finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
-    @Override
     public int getTopScore(String game, String player)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
@@ -78,7 +77,7 @@ public class JdbcScoreRepository implements ScoreRepository
                if (rs.next()) return rs.getInt(1);
             }
 
-            return 0;
+            return -1;
         }
         catch (SQLException e) { throw new ScoreException("Failed to select score", e); }
         finally { DataSourceUtils.releaseConnection(connection, dataSource); }

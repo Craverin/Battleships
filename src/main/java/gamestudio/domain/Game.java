@@ -2,10 +2,7 @@ package gamestudio.domain;
 
 import gamestudio.dto.ShotResult;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Game
 {
@@ -14,6 +11,7 @@ public class Game
     private Map<UUID, Integer> scores;
     private Map<UUID, Integer> hitStreaks;
     private GamePhase gamePhase;
+    public static final int BASE_SCORE_PER_HIT = 10;
 
     public UUID createGame()
     {

@@ -106,7 +106,7 @@ public class GameService
         CellStateView[][] opponentCells = transform(opponentBoard.getCells());
 
         hostBoard.setLastShotResult(shotResult);
-        game.updateScore(shotResult, playerToken, 10);
+        game.updateScore(shotResult, playerToken, Game.BASE_SCORE_PER_HIT);
 
         return new CombatViewResponse(game.getPhase(), shotResult, game.getScore(playerToken), hostCells, opponentCells);
     }
