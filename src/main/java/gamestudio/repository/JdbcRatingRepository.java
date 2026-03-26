@@ -65,7 +65,7 @@ public class JdbcRatingRepository implements RatingRepository
     }
 
     @Override
-    public int getRating(String player, String game)
+    public int getRating(String game, String player)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement statement = connection.prepareStatement(SELECT_RATING))

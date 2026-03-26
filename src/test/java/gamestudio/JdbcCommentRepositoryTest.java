@@ -30,15 +30,15 @@ public class JdbcCommentRepositoryTest
     static PostgreSQLContainer postgres = new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"));
 
     @Test
-    void getComments_threeComments_returnsAllGameCommentsTrimmed()
+    void getComments_threeCommentsAdded_returnsAllGameCommentsTrimmed()
     {
         Date firstDate = new Date();
         Date secondDate = new Date();
         Date thirdDate = new Date();
 
-        repository.addComment(new Comment("first player", "battleships", "Comment one", firstDate));
-        repository.addComment(new Comment("second player", "battleships", "Comment two  ", secondDate));
-        repository.addComment(new Comment("third player", "battleships", "   Comment three   ", thirdDate));
+        repository.addComment(new Comment("p1", "battleships", "Comment one", firstDate));
+        repository.addComment(new Comment("p2", "battleships", "Comment two  ", secondDate));
+        repository.addComment(new Comment("p3", "battleships", "   Comment three   ", thirdDate));
 
         List<Comment> comments = repository.getComments("battleships");
         assertEquals(3, comments.size());
@@ -47,26 +47,62 @@ public class JdbcCommentRepositoryTest
         Comment secondComment = comments.get(1);
         Comment thirdComment = comments.get(2);
 
-        assertEquals("first player", firstComment.getPlayer());
+        assertEquals("p1", firstComment.getPlayer());
         assertEquals("battleships", firstComment.getGame());
         assertEquals("Comment one", firstComment.getComment());
         assertEquals(firstDate, firstComment.getCommentedOn());
 
-        assertEquals("second player", secondComment.getPlayer());
+        assertEquals("p2", secondComment.getPlayer());
         assertEquals("battleships", secondComment.getGame());
         assertEquals("Comment two", secondComment.getComment());
         assertEquals(secondDate, secondComment.getCommentedOn());
 
-        assertEquals("third player", thirdComment.getPlayer());
+        assertEquals("p3", thirdComment.getPlayer());
         assertEquals("battleships", thirdComment.getGame());
         assertEquals("Comment three", thirdComment.getComment());
         assertEquals(thirdDate, thirdComment.getCommentedOn());
     }
 
     @Test
-    void getComments_noComments_returnsEmptyList()
+    void getComments_noCommentsAdded_returnsEmptyList()
     {
         List<Comment> comments = repository.getComments("battleships");
+
+        assertNotNull(comments);
+        assertTrue(comments.isEmpty());
+    }
+
+    @Test
+    void getPlayerComments_twoCommentsAdded_returnsAllPlayerCommentsTrimmed()
+    {
+        Date firstDate = new Date();
+        Date secondDate = new Date();
+
+        repository.addComment(new Comment("p1", "battleships", "Comment one", firstDate));
+        repository.addComment(new Comment("p1", "battleships", " Comment two  ", secondDate));
+
+        List<Comment> comments = repository.getPlayerComments("battleships", "p1");
+        assertEquals(2, comments.size());
+
+        Comment firstComment = comments.get(0);
+        Comment secondComment = comments.get(1);
+
+        assertEquals("p1", firstComment.getPlayer());
+        assertEquals("battleships", firstComment.getGame());
+        assertEquals("Comment one", firstComment.getComment());
+        assertEquals(firstDate, firstComment.getCommentedOn());
+
+        assertEquals("p1", secondComment.getPlayer());
+        assertEquals("battleships", secondComment.getGame());
+        assertEquals("Comment two", secondComment.getComment());
+        assertEquals(secondDate, secondComment.getCommentedOn());
+
+    }
+
+    @Test
+    void getPlayerComments_noCommentsAdded_returnsEmptyList()
+    {
+        List<Comment> comments = repository.getPlayerComments("battleships", "p1");
 
         assertNotNull(comments);
         assertTrue(comments.isEmpty());

@@ -36,18 +36,20 @@ public class Menu
         System.out.print(ANSI_GREEN.unicode + "> " + ANSI_RESET.unicode);
     }
 
-    void showUserComment(String player)
+    void showUserComments(String player)
     {
-        Comment comment = commentRepository.getComment("battleships", player);
+        List<Comment> comments = commentRepository.getPlayerComments("battleships", player);
 
-        if (comment == null)
+        if (comments.isEmpty())
         {
             System.out.println(ANSI_YELLOW.unicode + "You haven't left a comment yet." + ANSI_RESET.unicode);
             return;
         }
 
-        System.out.println(ANSI_CYAN.unicode + "\n=== Your Comment ===" + ANSI_RESET.unicode);
-        System.out.println("\"" + comment.getComment() + "\"");
+        System.out.println(ANSI_CYAN.unicode + "\n=== Your Comments ===" + ANSI_RESET.unicode);
+
+        for (Comment comment : comments)
+            System.out.println("\"" + comment.getComment() + "\"");
     }
 
     int getCommentsPageCount()
@@ -99,7 +101,7 @@ public class Menu
         if (userRating == -1) System.out.println(ANSI_YELLOW.unicode + "You haven't rated this game yet." + ANSI_RESET.unicode);
         else System.out.println("Your rating: " + ANSI_YELLOW.unicode + userRating + "/5" + ANSI_RESET.unicode);
 
-        if (averageRating == 0) System.out.println(ANSI_YELLOW.unicode + "No ratings yet." + ANSI_RESET.unicode);
+        if (averageRating == -1) System.out.println(ANSI_YELLOW.unicode + "No ratings yet." + ANSI_RESET.unicode);
         else System.out.println("Average rating: " + ANSI_YELLOW.unicode + averageRating + "/5"
                                 + ANSI_RESET.unicode + " (" + ANSI_BLUE.unicode
                                 + ratingRepository.getRatingCount("battleships") + ANSI_RESET.unicode

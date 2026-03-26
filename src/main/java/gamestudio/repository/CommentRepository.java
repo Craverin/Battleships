@@ -9,6 +9,6 @@ public interface CommentRepository
 {
     void addComment(Comment comment) throws CommentException;
     List<Comment> getComments(String game) throws CommentException;
-    Comment getComment(String game, String player);
+    List<Comment> getPlayerComments(String game, String player);
     void reset() throws CommentException;
 }

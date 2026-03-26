@@ -2,7 +2,6 @@ package gamestudio;
 
 import gamestudio.entity.Rating;
 import gamestudio.repository.JdbcRatingRepository;
-import gamestudio.repository.exception.RatingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
@@ -36,9 +35,9 @@ public class JdbcRatingRepositoryTest
         repository.setRating(new Rating("p2", "numberLink", 2, new Date()));
         repository.setRating(new Rating("p3", "sudoku", 3, new Date()));
 
-        assertEquals(5, repository.getRating("p1", "battleships"));
-        assertEquals(2, repository.getRating("p2", "numberLink"));
-        assertEquals(3, repository.getRating("p3", "sudoku"));
+        assertEquals(5, repository.getRating("battleships", "p1" ));
+        assertEquals(2, repository.getRating("numberLink", "p2"));
+        assertEquals(3, repository.getRating("sudoku", "p3"));
     }
 
     @Test
@@ -52,7 +51,7 @@ public class JdbcRatingRepositoryTest
     {
         repository.setRating(new Rating("p1", "battleships", 4, new Date()));
 
-        int rating = repository.getRating("p1", "battleships");
+        int rating = repository.getRating("battleships", "p1");
         assertEquals(4, rating);
     }
 
@@ -63,7 +62,7 @@ public class JdbcRatingRepositoryTest
         repository.setRating(new Rating("p1", "battleships", 2, new Date()));
         repository.setRating(new Rating("p1", "battleships", 5, new Date()));
 
-        assertEquals(5, repository.getRating("p1", "battleships"));
+        assertEquals(5, repository.getRating("battleships", "p1"));
     }
 
     @Test
@@ -92,7 +91,7 @@ public class JdbcRatingRepositoryTest
     public void reset_afterAddingRatings_deletesAllRatings()
     {
         repository.setRating(new Rating("p1", "battleships", 4, new Date()));
-        assertEquals(4, repository.getRating("p1", "battleships"));
+        assertEquals(4, repository.getRating("battleships", "p1"));
 
         repository.reset();
         assertEquals(-1, repository.getRating("battleships", "p1"));

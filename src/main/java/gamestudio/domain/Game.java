@@ -112,9 +112,12 @@ public class Game
 
     public void updateScore(ShotResult shotResult, UUID playerToken, int baseScore)
     {
+        // Consecutive hits increase the score multiplier by one, while sinking a ship gives an extra points
+        // A miss resets the streak
         int multiplier;
 
-        if (shotResult.equals(ShotResult.HIT) || shotResult.equals(ShotResult.SUNK)) multiplier = hitStreaks.get(playerToken) + 1;
+        if (shotResult.equals(ShotResult.HIT) || shotResult.equals(ShotResult.SUNK))
+            multiplier = hitStreaks.get(playerToken) + 1;
         else
         {
             hitStreaks.put(playerToken, 0);

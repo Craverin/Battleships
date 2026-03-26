@@ -29,10 +29,9 @@ public class Ship
         for (int i = 1; i < length; i++)
         {
             if (orientation.equals(Orientation.HORIZONTAL))
-            {
                 cells.add(new Coordinate(start.row(), start.col() + i));
-            }
-            else cells.add(new Coordinate(start.row() + i, start.col()));
+            else
+                cells.add(new Coordinate(start.row() + i, start.col()));
         }
 
         return cells;
@@ -51,6 +50,8 @@ public class Ship
 
     public List<Coordinate> getBorderCells()
     {
+        // Returns all cells around the ship, excluding its own cells
+
         List<Coordinate> shipCells = getCells();
         List<Coordinate> borderCells = new ArrayList<>();
         Coordinate rightBorderCell;

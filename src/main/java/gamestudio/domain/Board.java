@@ -35,6 +35,8 @@ public class Board
 
     public void generateShips()
     {
+        // One of the ship placement methods, which randomly places the standard fleet:
+        // 1 ship of length 4, 2 ships of length 3, 3 ships of length 2, and 4 ships of length 1
         for (int length = 4; length > 0; length--)
         {
             for (int quantity = 5 - length; quantity > 0; quantity--)
@@ -113,15 +115,18 @@ public class Board
         for (Coordinate cell : ship.getBorderCells()) cells[cell.row()][cell.col()] = CellState.INDIRECTLY_OCCUPIED;
     }
 
-    private boolean isAlreadyShot(Coordinate coordinate)
+    private boolean isAlreadyShotOrBlocked(Coordinate coordinate)
     {
         CellState cellState = cells[coordinate.row()][coordinate.col()];
-        return cellState.equals(CellState.MISS) || cellState.equals(CellState.HIT) || cellState.equals(CellState.SUNK);
+        return cellState.equals(CellState.MISS) ||
+               cellState.equals(CellState.HIT)  ||
+               cellState.equals(CellState.SUNK) ||
+               cellState.equals(CellState.BLOCKED);
     }
 
     public ShotResult shoot(Coordinate coordinate)
     {
-        if (isAlreadyShot(coordinate)) return ShotResult.NONE;
+        if (isAlreadyShotOrBlocked(coordinate)) return ShotResult.NONE;
         for (Ship ship : ships)
         {
             if (ship.hit(coordinate))
@@ -131,11 +136,14 @@ public class Board
                 {
                     removeShip(ship);
 
+                    // If the ship is sunk, block all surrounding border cells, including diagonal ones
                     markNearbyCellsAsBlocked(coordinate, ship.getBorderCells());
                     for (Coordinate cell : ship.getCells())
                         cells[cell.row()][cell.col()] = CellState.SUNK;
                     return ShotResult.SUNK;
                 }
+
+                // If the ship is only hit, block only diagonal cells to avoid revealing the rest of the ship
                 markNearbyCellsAsBlocked(coordinate, null);
                 return ShotResult.HIT;
             }
