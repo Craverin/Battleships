@@ -42,13 +42,13 @@ public class JdbcRatingRepositoryTest
     }
 
     @Test
-    public void getRating_noRatings_throwsRatingException()
+    public void getRating_noRatings_returnsMinusOne()
     {
-        assertThrows(RatingException.class, () -> repository.getRating("p1", "battleships"));
+        assertEquals(-1, repository.getRating("p1", "battleships"));
     }
 
     @Test
-    public void setRating_ratingDoesNotExist_savesRating()
+    public void setRating_noRating_savesRating()
     {
         repository.setRating(new Rating("p1", "battleships", 4, new Date()));
 
@@ -67,9 +67,9 @@ public class JdbcRatingRepositoryTest
     }
 
     @Test
-    public void getAverageRating_ratingsDoNotExist_returnsZero()
+    public void getAverageRating_noRatings_returnsMinusOne()
     {
-        assertEquals(0, repository.getAverageRating("battleships"));
+        assertEquals(-1, repository.getAverageRating("battleships"));
     }
 
     @Test
@@ -95,6 +95,6 @@ public class JdbcRatingRepositoryTest
         assertEquals(4, repository.getRating("p1", "battleships"));
 
         repository.reset();
-        assertThrows(RatingException.class, () -> repository.getRating("battleships", "p1"));
+        assertEquals(-1, repository.getRating("battleships", "p1"));
     }
 }

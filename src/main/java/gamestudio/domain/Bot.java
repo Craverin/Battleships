@@ -22,16 +22,9 @@ public class Bot
         {
             if (cells[lastHitCell.row()][lastHitCell.col()].equals(CellStateView.MISS))
             {
-              //  System.out.println("MISS: (" + lastHitCell.row() + ", " + lastHitCell.col() + ")");
                 lastHitCell = firstHitCell;
-              //  System.out.println("First hit cell: (" + lastHitCell.row() + ", " + lastHitCell.col() + ")");
-
-               // System.out.println("CURRENT POSSIBLE DIRECTIONS:");
-               // for (HitDirection direction : possibleDirections) System.out.println("d: " + direction.name());
-
                 hitDirection = pickHitDirection(cells);
 
-              //  System.out.println("\nPicked new hit direction: " + hitDirection.name());
                 possibleDirections.remove(hitDirection);
             }
 
@@ -62,10 +55,7 @@ public class Bot
                 lastHitCell = new Coordinate(row, col);
                 hitDirection = shift;
 
-             //   for (HitDirection h : possibleDirections) System.out.println(h.name());
                 possibleDirections.remove(hitDirection);
-
-                //System.out.println("Picked (" + lastHitCell.row() +  ", " + lastHitCell.col() + ") as target cell. Direction " + hitDirection.name());
 
                 return lastHitCell;
             }

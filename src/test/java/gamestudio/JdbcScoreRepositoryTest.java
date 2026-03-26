@@ -44,9 +44,9 @@ public class JdbcScoreRepositoryTest
     }
 
     @Test
-    public void getTopScore_noScores_returnsZero()
+    public void getTopScore_noScores_returnsMinusOne()
     {
-        assertEquals(0, repository.getTopScore("battleships", "p1"));
+        assertEquals(-1, repository.getTopScore("battleships", "p1"));
     }
 
     @Test

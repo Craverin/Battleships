@@ -56,7 +56,7 @@ public class JdbcRatingRepository implements RatingRepository
                     counter++;
                 }
 
-                if (counter == 0) return 0;
+                if (counter == 0) return -1;
                 return totalScore / counter;
             }
         }

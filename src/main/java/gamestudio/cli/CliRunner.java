@@ -13,6 +13,7 @@ import gamestudio.repository.RatingRepository;
 import gamestudio.repository.ScoreRepository;
 import gamestudio.service.GameService;
 import jakarta.annotation.Nullable;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -28,7 +29,6 @@ import static gamestudio.cli.Color.*;
 @Component
 public class CliRunner implements CommandLineRunner
 {
-    private final char[] columns = "ABCDEFGHIJ".toCharArray();
     private final String playerName = "player";
     private Game game;
     private UUID gameId, hostToken, opponentToken;
@@ -105,7 +105,7 @@ public class CliRunner implements CommandLineRunner
             {
                 case "1":
                     System.out.println();
-                    printRules();
+                    Messages.printRules();
                     playGame();
 
                     Action action = parsePostGameCommands();
@@ -346,7 +346,7 @@ public class CliRunner implements CommandLineRunner
                 if (firstHitCell == null && shotResult.equals(ShotResult.HIT)) firstHitCell = targetCell;
                 else if (firstHitCell != null && shotResult.equals(ShotResult.SUNK)) firstHitCell = null;
 
-                printBotMessages();
+                Messages.printBotMessages();
                 drawCombatBoard(hostToken);
 
             } while (!shotResult.equals(ShotResult.MISS) && botCombatView.phase().equals(GamePhase.COMBAT));
@@ -485,41 +485,16 @@ public class CliRunner implements CommandLineRunner
         return true;
     }
 
-    private static void printBotMessages() throws InterruptedException
-    {
-        System.out.println("\n\t\t\t\t\t\tOpponent's turn!");
-        TimeUnit.SECONDS.sleep(3);
-        System.out.println("\n\t\t\t\t\t\t\tYour board");
-        TimeUnit.MILLISECONDS.sleep(500);
-    }
-
-    private static void printRules()
-    {
-        System.out.println(ANSI_CYAN.unicode + "\nWelcome to Battleships!" + ANSI_RESET.unicode);
-        System.out.println("\nTo move a ship, enter two coordinates separated by a space:");
-        System.out.println("1) the ship's current start cell, 2) the new start cell.");
-        System.out.println("Optionally add the new orientation at the end (" + ANSI_YELLOW.unicode
-                           + "H" + ANSI_RESET.unicode + " or " + ANSI_YELLOW.unicode + "V"
-                           + ANSI_RESET.unicode + ").");
-        System.out.println(ANSI_CYAN.unicode + "\nFormat:" + ANSI_RESET.unicode + " "
-                           + ANSI_GREEN.unicode + "<oldStart> <newStart> [H|V]" + ANSI_RESET.unicode);
-        System.out.println(ANSI_CYAN.unicode + "Examples:" + ANSI_RESET.unicode);
-        System.out.println("  " + ANSI_GREEN.unicode + "5A 3C" + ANSI_RESET.unicode);
-        System.out.println("  " + ANSI_GREEN.unicode + "8B 3D V" + ANSI_RESET.unicode);
-        System.out.println("\nWhen ready, just enter " + ANSI_YELLOW.unicode
-                           + "\"start\"" + ANSI_RESET.unicode + ". Good luck!\n");
-    }
-
     private void drawPlacementBoard()
     {
-        printColumns();
+        Messages.printColumns();
         List<ShipResponse> ships = gameService.getShips(gameId, hostToken);
         fillOccupiedCells(ships);
 
         for (int i = 0; i < Board.SIZE; i++)
         {
             System.out.println("  ");
-            printBorderLine();
+            Messages.printBorderLine();
 
             if (i < Board.SIZE - 1) System.out.print(" ");
             System.out.print(i + 1 + " ");
@@ -531,7 +506,7 @@ public class CliRunner implements CommandLineRunner
         }
 
         System.out.println();
-        printBorderLine();
+        Messages.printBorderLine();
     }
 
     private void drawCombatBoard(UUID playerToken)
@@ -541,11 +516,11 @@ public class CliRunner implements CommandLineRunner
         if (!hostBoard)
             System.out.println(ANSI_BLUE.unicode + "Score: " + game.getScore(hostToken) + ANSI_RESET.unicode);
 
-        printColumns();
+        Messages.printColumns();
         for (int i = 0; i < Board.SIZE; i++)
         {
             System.out.println("  ");
-            printBorderLine();
+            Messages.printBorderLine();
 
             if (i < Board.SIZE - 1) System.out.print(" ");
             System.out.print(i + 1 + " ");
@@ -566,7 +541,7 @@ public class CliRunner implements CommandLineRunner
         }
 
         System.out.println();
-        printBorderLine();
+        Messages.printBorderLine();
     }
 
     private void fillOccupiedCells(List<ShipResponse> ships)
@@ -602,22 +577,6 @@ public class CliRunner implements CommandLineRunner
         }
 
         return coordinates;
-    }
-
-    private void printBorderLine()
-    {
-        System.out.print("   ");
-        for (int i = 0; i < Board.SIZE; i++)
-        {
-            System.out.print("+-----");
-        }
-        System.out.println("+");
-    }
-
-    private void printColumns()
-    {
-        System.out.print("      " + columns[0]);
-        for (int i = 1; i < columns.length; i++) System.out.print("     " + columns[i]);
     }
 
     private UUID getShipId(Coordinate cell)
