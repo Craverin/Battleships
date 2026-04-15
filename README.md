@@ -58,3 +58,6 @@ Use the [standard Maven directory layout](https://maven.apache.org/guides/introd
 
 ## Prva odovzdavka (VIDEO)
 https://youtu.be/nyN_zg7A9aE
+
+## Druha odovzdavka (VIDEO)
+https://youtu.be/39kkYELPRGQ

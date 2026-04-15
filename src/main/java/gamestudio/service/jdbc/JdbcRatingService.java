@@ -1,15 +1,14 @@
-package gamestudio.repository;
+package gamestudio.service.jdbc;
 
 import gamestudio.entity.Rating;
-import gamestudio.repository.exception.RatingException;
+import gamestudio.service.RatingService;
+import gamestudio.service.exception.RatingException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
 
-@Repository
-public class JdbcRatingRepository implements RatingRepository
+public class JdbcRatingService implements RatingService
 {
     private final DataSource dataSource;
 
@@ -18,7 +17,7 @@ public class JdbcRatingRepository implements RatingRepository
     private static final String INSERT = "INSERT INTO rating (player, game, rating, ratedOn) VALUES (?, ?, ?, ?) ON CONFLICT (player, game) DO UPDATE SET rating = EXCLUDED.rating, ratedOn = EXCLUDED.ratedOn";
     private static final String RATING_COUNT = "SELECT COUNT(*) FROM rating WHERE game = ?";
 
-    public JdbcRatingRepository(DataSource dataSource)
+    public JdbcRatingService(DataSource dataSource)
     {
         this.dataSource = dataSource;
     }
@@ -84,7 +83,7 @@ public class JdbcRatingRepository implements RatingRepository
     }
 
     @Override
-    public int getRatingCount(String game)
+    public int getRatingCount(String game) throws RatingException
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement statement = connection.prepareStatement(RATING_COUNT))

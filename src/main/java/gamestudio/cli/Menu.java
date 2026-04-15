@@ -2,7 +2,9 @@ package gamestudio.cli;
 
 import gamestudio.entity.Comment;
 import gamestudio.entity.Score;
-import gamestudio.repository.*;
+import gamestudio.service.CommentService;
+import gamestudio.service.RatingService;
+import gamestudio.service.ScoreService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,16 +14,16 @@ import static gamestudio.cli.Color.*;
 @Component
 public class Menu
 {
-    private final CommentRepository commentRepository;
-    private final ScoreRepository scoreRepository;
-    private final RatingRepository ratingRepository;
+    private final CommentService commentService;
+    private final ScoreService scoreService;
+    private final RatingService ratingService;
     private static final int PAGE_SIZE = 10;
 
-    public Menu(CommentRepository commentRep, ScoreRepository scoreRep, RatingRepository ratingRep)
+    public Menu(CommentService commentRep, ScoreService scoreRep, RatingService ratingRep)
     {
-        commentRepository = commentRep;
-        scoreRepository = scoreRep;
-        ratingRepository = ratingRep;
+        commentService = commentRep;
+        scoreService = scoreRep;
+        ratingService = ratingRep;
     }
 
     void showMenu()
@@ -38,7 +40,7 @@ public class Menu
 
     void showUserComments(String player)
     {
-        List<Comment> comments = commentRepository.getPlayerComments("battleships", player);
+        List<Comment> comments = commentService.getPlayerComments("battleships", player);
 
         if (comments.isEmpty())
         {
@@ -54,7 +56,7 @@ public class Menu
 
     int getCommentsPageCount()
     {
-        int totalComments = commentRepository.getComments("battleships").size();
+        int totalComments = commentService.getComments("battleships").size();
         return Math.max(1, (totalComments + PAGE_SIZE - 1) / PAGE_SIZE);
     }
 
@@ -62,7 +64,7 @@ public class Menu
     {
         if (pageNum <= 0) return;
 
-        List<Comment> comments = commentRepository.getComments("battleships");
+        List<Comment> comments = commentService.getComments("battleships");
         if (comments == null)
         {
             System.out.println(ANSI_YELLOW.unicode + "No comments yet." + ANSI_RESET.unicode);
@@ -93,8 +95,8 @@ public class Menu
 
     void showRatingPage(String player)
     {
-        int userRating = ratingRepository.getRating("battleships", player);
-        int averageRating = ratingRepository.getAverageRating("battleships");
+        int userRating = ratingService.getRating("battleships", player);
+        int averageRating = ratingService.getAverageRating("battleships");
 
         System.out.println(ANSI_CYAN.unicode + "\n=== Rating ===" + ANSI_RESET.unicode);
 
@@ -104,14 +106,14 @@ public class Menu
         if (averageRating == -1) System.out.println(ANSI_YELLOW.unicode + "No ratings yet." + ANSI_RESET.unicode);
         else System.out.println("Average rating: " + ANSI_YELLOW.unicode + averageRating + "/5"
                                 + ANSI_RESET.unicode + " (" + ANSI_BLUE.unicode
-                                + ratingRepository.getRatingCount("battleships") + ANSI_RESET.unicode
+                                + ratingService.getRatingCount("battleships") + ANSI_RESET.unicode
                                 + " votes)");
     }
 
     void showScoresPage(String player)
     {
-        int userScore = scoreRepository.getTopScore("battleships", player);
-        List<Score> scores = scoreRepository.getTopScores("battleships");
+        int userScore = scoreService.getTopScore("battleships", player);
+        List<Score> scores = scoreService.getTopScores("battleships");
 
         System.out.println(ANSI_CYAN.unicode + "\n=== Scores ===" + ANSI_RESET.unicode);
 

@@ -1,12 +1,14 @@
-package gamestudio;
+package gamestudio.jdbc;
 
 import gamestudio.entity.Score;
-import gamestudio.repository.JdbcScoreRepository;
+import gamestudio.service.jdbc.JdbcScoreService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -19,17 +21,23 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@JdbcTest
+@JdbcTest(properties = {
+        "spring.sql.init.schema-locations=classpath:jdbc-schema.sql",
+        "spring.sql.init.mode=always"})
 @Testcontainers
-@Import(JdbcScoreRepository.class)
-public class JdbcScoreRepositoryTest
+@ContextConfiguration(classes = JdbcScoreServiceTest.TestConfig.class)
+@Import(JdbcScoreService.class)
+public class JdbcScoreServiceTest
 {
     @Autowired
-    private JdbcScoreRepository repository;
+    private JdbcScoreService repository;
 
     @Container
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"));
+
+    @SpringBootConfiguration
+    static class TestConfig { }
 
     @Test
     public void getTopScore_afterAddingMultipleScores_returnsHighestScore()

@@ -1,4 +1,4 @@
-package gamestudio.repository.exception;
+package gamestudio.service.exception;
 
 public class RatingException extends RuntimeException {
     public RatingException(String message) {

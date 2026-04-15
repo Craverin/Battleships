@@ -1,4 +1,4 @@
-package gamestudio.repository.exception;
+package gamestudio.service.exception;
 
 public class ScoreException extends RuntimeException {
     public ScoreException(String message) {

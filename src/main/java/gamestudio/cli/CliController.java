@@ -6,9 +6,9 @@ import gamestudio.dto.ShotResult;
 import gamestudio.entity.Comment;
 import gamestudio.entity.Rating;
 import gamestudio.entity.Score;
-import gamestudio.repository.CommentRepository;
-import gamestudio.repository.RatingRepository;
-import gamestudio.repository.ScoreRepository;
+import gamestudio.service.CommentService;
+import gamestudio.service.RatingService;
+import gamestudio.service.ScoreService;
 import gamestudio.service.GameService;
 
 import java.util.*;
@@ -25,9 +25,9 @@ public class CliController
     private final String playerName;
     private final Scanner sc;
     private final GameService gameService;
-    private final ScoreRepository scoreRep;
-    private final RatingRepository ratingRep;
-    private final CommentRepository commentRep;
+    private final ScoreService scoreRep;
+    private final RatingService ratingRep;
+    private final CommentService commentRep;
     private final BoardRenderer boardRenderer;
 
     private Game game;
@@ -37,7 +37,7 @@ public class CliController
     private Board board;
     private CombatViewResponse hostCombatView;
 
-    public CliController(ScoreRepository scoreRep, RatingRepository ratingRep, CommentRepository commentRep, String playerName)
+    public CliController(ScoreService scoreRep, RatingService ratingRep, CommentService commentRep, String playerName)
     {
         this.scoreRep = scoreRep;
         this.ratingRep = ratingRep;
@@ -77,7 +77,7 @@ public class CliController
         BoardMessages.printPostGameCommands();
     }
 
-    public void playPlacementPhase()
+    private void playPlacementPhase()
     {
         String input;
         Matcher matcher;
@@ -101,7 +101,7 @@ public class CliController
         }
     }
 
-    public void playCombatPhase() throws InterruptedException
+    private void playCombatPhase() throws InterruptedException
     {
         String input;
         Matcher matcher;
@@ -202,7 +202,7 @@ public class CliController
         return action;
     }
 
-    public void parseQuery(String query, String arg)
+    private void parseQuery(String query, String arg)
     {
         if (query.equals("comment"))
         {
@@ -230,7 +230,7 @@ public class CliController
         else System.out.println(ANSI_RED.unicode + "Invalid command!" + ANSI_RESET.unicode);
     }
 
-    public int parseRating(String str)
+    private int parseRating(String str)
     {
         try
         {
@@ -242,7 +242,7 @@ public class CliController
         catch (NumberFormatException e) { return -1; }
     }
 
-    public void addNewScore(int score)
+    private void addNewScore(int score)
     {
         List<Score> scores = scoreRep.getTopScores("battleships");
         int topScore = scoreRep.getTopScore("battleships", playerName);
@@ -276,7 +276,7 @@ public class CliController
 
     }
 
-    public boolean isMoveValid(Matcher matcher)
+    private boolean isMoveValid(Matcher matcher)
     {
         if (!matcher.matches())
         {
@@ -315,7 +315,7 @@ public class CliController
         return true;
     }
 
-    public UUID getShipId(Coordinate cell)
+    private UUID getShipId(Coordinate cell)
     {
         List<Ship> ships = board.getShips();
         for (Ship ship : ships)
@@ -327,7 +327,7 @@ public class CliController
         return null;
     }
 
-    public static Coordinate convertCellCoordinate(String coordinate)
+    private Coordinate convertCellCoordinate(String coordinate)
     {
         int row, col;
         char[] coords = coordinate.toCharArray();

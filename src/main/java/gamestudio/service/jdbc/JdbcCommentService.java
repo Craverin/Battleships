@@ -1,17 +1,16 @@
-package gamestudio.repository;
+package gamestudio.service.jdbc;
 
 import gamestudio.entity.Comment;
-import gamestudio.repository.exception.CommentException;
+import gamestudio.service.CommentService;
+import gamestudio.service.exception.CommentException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
-public class JdbcCommentRepository implements CommentRepository
+public class JdbcCommentService implements CommentService
 {
     private final DataSource dataSource;
 
@@ -19,7 +18,7 @@ public class JdbcCommentRepository implements CommentRepository
     private static final String SELECT_GAME_COMMENTS = "SELECT player, game, comment, commentedOn from comment WHERE game = ? ORDER BY commentedOn DESC";
     private static final String SELECT_PLAYER_COMMENTS = "SELECT player, game, comment, commentedOn from comment WHERE game = ? AND player = ? ORDER BY commentedOn DESC";
 
-    public JdbcCommentRepository(DataSource dataSource)
+    public JdbcCommentService(DataSource dataSource)
     {
         this.dataSource = dataSource;
     }

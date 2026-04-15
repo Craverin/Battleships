@@ -1,0 +1,116 @@
+### SCORE
+
+GET http://localhost:8080/api/score/battleships
+
+###
+GET http://localhost:8080/api/score/battleships/players/SmPlayer
+
+###
+POST http://localhost:8080/api/score
+Content-Type: application/json
+
+{
+  "player": "SmPlayer",
+  "game": "battleships",
+  "points": 120,
+  "playedOn": "2026-04-13T11:31:34Z"
+}
+
+###
+POST http://localhost:8080/api/score
+Content-Type: application/json
+
+{
+  "player": "OthPlayer",
+  "game": "battleships",
+  "points": 95,
+  "playedOn": "2026-04-15T12:05:41Z"
+}
+
+###
+GET http://localhost:8080/api/score/battleships
+
+###
+GET http://localhost:8080/api/score/battleships/players/SmPlayer
+
+
+### COMMENT
+
+GET http://localhost:8080/api/comment/battleships
+
+###
+POST http://localhost:8080/api/comment
+Content-Type: application/json
+
+{
+  "player": "SmPlayer",
+  "game": "battleships",
+  "comment": "Great game!",
+  "commentedOn": "2026-04-13T11:45:41Z"
+}
+
+###
+POST http://localhost:8080/api/comment
+Content-Type: application/json
+
+{
+  "player": "OthPlayer",
+  "game": "battleships",
+  "comment": "Yeah",
+  "commentedOn": "2026-04-13T12:21:30Z"
+}
+
+###
+GET http://localhost:8080/api/comment/battleships
+
+###
+GET http://localhost:8080/api/comment/battleships/players/SmPlayer
+
+
+### RATING
+
+###
+GET http://localhost:8080/api/rating/battleships
+
+###
+GET http://localhost:8080/api/rating/battleships/count
+
+###
+GET http://localhost:8080/api/rating/battleships/summary
+
+###
+GET http://localhost:8080/api/rating/battleships/players/SmPlayer
+
+###
+POST http://localhost:8080/api/rating
+Content-Type: application/json
+
+{
+  "player": "SmPlayer",
+  "game": "battleships",
+  "rating": 5,
+  "ratedOn": "2026-04-14T12:25:56Z"
+}
+
+###
+POST http://localhost:8080/api/rating
+Content-Type: application/json
+
+{
+  "player": "OthPlayer",
+  "game": "battleships",
+  "rating": 4,
+  "ratedOn": "2026-04-15T16:34:14Z"
+}
+
+###
+GET http://localhost:8080/api/rating/battleships
+
+###
+GET http://localhost:8080/api/rating/battleships/count
+
+###
+GET http://localhost:8080/api/rating/battleships/summary
+
+###
+GET http://localhost:8080/api/rating/battleships/players/SmPlayer

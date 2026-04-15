@@ -1,11 +1,11 @@
-package gamestudio.repository;
+package gamestudio.service;
 
 import gamestudio.entity.Score;
-import gamestudio.repository.exception.ScoreException;
+import gamestudio.service.exception.ScoreException;
 
 import java.util.List;
 
-public interface ScoreRepository
+public interface ScoreService
 {
     void addScore(Score score) throws ScoreException;
     List<Score> getTopScores(String game) throws ScoreException;

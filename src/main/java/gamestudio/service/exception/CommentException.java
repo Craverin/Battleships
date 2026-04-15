@@ -1,4 +1,4 @@
-package gamestudio.repository.exception;
+package gamestudio.service.exception;
 
 public class CommentException extends RuntimeException {
     public CommentException(String message) {

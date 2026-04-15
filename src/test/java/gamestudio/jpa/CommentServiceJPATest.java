@@ -1,12 +1,20 @@
-package gamestudio;
+package gamestudio.jpa;
 
+import gamestudio.cli.CliRunner;
+import gamestudio.cli.Menu;
 import gamestudio.entity.Comment;
-import gamestudio.repository.JdbcCommentRepository;
+import gamestudio.service.jpa.CommentServiceJPA;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.test.autoconfigure.JdbcTest;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -15,19 +23,28 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@JdbcTest
+@DataJpaTest
 @Testcontainers
-@Import(JdbcCommentRepository.class)
-public class JdbcCommentRepositoryTest
+@ContextConfiguration(classes = CommentServiceJPATest.TestConfig.class)
+@EntityScan("gamestudio.entity")
+@Import(CommentServiceJPA.class)
+public class CommentServiceJPATest
 {
     @Autowired
-    private JdbcCommentRepository repository;
+    private CommentServiceJPA repository;
 
     @Container
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"));
+
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    static class TestConfig { }
 
     @Test
     void getComments_threeCommentsAdded_returnsAllGameCommentsTrimmed()

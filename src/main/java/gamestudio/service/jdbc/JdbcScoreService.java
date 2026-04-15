@@ -1,17 +1,16 @@
-package gamestudio.repository;
+package gamestudio.service.jdbc;
 
 import gamestudio.entity.Score;
-import gamestudio.repository.exception.ScoreException;
+import gamestudio.service.ScoreService;
+import gamestudio.service.exception.ScoreException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
-public class JdbcScoreRepository implements ScoreRepository
+public class JdbcScoreService implements ScoreService
 {
     private final DataSource dataSource;
 
@@ -19,7 +18,7 @@ public class JdbcScoreRepository implements ScoreRepository
     private static final String SELECT_TOP_SCORE = "SELECT MAX(points) FROM score WHERE game = ? AND player = ?";
     private static final String INSERT = "INSERT INTO score (player, game, points, playedOn) VALUES (?, ?, ?, ?)";
 
-    public JdbcScoreRepository(DataSource dataSource)
+    public JdbcScoreService(DataSource dataSource)
     {
         this.dataSource = dataSource;
     }

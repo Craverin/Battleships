@@ -1,8 +1,8 @@
 package gamestudio.cli;
 
-import gamestudio.repository.CommentRepository;
-import gamestudio.repository.RatingRepository;
-import gamestudio.repository.ScoreRepository;
+import gamestudio.service.CommentService;
+import gamestudio.service.RatingService;
+import gamestudio.service.ScoreService;
 import jakarta.annotation.Nullable;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,12 +19,11 @@ public class CliRunner implements CommandLineRunner
     private final Menu menu;
     private final CliController gameController;
 
-    public CliRunner(Menu menu, ScoreRepository scoreRep, RatingRepository ratingRep, CommentRepository commentRep)
+    public CliRunner(Menu menu, ScoreService scoreRep, RatingService ratingRep, CommentService commentRep)
     {
         this.menu = menu;
         this.gameController = new CliController(scoreRep, ratingRep, commentRep, playerName);
     }
-
 
     @Override
     public void run(@Nullable String... args) throws InterruptedException
