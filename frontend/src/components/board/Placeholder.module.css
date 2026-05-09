@@ -1,0 +1,37 @@
+.placeholderBoardCard {
+    position: relative;
+    width: fit-content;
+    padding: 24px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #101a31 0%, #090f1f 100%);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.placeholderBoardInner {
+    opacity: 0.9;
+}
+
+.placeholderOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    border-radius: inherit;
+    background: rgba(2, 6, 23, 0.48);
+    backdrop-filter: blur(3px);
+}
+
+.placeholderMessage {
+    max-width: 240px;
+    text-align: center;
+}
+
+.placeholderText {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 16px;
+    line-height: 1.5;
+}

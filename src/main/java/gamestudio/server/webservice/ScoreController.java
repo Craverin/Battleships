@@ -1,16 +1,13 @@
 package gamestudio.server.webservice;
 
-import gamestudio.entity.Score;
-import gamestudio.service.ScoreService;
-import gamestudio.service.jpa.ScoreServiceJPA;
-import org.springframework.context.annotation.Import;
+import gamestudio.server.entity.Score;
+import gamestudio.server.service.ScoreService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/score")
-@Import(ScoreServiceJPA.class)
+@RequestMapping("/score")
 public class ScoreController
 {
     private final ScoreService scoreService;

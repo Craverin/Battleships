@@ -1,8 +1,7 @@
 package gamestudio.jpa;
 
-import gamestudio.entity.Score;
-import gamestudio.service.jpa.RatingServiceJPA;
-import gamestudio.service.jpa.ScoreServiceJPA;
+import gamestudio.server.entity.Score;
+import gamestudio.server.service.jpa.ScoreServiceJPA;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;

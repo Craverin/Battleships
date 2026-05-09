@@ -1,15 +1,12 @@
 package gamestudio.cli;
 
-import gamestudio.domain.*;
-import gamestudio.dto.CombatViewResponse;
-import gamestudio.dto.ShotResult;
-import gamestudio.entity.Comment;
-import gamestudio.entity.Rating;
-import gamestudio.entity.Score;
-import gamestudio.service.CommentService;
-import gamestudio.service.RatingService;
-import gamestudio.service.ScoreService;
-import gamestudio.service.GameService;
+import gamestudio.server.domain.*;
+import gamestudio.server.dto.CombatViewResponse;
+import gamestudio.server.dto.ShotResult;
+import gamestudio.server.entity.Comment;
+import gamestudio.server.entity.Rating;
+import gamestudio.server.entity.Score;
+import gamestudio.server.service.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +25,7 @@ public class CliController
     private final ScoreService scoreRep;
     private final RatingService ratingRep;
     private final CommentService commentRep;
+    private final PlayerStatsService pl;
     private final BoardRenderer boardRenderer;
 
     private Game game;
@@ -37,11 +35,12 @@ public class CliController
     private Board board;
     private CombatViewResponse hostCombatView;
 
-    public CliController(ScoreService scoreRep, RatingService ratingRep, CommentService commentRep, String playerName)
+    public CliController(ScoreService scoreRep, RatingService ratingRep, CommentService commentRep, PlayerStatsService pl, String playerName)
     {
         this.scoreRep = scoreRep;
         this.ratingRep = ratingRep;
         this.commentRep = commentRep;
+        this.pl = pl;
         this.gameService = new GameService();
         this.playerName = playerName;
 
@@ -51,6 +50,10 @@ public class CliController
 
     public void playGame() throws InterruptedException
     {
+        pl.addPlayerStats("battleships", "me", 2250, true);
+        pl.addPlayerStats("battleships", "me", 250, false);
+        pl.addPlayerStats("battleships", "me", 1550, true);
+
         var resp = gameService.createGame();
 
         gameId = resp.gameId();

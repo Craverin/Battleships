@@ -1,0 +1,480 @@
+.gamePage {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    padding: 24px 28px;
+    color: #f8fafc;
+    background:
+            radial-gradient(circle at 20% 10%, #0f766e, transparent 28%),
+            radial-gradient(circle at 80% 20%, #1d4ed8, transparent 26%),
+            #020617
+}
+
+.gameShell {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 36px;
+    max-width: 1420px;
+    margin: 0 auto;
+}
+
+.gameMenu {
+    width: 310px;
+    flex: 0 0 310px;
+    padding: 22px;
+    border-radius: 24px;
+    background:
+            linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.96));
+    border: 1px solid #1e293b;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+.menuHeader {
+    margin-bottom: 16px;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: #5eead4;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+
+.modeBlock,
+.inviteBlock {
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.joinBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.blockLabel {
+    margin: 0 0 10px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.modeGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.menuTabButton {
+    --bs-btn-color: #94a3b8;
+    --bs-btn-bg: #0f172a;
+    --bs-btn-border-color: #26344d;
+
+    --bs-btn-hover-color: #f8fafc;
+    --bs-btn-hover-bg: #111c33;
+    --bs-btn-hover-border-color: #2dd4bf;
+
+    --bs-btn-active-color: #ccfbf1;
+    --bs-btn-active-bg: #0f3438;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    min-height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.menuTabButtonActive {
+    --bs-btn-color: #ccfbf1;
+    --bs-btn-bg: #0f3438;
+    --bs-btn-border-color: #2dd4bf;
+
+    --bs-btn-hover-color: #ccfbf1;
+    --bs-btn-hover-bg: #134e4a;
+    --bs-btn-hover-border-color: #5eead4;
+}
+
+.modeCard {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+    color: #cbd5e1;
+    background: #0f172a;
+    border: 1px solid #26344d;
+    text-align: left;
+    cursor: pointer;
+    transition:
+            transform 0.15s ease,
+            border-color 0.15s ease,
+            background-color 0.15s ease;
+}
+
+.modeCard:not(:disabled):hover {
+    transform: translateY(-1px);
+    border-color: #2dd4bf;
+    background: #111c33;
+}
+
+.modeCard:disabled {
+    color: #94a3b8;
+    background-color: #1e293b;
+    border-color: #475569;
+    cursor: not-allowed;
+    opacity: 0.65;
+    box-shadow: none;
+}
+
+.readyBlock {
+    padding-top: 18px;
+    margin-top: 18px;
+    border-top: 1px solid #1e293b;
+}
+
+.readyHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.readyText {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.readyBadge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.readyBadgeActive {
+    color: #bbf7d0;
+    background-color: #14532d;
+    border: 1px solid #22c55e;
+}
+
+.readyBadgeIdle {
+    color: #cbd5e1;
+    background-color: #1e293b;
+    border: 1px solid #475569;
+}
+
+.readyStatusList {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.readyStatusItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background-color: #0b1220;
+    border: 1px solid #26344d;
+}
+
+.readyStatusLabel {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.readyStatusValue {
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.statusReady {
+    color: #86efac;
+}
+
+.statusWaiting {
+    color: #fcd34d;
+}
+
+.readyButton {
+    width: 100%;
+    min-height: 46px;
+    border-radius: 14px;
+    color: #042f2e;
+    background-color: #5eead4;
+    border: 1px solid #99f6e4;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+            background-color 0.15s ease,
+            border-color 0.15s ease,
+            color 0.15s ease,
+            box-shadow 0.15s ease,
+            opacity 0.15s ease;
+}
+
+.readyButton:not(:disabled):hover {
+    background-color: #99f6e4;
+    border-color: #ccfbf1;
+    box-shadow: 0 0 0 3px #5eead433;
+}
+
+.readyButton:disabled {
+    color: #94a3b8;
+    background-color: #1e293b;
+    border-color: #475569;
+    cursor: not-allowed;
+    opacity: 0.65;
+    box-shadow: none;
+}
+
+.modeCardActive {
+    color: #ccfbf1;
+    background: #0f3438;
+    border-color: #2dd4bf;
+}
+
+.modeTitle {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.modeDescription {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.inviteHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.inviteBadge {
+    padding: 4px 8px;
+    border-radius: 999px;
+    color: #99f6e4;
+    background-color: #134e4a;
+    border: 1px solid #2dd4bf;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.inviteLinkBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 7px;
+    border-radius: 14px;
+    background: #020617;
+    border: 1px solid #26344d;
+}
+
+.inviteLinkText {
+    min-width: 0;
+    flex: 1;
+    color: #dbeafe;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.copyButton {
+    flex: 0 0 auto;
+    padding: 7px 10px;
+    border-radius: 10px;
+    color: #ccfbf1;
+    background-color: #0f766e;
+    border: 1px solid #14b8a6;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.copyButton:not(:disabled):hover {
+    background-color: #115e59;
+    border-color: #5eead4;
+    box-shadow: 0 0 0 2px #2dd4bf33;
+}
+
+.copyButton:disabled {
+    color: #94a3b8;
+    background-color: #1e293b;
+    border-color: #475569;
+    cursor: not-allowed;
+    opacity: 0.55;
+    box-shadow: none;
+}
+
+.codeBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: #0b1220;
+    border: 1px solid #26344d;
+}
+
+.codeLabel {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.codeValue {
+    color: #fef3c7;
+    font-size: 20px;
+    letter-spacing: 0.12em;
+}
+
+.hintText {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.menuActions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.primaryButton,
+.secondaryButton {
+    min-height: 40px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.primaryButton {
+    color: #042f2e;
+    background: #5eead4;
+    border: 1px solid #99f6e4;
+}
+
+.secondaryButton {
+    color: #cbd5e1;
+    background: #0f172a;
+    border: 1px solid #334155;
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+    color: #94a3b8;
+    background: #1e293b;
+    border-color: #475569;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+}
+.primaryButton:not(:disabled):hover {
+    background: #99f6e4;
+    border-color: #ccfbf1;
+    box-shadow: 0 0 0 3px #5eead433;
+}
+
+.secondaryButton:not(:disabled):hover {
+    color: #f8fafc;
+    background: #111c33;
+    border-color: #5eead4;
+    box-shadow: 0 0 0 3px #5eead422;
+}
+
+.joinCodeInput {
+    background-color: #0b1326;
+    border: 1px solid #223155;
+    color: #f5f8ff;
+    border-radius: 14px;
+    min-height: 42px;
+    padding: 0 16px;
+}
+
+.boardSection {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: fit-content;
+}
+
+.boardsViewport {
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.boardsRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 24px;
+    width: max-content;
+    min-width: 100%;
+}
+
+.boardCard {
+    position: relative;
+    min-width: 0;
+    padding: 24px;
+    margin-top: 40px;
+    border-radius: 28px;
+    background: #071120;
+    /*box-shadow: 0 24px 70px #14b8a6;*/
+}
+
+
+@media (max-width: 1100px) {
+    .gameShell {
+        flex-direction: column;
+    }
+
+    .gameMenu {
+        width: 100%;
+        flex: none;
+        max-width: 610px;
+    }
+}
+
+@media (max-width: 640px) {
+    .gamePage {
+        padding: 18px;
+    }
+
+    .gameMenu {
+        padding: 18px;
+        border-radius: 20px;
+    }
+
+}

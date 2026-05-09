@@ -1,7 +1,7 @@
 package gamestudio.jdbc;
 
-import gamestudio.entity.Score;
-import gamestudio.service.jdbc.JdbcScoreService;
+import gamestudio.server.entity.Score;
+import gamestudio.server.service.jdbc.JdbcScoreService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;

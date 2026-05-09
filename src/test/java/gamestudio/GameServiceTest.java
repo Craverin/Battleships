@@ -1,8 +1,8 @@
 package gamestudio;
 
-import gamestudio.domain.*;
-import gamestudio.dto.*;
-import gamestudio.service.GameService;
+import gamestudio.server.domain.*;
+import gamestudio.server.dto.*;
+import gamestudio.server.service.GameService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

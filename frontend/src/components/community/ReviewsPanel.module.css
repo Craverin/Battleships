@@ -1,0 +1,445 @@
+.reviewsPanel {
+    width: 100%;
+    max-width: 800px;
+    min-width: 0;
+}
+
+.reviewsHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+}
+
+.reviewsEyebrow {
+    margin: 0 0 6px;
+    color: #5eead4;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.reviewsTopGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.reviewFormCard,
+.ratingSummaryCard,
+.reviewsListCard {
+    padding: 18px;
+    border-radius: 22px;
+    background: #0b1220;
+    border: 1px solid #1e293b;
+}
+
+.reviewFormCard {
+    background:
+            linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(15, 23, 42, 0.96)),
+            #0b1220;
+}
+
+.cardHeader,
+.listHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 16px;
+}
+
+.cardLabel {
+    margin: 0 0 6px;
+    color: #99f6e4;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.cardTitle {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 22px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.listBadge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    color: #cbd5e1;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.ratingPicker {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.starButton {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 12px;
+    color: #64748b;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+            color 0.15s ease,
+            background-color 0.15s ease,
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            transform 0.15s ease;
+}
+
+.starButton:hover {
+    color: #fde68a;
+    background-color: #1e293b;
+    border-color: #f59e0b;
+    transform: translateY(-1px);
+}
+
+.starButtonActive {
+    color: #fde68a;
+    background-color: #451a03;
+    border-color: #f59e0b;
+}
+
+.ratingHint {
+    margin-left: 8px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.ratingHintEmpty {
+    color: #cbd5e1;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+}
+
+.inputLabel {
+    display: block;
+    margin-bottom: 8px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.reviewTextarea {
+    color: #f8fafc;
+    background-color: #020617;
+    border: 1px solid #26344d;
+    border-radius: 16px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.reviewTextarea::placeholder {
+    color: #64748b;
+}
+
+.reviewTextarea:focus {
+    color: #f8fafc;
+    background-color: #020617;
+    border-color: #5eead4;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.18);
+}
+
+.formFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.submitCommentButton {
+    --bs-btn-color: #042f2e;
+    --bs-btn-bg: #5eead4;
+    --bs-btn-border-color: #99f6e4;
+
+    --bs-btn-hover-color: #022c22;
+    --bs-btn-hover-bg: #2dd4bf;
+    --bs-btn-hover-border-color: #5eead4;
+
+    --bs-btn-active-color: #022c22;
+    --bs-btn-active-bg: #14b8a6;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.submitCommentButton:hover {
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.22);
+}
+
+.averageRating {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.averageValue {
+    color: #f8fafc;
+    font-size: 46px;
+    line-height: 0.95;
+    font-weight: 900;
+    letter-spacing: -0.06em;
+}
+
+.averageMax {
+    color: #94a3b8;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.summaryStars {
+    margin-top: 10px;
+    color: #fde68a;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+}
+
+.summaryText {
+    margin: 10px 0 18px;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.ratingBreakdown {
+    display: grid;
+    gap: 10px;
+}
+
+.ratingRow {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) 38px;
+    align-items: center;
+    gap: 10px;
+}
+
+.ratingRowLabel,
+.ratingPercent {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.ratingPercent {
+    text-align: right;
+}
+
+.ratingTrack {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background-color: #1e293b;
+}
+
+.ratingFill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #2dd4bf, #5eead4);
+}
+
+.reviewsList {
+    display: grid;
+    gap: 10px;
+}
+
+.reviewCard {
+    position: relative;
+    overflow: hidden;
+    padding: 14px;
+    border-radius: 18px;
+    background-color: #0f172a;
+    border: 1px solid #26344d;
+    transition:
+            border-color 0.15s ease,
+            background-color 0.15s ease,
+            box-shadow 0.15s ease,
+            transform 0.15s ease;
+}
+
+.reviewCardOwn {
+    background:
+            linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(15, 23, 42, 0.98)),
+            #0f172a;
+    border-color: rgba(45, 212, 191, 0.36);
+    box-shadow:
+            inset 4px 0 0 #2dd4bf,
+            inset 0 0 0 1px rgba(94, 234, 212, 0.06);
+}
+
+.reviewCard:hover {
+    border-color: rgba(94, 234, 212, 0.35);
+    background-color: #111c33;
+    transform: translateY(-1px);
+}
+
+.reviewTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+.reviewerInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.reviewerAvatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    color: #042f2e;
+    background-color: #5eead4;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.reviewerName {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 14px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.reviewDate {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.1;
+}
+
+.reviewComment {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.commentsPaginationRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #1e293b;
+}
+
+.commentsPaginationText {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.commentsPageButton {
+    --bs-btn-color: #cbd5e1;
+    --bs-btn-bg: #0f172a;
+    --bs-btn-border-color: #334155;
+
+    --bs-btn-hover-color: #f8fafc;
+    --bs-btn-hover-bg: #111c33;
+    --bs-btn-hover-border-color: #5eead4;
+
+    --bs-btn-active-color: #ccfbf1;
+    --bs-btn-active-bg: #0f3438;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    --bs-btn-disabled-color: #64748b;
+    --bs-btn-disabled-bg: #111827;
+    --bs-btn-disabled-border-color: #26344d;
+
+    min-width: 38px;
+    min-height: 34px;
+    padding: 0 10px;
+
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.commentsPageButtonActive {
+    --bs-btn-color: #042f2e;
+    --bs-btn-bg: #5eead4;
+    --bs-btn-border-color: #99f6e4;
+
+    --bs-btn-hover-color: #022c22;
+    --bs-btn-hover-bg: #2dd4bf;
+    --bs-btn-hover-border-color: #5eead4;
+}
+
+@media (max-width: 1100px) {
+    .reviewsTopGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 680px) {
+    .reviewsHeader,
+    .cardHeader,
+    .listHeader,
+    .formFooter,
+    .reviewTop,
+    .commentsPaginationRow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .reviewsTitle {
+        font-size: 28px;
+    }
+
+    .ratingRow {
+        grid-template-columns: 58px minmax(0, 1fr) 34px;
+    }
+}

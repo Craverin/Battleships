@@ -1,0 +1,349 @@
+.leaderboardPanel {
+    width: 100%;
+    min-width: 0;
+}
+
+.leaderboardHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+}
+
+.leaderboardEyebrow {
+    margin: 0 0 6px;
+    color: #5eead4;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.leaderboardTitle {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+}
+
+.leaderboardPill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: #ccfbf1;
+    background-color: #0f3438;
+    border: 1px solid #2dd4bf;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.currentPlayerCard {
+    margin-bottom: 18px;
+    padding: 18px;
+    border-radius: 22px;
+    background:
+            linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(15, 23, 42, 0.96)),
+            #0f172a;
+    border: 1px solid rgba(45, 212, 191, 0.22);
+}
+
+.currentPlayerTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 16px;
+}
+
+.currentPlayerLabel {
+    margin: 0 0 6px;
+    color: #99f6e4;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.currentPlayerName {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 24px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.currentRankBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 66px;
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 999px;
+    color: #042f2e;
+    background-color: #5eead4;
+    border: 1px solid #99f6e4;
+    font-size: 16px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.currentStatsGrid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.statItem {
+    padding: 12px;
+    border-radius: 16px;
+    background-color: rgba(2, 6, 23, 0.48);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.statLabel {
+    display: block;
+    margin-bottom: 5px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.statValue {
+    color: #f8fafc;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.statAccent {
+    color: #5eead4;
+}
+
+.emptyPlayerStats {
+    display: grid;
+    gap: 14px;
+}
+
+.emptyPlayerText {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.tableCard {
+    padding: 18px;
+    border-radius: 22px;
+    background: #0b1220;
+    border: 1px solid #1e293b;
+}
+
+.leaderboardTable {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.leaderboardTable th {
+    padding: 0 10px 4px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.leaderboardTable td {
+    padding: 12px 10px;
+    color: #cbd5e1;
+    background-color: #0f172a;
+    border-top: 1px solid #26344d;
+    border-bottom: 1px solid #26344d;
+    vertical-align: middle;
+}
+
+.leaderboardTable td:first-child {
+    border-left: 1px solid #26344d;
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+}
+
+.leaderboardTable td:last-child {
+    border-right: 1px solid #26344d;
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+}
+
+.firstPlaceRow td {
+    background:
+            linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.98)),
+            #0f172a;
+    border-color: rgba(245, 158, 11, 0.26);
+}
+
+.secondPlaceRow td {
+    background:
+            linear-gradient(135deg, rgba(148, 163, 184, 0.12), rgba(15, 23, 42, 0.98)),
+            #0f172a;
+}
+
+.thirdPlaceRow td {
+    background:
+            linear-gradient(135deg, rgba(180, 83, 9, 0.12), rgba(15, 23, 42, 0.98)),
+            #0f172a;
+}
+
+.sortButton {
+    appearance: none;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
+.sortButton:not(:disabled):hover {
+    color: #f8fafc;
+}
+
+.sortButton:disabled {
+    cursor: default;
+}
+
+.sortButtonActive {
+    color: #5eead4;
+}
+
+.rankCell {
+    width: 52px;
+    color: #f8fafc;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.playerCell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 210px;
+}
+
+.playerAvatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    color: #042f2e;
+    background-color: #5eead4;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.playerName {
+    display: block;
+    color: #f8fafc;
+    font-size: 14px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.numericCell {
+    text-align: right;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.bestScoreCell {
+    color: #5eead4;
+    font-size: 15px;
+}
+
+.paginationRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 14px;
+}
+
+.paginationText {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.pageButton {
+    --bs-btn-color: #cbd5e1;
+    --bs-btn-bg: #0f172a;
+    --bs-btn-border-color: #334155;
+
+    --bs-btn-hover-color: #f8fafc;
+    --bs-btn-hover-bg: #111c33;
+    --bs-btn-hover-border-color: #5eead4;
+
+    --bs-btn-active-color: #ccfbf1;
+    --bs-btn-active-bg: #0f3438;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    min-width: 38px;
+    min-height: 34px;
+    padding: 0 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.pageButton:disabled {
+    --bs-btn-disabled-color: #64748b;
+    --bs-btn-disabled-bg: #111827;
+    --bs-btn-disabled-border-color: #26344d;
+    cursor: not-allowed;
+}
+
+.pageButtonActive {
+    --bs-btn-color: #042f2e;
+    --bs-btn-bg: #5eead4;
+    --bs-btn-border-color: #99f6e4;
+
+    --bs-btn-hover-color: #022c22;
+    --bs-btn-hover-bg: #2dd4bf;
+    --bs-btn-hover-border-color: #5eead4;
+}
+
+@media (max-width: 980px) {
+    .leaderboardHeader,
+    .tableHeader,
+    .paginationRow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .currentStatsGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .leaderboardTitle {
+        font-size: 28px;
+    }
+
+    .currentStatsGrid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,8 +1,8 @@
 package gamestudio;
 
-import gamestudio.domain.Coordinate;
-import gamestudio.domain.Orientation;
-import gamestudio.domain.Ship;
+import gamestudio.server.domain.Coordinate;
+import gamestudio.server.domain.Orientation;
+import gamestudio.server.domain.Ship;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

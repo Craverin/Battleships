@@ -1,8 +1,9 @@
 package gamestudio.cli;
 
-import gamestudio.service.CommentService;
-import gamestudio.service.RatingService;
-import gamestudio.service.ScoreService;
+import gamestudio.server.service.CommentService;
+import gamestudio.server.service.PlayerStatsService;
+import gamestudio.server.service.RatingService;
+import gamestudio.server.service.ScoreService;
 import jakarta.annotation.Nullable;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,15 +20,16 @@ public class CliRunner implements CommandLineRunner
     private final Menu menu;
     private final CliController gameController;
 
-    public CliRunner(Menu menu, ScoreService scoreRep, RatingService ratingRep, CommentService commentRep)
+    public CliRunner(Menu menu, ScoreService scoreRep, RatingService ratingRep, CommentService commentRep, PlayerStatsService pl)
     {
         this.menu = menu;
-        this.gameController = new CliController(scoreRep, ratingRep, commentRep, playerName);
+        this.gameController = new CliController(scoreRep, ratingRep, commentRep, pl, playerName);
     }
 
     @Override
     public void run(@Nullable String... args) throws InterruptedException
     {
+
         boolean running = true, showingMenu = true;
 
         while (running)

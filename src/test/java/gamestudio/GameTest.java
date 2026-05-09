@@ -1,9 +1,9 @@
 package gamestudio;
 
-import gamestudio.domain.Board;
-import gamestudio.domain.Game;
-import gamestudio.domain.GamePhase;
-import gamestudio.dto.ShotResult;
+import gamestudio.server.domain.Board;
+import gamestudio.server.domain.Game;
+import gamestudio.server.domain.GamePhase;
+import gamestudio.server.dto.ShotResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

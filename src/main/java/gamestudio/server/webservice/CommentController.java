@@ -1,20 +1,18 @@
 package gamestudio.server.webservice;
 
-import gamestudio.entity.Comment;
-import gamestudio.service.jpa.CommentServiceJPA;
-import org.springframework.context.annotation.Import;
+import gamestudio.server.entity.Comment;
+import gamestudio.server.service.CommentService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/comment")
-@Import(CommentServiceJPA.class)
+@RequestMapping("/comments")
 public class CommentController
 {
-    private final CommentServiceJPA commentService;
+    private final CommentService commentService;
 
-    public CommentController(CommentServiceJPA commentService)
+    public CommentController(CommentService commentService)
     {
         this.commentService = commentService;
     }

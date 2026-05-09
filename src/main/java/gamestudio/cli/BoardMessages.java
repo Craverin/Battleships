@@ -1,6 +1,6 @@
 package gamestudio.cli;
 
-import gamestudio.domain.Board;
+import gamestudio.server.domain.Board;
 
 import java.util.concurrent.TimeUnit;
 

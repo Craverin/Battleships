@@ -1,11 +1,13 @@
 package gamestudio;
 
-import gamestudio.service.CommentService;
-import gamestudio.service.RatingService;
-import gamestudio.service.ScoreService;
-import gamestudio.service.rest.CommentServiceRestClient;
-import gamestudio.service.rest.RatingServiceRestClient;
-import gamestudio.service.rest.ScoreServiceRestClient;
+import gamestudio.server.service.CommentService;
+import gamestudio.server.service.PlayerStatsService;
+import gamestudio.server.service.RatingService;
+import gamestudio.server.service.ScoreService;
+import gamestudio.server.service.jpa.PlayerStatsServiceJPA;
+import gamestudio.server.service.rest.CommentServiceRestClient;
+import gamestudio.server.service.rest.RatingServiceRestClient;
+import gamestudio.server.service.rest.ScoreServiceRestClient;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -14,9 +16,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication
-@ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
-               pattern = "gamestudio.server.*"))
+@SpringBootApplication(scanBasePackages = "gamestudio.cli")
 public class SpringClient
 {
 	public static void main(String[] args)
@@ -43,5 +43,11 @@ public class SpringClient
     public CommentService commentService(RestTemplate restTemplate)
     {
         return new CommentServiceRestClient(restTemplate);
+    }
+
+    @Bean
+    public PlayerStatsService playerStatsService()
+    {
+        return new PlayerStatsServiceJPA();
     }
 }

@@ -1,9 +1,7 @@
 package gamestudio.jpa;
 
-import gamestudio.entity.Rating;
-import gamestudio.service.RatingService;
-import gamestudio.service.jpa.CommentServiceJPA;
-import gamestudio.service.jpa.RatingServiceJPA;
+import gamestudio.server.entity.Rating;
+import gamestudio.server.service.jpa.RatingServiceJPA;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -11,7 +9,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Container;

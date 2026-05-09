@@ -1,10 +1,10 @@
 package gamestudio.cli;
 
-import gamestudio.entity.Comment;
-import gamestudio.entity.Score;
-import gamestudio.service.CommentService;
-import gamestudio.service.RatingService;
-import gamestudio.service.ScoreService;
+import gamestudio.server.entity.Comment;
+import gamestudio.server.entity.Score;
+import gamestudio.server.service.CommentService;
+import gamestudio.server.service.RatingService;
+import gamestudio.server.service.ScoreService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -96,7 +96,7 @@ public class Menu
     void showRatingPage(String player)
     {
         int userRating = ratingService.getRating("battleships", player);
-        int averageRating = ratingService.getAverageRating("battleships");
+        float averageRating = ratingService.getAverageRating("battleships");
 
         System.out.println(ANSI_CYAN.unicode + "\n=== Rating ===" + ANSI_RESET.unicode);
 

@@ -1,7 +1,8 @@
 package gamestudio;
 
-import gamestudio.domain.*;
-import gamestudio.dto.CellStateView;
+import gamestudio.server.domain.Bot;
+import gamestudio.server.domain.Coordinate;
+import gamestudio.server.dto.CellStateView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +23,7 @@ public class BotTest
          /*
               A     B     C     D     E     F     G     H     I     J
            +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-         1 |  *  |     |  *  |  ■  |     |     |     |  *  |     |     |
+         1 |  *  |     |  *  |  ■  |     |     |  *  |  *  |     |     |
            +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
          2 |     |     |     |  ■  |     |  *  |  ■  |  ■  |  ■  |  *  |
            +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
@@ -46,7 +47,7 @@ public class BotTest
 
         cells = new CellStateView[][]
         {
-            new CellStateView[]{CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.UNKNOWN},
+            new CellStateView[]{CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.MISS, CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.UNKNOWN},
             new CellStateView[]{CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.MISS},
             new CellStateView[]{CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.UNKNOWN},
             new CellStateView[]{CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.MISS, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN, CellStateView.UNKNOWN},

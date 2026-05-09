@@ -1,15 +1,12 @@
 package gamestudio.server.webservice;
 
-import gamestudio.dto.RatingSummaryResponse;
-import gamestudio.entity.Rating;
-import gamestudio.service.RatingService;
-import gamestudio.service.jpa.RatingServiceJPA;
-import org.springframework.context.annotation.Import;
+import gamestudio.server.dto.RatingSummaryResponse;
+import gamestudio.server.entity.Rating;
+import gamestudio.server.service.RatingService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/rating")
-@Import(RatingServiceJPA.class)
+@RequestMapping("/rating")
 public class RatingController
 {
     private final RatingService ratingService;
@@ -20,7 +17,7 @@ public class RatingController
     }
 
     @GetMapping("/{game}")
-    public int getAverageRating(@PathVariable String game)
+    public float getAverageRating(@PathVariable String game)
     {
         return ratingService.getAverageRating(game);
     }
@@ -34,8 +31,7 @@ public class RatingController
     @GetMapping("/{game}/summary")
     public RatingSummaryResponse getRatingSummary(@PathVariable String game)
     {
-        return new RatingSummaryResponse(ratingService.getAverageRating(game),
-                                         ratingService.getRatingCount(game));
+        return ratingService.getRatingSummary(game);
     }
 
     @GetMapping("/{game}/players/{player}")

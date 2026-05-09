@@ -1,9 +1,7 @@
 package gamestudio.jpa;
 
-import gamestudio.cli.CliRunner;
-import gamestudio.cli.Menu;
-import gamestudio.entity.Comment;
-import gamestudio.service.jpa.CommentServiceJPA;
+import gamestudio.server.entity.Comment;
+import gamestudio.server.service.jpa.CommentServiceJPA;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -11,8 +9,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Container;

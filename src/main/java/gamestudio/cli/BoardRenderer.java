@@ -1,12 +1,12 @@
 package gamestudio.cli;
 
-import gamestudio.domain.Board;
-import gamestudio.domain.CellState;
-import gamestudio.domain.Coordinate;
-import gamestudio.domain.Orientation;
-import gamestudio.dto.CellStateView;
-import gamestudio.dto.CombatViewResponse;
-import gamestudio.dto.ShipResponse;
+import gamestudio.server.domain.Board;
+import gamestudio.server.domain.CellState;
+import gamestudio.server.domain.Coordinate;
+import gamestudio.server.domain.Orientation;
+import gamestudio.server.dto.CellStateView;
+import gamestudio.server.dto.CombatViewResponse;
+import gamestudio.server.dto.ShipResponse;
 
 import java.util.*;
 

@@ -1,7 +1,7 @@
 package gamestudio.jdbc;
 
-import gamestudio.entity.Rating;
-import gamestudio.service.jdbc.JdbcRatingService;
+import gamestudio.server.entity.Rating;
+import gamestudio.server.service.jdbc.JdbcRatingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;

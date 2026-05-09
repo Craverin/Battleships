@@ -1,7 +1,7 @@
 package gamestudio.jdbc;
 
-import gamestudio.entity.Comment;
-import gamestudio.service.jdbc.JdbcCommentService;
+import gamestudio.server.entity.Comment;
+import gamestudio.server.service.jdbc.JdbcCommentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
