@@ -1,0 +1,206 @@
+.authPanel {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0 16px;
+}
+
+.authCard {
+    width: min(100%, 480px);
+    padding: 28px;
+    border-radius: 24px;
+    background:
+            linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(15, 23, 42, 0.96)),
+            #0b1220;
+    border: 1px solid #1e293b;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.authHeader {
+    margin-bottom: 18px;
+}
+
+.authEyebrow {
+    margin: 0 0 8px;
+    color: #5eead4;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.authTitle {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+}
+
+.authText {
+    margin: 10px 0 0;
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.authTabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 6px;
+    border-radius: 18px;
+    background-color: #020617;
+    border: 1px solid #26344d;
+}
+
+
+.authTabButton {
+    --bs-btn-color: #94a3b8;
+    --bs-btn-bg: transparent;
+    --bs-btn-border-color: transparent;
+
+    --bs-btn-hover-color: #f8fafc;
+    --bs-btn-hover-bg: #111c33;
+    --bs-btn-hover-border-color: #26344d;
+
+    --bs-btn-active-color: #ccfbf1;
+    --bs-btn-active-bg: #0f3438;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    min-height: 36px;
+    border-radius: 13px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.authTabButtonActive {
+    --bs-btn-color: #ccfbf1;
+    --bs-btn-bg: #0f3438;
+    --bs-btn-border-color: #2dd4bf;
+
+    --bs-btn-hover-color: #ccfbf1;
+    --bs-btn-hover-bg: #134e4a;
+    --bs-btn-hover-border-color: #5eead4;
+}
+
+.authErrorMessage {
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border-radius: 14px;
+
+    color: #fecaca;
+    background:
+            linear-gradient(135deg, rgba(248, 113, 113, 0.12), rgba(15, 23, 42, 0.96)),
+            #0f172a;
+    border: 1px solid rgba(248, 113, 113, 0.42);
+
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.authSuccessMessage {
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border-radius: 14px;
+
+    color: #ccfbf1;
+    background:
+            linear-gradient(135deg, rgba(20, 184, 166, 0.14), rgba(15, 23, 42, 0.96)),
+            #0f172a;
+    border: 1px solid rgba(45, 212, 191, 0.45);
+
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.authForm {
+    display: grid;
+    gap: 14px;
+}
+
+.authField {
+    display: grid;
+    gap: 8px;
+}
+
+.authLabel {
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.authInput {
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: 14px;
+    color: #f8fafc;
+    background-color: #020617;
+    border: 1px solid #26344d;
+    font-size: 14px;
+}
+
+.authInput::placeholder {
+    color: #64748b;
+}
+
+.authInput:focus {
+    color: #f8fafc;
+    background-color: #020617;
+    border-color: #5eead4;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.18);
+}
+
+.authSubmitButton {
+    --bs-btn-color: #042f2e;
+    --bs-btn-bg: #5eead4;
+    --bs-btn-border-color: #99f6e4;
+
+    --bs-btn-hover-color: #022c22;
+    --bs-btn-hover-bg: #2dd4bf;
+    --bs-btn-hover-border-color: #5eead4;
+
+    --bs-btn-active-color: #022c22;
+    --bs-btn-active-bg: #14b8a6;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    min-height: 44px;
+    margin-top: 4px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.authSubmitButton:hover {
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.22);
+}
+
+.authFooterText {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 18px 0 0;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.authInlineButton {
+    appearance: none;
+    padding: 0;
+    color: #5eead4;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.authInlineButton:hover {
+    color: #99f6e4;
+    text-decoration: underline;
+}

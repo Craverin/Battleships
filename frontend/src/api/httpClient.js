@@ -14,19 +14,35 @@ export const request = async(path, options = {}) => {
     const response = await fetch(`/api${path}`, {
         method: method,
         headers: headers,
-        body: body !== null ? JSON.stringify(body) : undefined,
+        credentials: "include",
+        body: body !== null ? JSON.stringify(body) : undefined
     });
 
     const contentType = response.headers.get('content-type') ?? '';
     console.log(response.status);
+
     if (!response.ok)
     {
         const error = new Error();
         error.status = response.status;
 
+        if (contentType.includes("application/json"))
+        {
+            const data = await response.json();
+
+            error.message = data.message || data.detail || data.error || "Request failed";
+            error.data = data;
+        }
+
+        else
+        {
+            const text = await response.text();
+
+            error.message = text || "Request failed";
+        }
+
         throw error;
     }
-
 
     return contentType.includes('application/json') ? await response.json() : await response.text();
 }

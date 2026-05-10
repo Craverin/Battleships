@@ -137,119 +137,6 @@
     box-shadow: none;
 }
 
-.readyBlock {
-    padding-top: 18px;
-    margin-top: 18px;
-    border-top: 1px solid #1e293b;
-}
-
-.readyHeader {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 14px;
-}
-
-.readyText {
-    margin: 0;
-    color: #94a3b8;
-    font-size: 13px;
-    line-height: 1.45;
-}
-
-.readyBadge {
-    display: inline-flex;
-    align-items: center;
-    min-height: 28px;
-    padding: 0 10px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 800;
-    white-space: nowrap;
-}
-
-.readyBadgeActive {
-    color: #bbf7d0;
-    background-color: #14532d;
-    border: 1px solid #22c55e;
-}
-
-.readyBadgeIdle {
-    color: #cbd5e1;
-    background-color: #1e293b;
-    border: 1px solid #475569;
-}
-
-.readyStatusList {
-    display: grid;
-    gap: 8px;
-    margin-bottom: 14px;
-}
-
-.readyStatusItem {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background-color: #0b1220;
-    border: 1px solid #26344d;
-}
-
-.readyStatusLabel {
-    color: #94a3b8;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.readyStatusValue {
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.statusReady {
-    color: #86efac;
-}
-
-.statusWaiting {
-    color: #fcd34d;
-}
-
-.readyButton {
-    width: 100%;
-    min-height: 46px;
-    border-radius: 14px;
-    color: #042f2e;
-    background-color: #5eead4;
-    border: 1px solid #99f6e4;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-    transition:
-            background-color 0.15s ease,
-            border-color 0.15s ease,
-            color 0.15s ease,
-            box-shadow 0.15s ease,
-            opacity 0.15s ease;
-}
-
-.readyButton:not(:disabled):hover {
-    background-color: #99f6e4;
-    border-color: #ccfbf1;
-    box-shadow: 0 0 0 3px #5eead433;
-}
-
-.readyButton:disabled {
-    color: #94a3b8;
-    background-color: #1e293b;
-    border-color: #475569;
-    cursor: not-allowed;
-    opacity: 0.65;
-    box-shadow: none;
-}
-
 .modeCardActive {
     color: #ccfbf1;
     background: #0f3438;
@@ -315,6 +202,12 @@
     font-size: 12px;
     font-weight: 800;
     cursor: pointer;
+}
+
+.copyButtonCopied {
+    color: #042f2e;
+    background-color: #5eead4;
+    border-color: #99f6e4;
 }
 
 .copyButton:not(:disabled):hover {
@@ -422,13 +315,6 @@
     padding: 0 16px;
 }
 
-.boardSection {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    width: fit-content;
-}
-
 .boardsViewport {
     max-width: 100%;
     overflow-x: auto;
@@ -446,14 +332,74 @@
 
 .boardCard {
     position: relative;
+    flex: 1 1 auto;
     min-width: 0;
     padding: 24px;
     margin-top: 40px;
     border-radius: 28px;
     background: #071120;
-    /*box-shadow: 0 24px 70px #14b8a6;*/
 }
 
+
+.boardCardAuth {
+    min-height: 720px;
+    padding: 56px 0 0;
+    background: transparent;
+    border-radius: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+}
+
+.accountBlock {
+    padding-top: 12px;
+    margin-top: 14px;
+    border-top: 1px solid #1e293b;
+}
+
+.accountActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.accountButton {
+    --bs-btn-color: #cbd5e1;
+    --bs-btn-bg: #0f172a;
+    --bs-btn-border-color: #26344d;
+
+    --bs-btn-hover-color: #f8fafc;
+    --bs-btn-hover-bg: #111c33;
+    --bs-btn-hover-border-color: #5eead4;
+
+    --bs-btn-active-color: #ccfbf1;
+    --bs-btn-active-bg: #0f3438;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.accountButtonPrimary {
+    --bs-btn-color: #042f2e;
+    --bs-btn-bg: #5eead4;
+    --bs-btn-border-color: #99f6e4;
+
+    --bs-btn-hover-color: #022c22;
+    --bs-btn-hover-bg: #2dd4bf;
+    --bs-btn-hover-border-color: #5eead4;
+
+    --bs-btn-active-color: #022c22;
+    --bs-btn-active-bg: #14b8a6;
+    --bs-btn-active-border-color: #2dd4bf;
+}
 
 @media (max-width: 1100px) {
     .gameShell {

@@ -1,6 +1,6 @@
 import {PlacementBoard} from "../components/board/PlacementBoard.jsx";
 import {GameStatus} from "../components/board/GameStatus.jsx";
-import {createGame, getShips, joinGame} from "../api/gameApi.js";
+import {createGame, getShips} from "../api/gameApi.js";
 import {useEffect, useState} from "react";
 import styles from "./GamePage.module.css"
 import {subscribeToSse} from "../api/sseApi.js";
@@ -12,6 +12,8 @@ import {LeaderboardPanel} from "../components/community/LeaderboardPanel.jsx";
 import {getPlayerStats, getTopPlayers} from "../api/leaderboardApi.js";
 import {ReviewsPanel} from "../components/community/ReviewsPanel.jsx";
 import {getComments, getPlayerComments, getRating, getRatingSummary} from "../api/reviewsApi.js";
+import {getCurrentUser} from "../api/authApi.js";
+import {AuthPanel} from "../components/authentication/AuthPanel.jsx";
 
 export const BOARD_SIZE = 10;
 
@@ -35,6 +37,7 @@ export const GamePage = ({
     const [gamePhase, setGamePhase] = useState('');
     const [playerToken, setPlayerToken] = useState(token);
     const [inviteCode, setInviteCode] = useState(invCode);
+    const [isInviteCopied, setIsInviteCopied] = useState(false);
     const [ships, setShips] = useState([]);
 
     const [hostCells, setHostCells] = useState();
@@ -51,6 +54,10 @@ export const GamePage = ({
     const [comments, setComments] = useState();
     const [playerRating, setPlayerRating] = useState();
     const [ratingSummary, setRatingSummary] = useState();
+
+    const [user, setUser] = useState();
+
+    const inviteLink = inviteCode ? `${window.location.origin}/games/${inviteCode}/join` : "";
 
     const initializeGame = async () => {
         const {gameId: id, hostToken: token, inviteCode: invCode} = await createGame();
@@ -84,7 +91,28 @@ export const GamePage = ({
                 state: null
             });
         }
+
+        const tryGetCurrentUser = async () => {
+            try {
+                const usr = await getCurrentUser();
+                console.log(usr);
+                setUser(usr);
+            } catch (error) { }
+        }
+        tryGetCurrentUser()
     }, []);
+
+    const copyInviteLink = async () => {
+        if (!inviteLink) return;
+
+        await navigator.clipboard.writeText(inviteLink);
+
+        setIsInviteCopied(true);
+
+        setTimeout(() => {
+            setIsInviteCopied(false);
+        }, 1400);
+    };
 
     useEffect(  () => {
         if (!gameId || !playerToken) return;
@@ -134,6 +162,7 @@ export const GamePage = ({
 
         getBoardShips();
     }, [gameId, playerToken]);
+
 
 
     return (
@@ -198,19 +227,38 @@ export const GamePage = ({
                         </button>
                     </div>
 
+                    <div className={styles.accountBlock}>
+                        <p className={styles.blockLabel}>Account</p>
+
+                        <div className={styles.accountActions}>
+                            <button
+                                type="button"
+                                className={`btn ${styles.accountButton}`}
+                                onClick={() => setActiveTab("Login")}
+                            >
+                                Log in
+                            </button>
+
+                            <button
+                                type="button"
+                                className={`btn ${styles.accountButton} ${styles.accountButtonPrimary}`}
+                                onClick={() => setActiveTab("Register")}
+                            >
+                                Sign up
+                            </button>
+                        </div>
+                    </div>
+
                     <div className={styles.modeBlock}>
                         <p className={styles.blockLabel}>Opponent</p>
                         <div className={styles.modeGrid}>
                             <button
                                 type="button"
                                 onClick={() => setFriendButtonActive(!friendButtonActive)}
-                                className={
-                                [
-                                    styles.modeCard,
-                                    friendButtonActive ? styles.modeCardActive : ""
-                                ]
-                                    .filter(x => Boolean(x))
-                                    .join(" ")}
+                                className={`
+                                    ${styles.modeCard}
+                                    ${friendButtonActive ? styles.modeCardActive : ""}
+                                `}
                             >
                                 <span className={styles.modeTitle}>Friend</span>
                                 <span className={styles.modeDescription}>Invite another player</span>
@@ -220,14 +268,11 @@ export const GamePage = ({
                                 type="button"
                                 disabled={!isHost || opponentJoined}
                                 onClick={() => setFriendButtonActive(!friendButtonActive)}
-                                className={
-                                [
-                                    styles.modeCard,
-                                    friendButtonActive ? "" : styles.modeCardActive
-                                ]
-                                    .filter(x => Boolean(x))
-                                    .join(" ")}
-                                >
+                                className={`
+                                    ${styles.modeCard}
+                                    ${friendButtonActive ? "" : styles.modeCardActive}
+                                `}
+                            >
                                 <span className={styles.modeTitle}>Bot</span>
                                 <span className={styles.modeDescription}>Practice alone</span>
                             </button>
@@ -241,22 +286,24 @@ export const GamePage = ({
                         </div>
 
                         <div className={styles.inviteLinkBox}>
-                            <span id="inviteCode" className={styles.inviteLinkText}>
+                            <span className={styles.inviteLinkText}>
                                 {
                                     !inviteCode
                                     ? `Create game to generate invite link`
-                                    : `${window.location.origin}/games/${inviteCode}/join`
+                                    : inviteLink
                                 }
                             </span>
 
                             <button
                                 type="button"
-                                className={styles.copyButton}
-                                onClick={() => navigator.clipboard.writeText(
-                                    document.getElementById("inviteCode").textContent) }
+                                className={`
+                                    ${styles.copyButton}
+                                    ${isInviteCopied ? styles.copyButtonCopied : ""}
+                                `}
+                                onClick={copyInviteLink}
                                 disabled={!inviteCode}
                             >
-                                Copy
+                                {isInviteCopied ? "✓ Copied" : "Copy"}
                             </button>
                         </div>
 
@@ -305,52 +352,73 @@ export const GamePage = ({
                 </aside>
 
 
-                <section className={`${styles.boardCard} ${activeTab === 'Play' ? "" : "m-0"}`}>
-                    {activeTab === 'Top' &&
-                        <LeaderboardPanel leaderboard={leaderboard} playerStats={playerStats}/>
-                    }
+                <section
+                    className={`
+                        ${styles.boardCard}
+                        ${activeTab === 'Login' || activeTab === 'Register' ?  styles.boardCardAuth : ""}
+                        `}
+                    >
+                        {activeTab === 'Top' &&
+                            <LeaderboardPanel leaderboard={leaderboard} playerStats={playerStats}/>
+                        }
 
-                    {activeTab === 'Play' && (
-                        <div>
-                            <GameStatus opponentJoined={opponentJoined}
-                                        opponentReady={opponentReady}
-                                        isReady={isReady}
-                                        setIsReady={setIsReady}
-                                        isYourTurn={isYourTurn}
-                                        gameId={gameId}
-                                        playerToken={playerToken}
-                            />
+                        {activeTab === 'Play' && (
+                            <div>
+                                <GameStatus opponentJoined={opponentJoined}
+                                            opponentReady={opponentReady}
+                                            isReady={isReady}
+                                            setIsReady={setIsReady}
+                                            isYourTurn={isYourTurn}
+                                            gameId={gameId}
+                                            playerToken={playerToken}
+                                />
 
-                            {(gamePhase === '' || gamePhase === "PLACEMENT") && (
-                                <div className={styles.boardsRow}>
-                                    <PlacementBoard gameId={gameId} playerToken={playerToken} ships={ships} isLocked={isReady} />
-                                    <PlaceholderBoard opponentJoined={opponentJoined} opponentReady={opponentReady} isReady={isReady} />
-                                </div>
-                            )}
-
-                            {(gamePhase === "COMBAT" || gamePhase === "FINISHED") && (
-                                <div className={styles.boardsViewport}>
+                                {(gamePhase === '' || gamePhase === "PLACEMENT") && (
                                     <div className={styles.boardsRow}>
-                                        <CombatBoard gameId={gameId} playerToken={playerToken} cells={hostCells} isHost={true}/>
-                                        <CombatBoard gameId={gameId} playerToken={playerToken} cells={opponentCells} isHost={false}/>
+                                        <PlacementBoard gameId={gameId} playerToken={playerToken} ships={ships} isLocked={isReady} />
+                                        <PlaceholderBoard opponentJoined={opponentJoined} opponentReady={opponentReady} isReady={isReady} />
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {gamePhase === "FINISHED" &&
-                                <GameOverPanel isWinner={isWinner} startNewGame={startNewGame} />
-                            }
-                        </div>
-                    )}
+                                {(gamePhase === "COMBAT" || gamePhase === "FINISHED") && (
+                                    <div className={styles.boardsViewport}>
+                                        <div className={styles.boardsRow}>
+                                            <CombatBoard gameId={gameId} playerToken={playerToken} cells={hostCells} isHost={true}/>
+                                            <CombatBoard gameId={gameId} playerToken={playerToken} cells={opponentCells} isHost={false}/>
+                                        </div>
+                                    </div>
+                                )}
 
-                    {activeTab === 'Reviews' && (
-                        <ReviewsPanel
-                            playerComments={playerComments}
-                            comments={comments}
-                            playerRating={playerRating}
-                            ratingSummary={ratingSummary}
-                        />
-                    )}
+                                {gamePhase === "FINISHED" &&
+                                    <GameOverPanel isWinner={isWinner} startNewGame={startNewGame} />
+                                }
+                            </div>
+                        )}
+
+                        {activeTab === 'Reviews' && (
+                            <ReviewsPanel
+                                playerComments={playerComments}
+                                comments={comments}
+                                playerRating={playerRating}
+                                ratingSummary={ratingSummary}
+                            />
+                        )}
+
+                        {activeTab === 'Login' &&
+                            <AuthPanel
+                                signingUp={false}
+                                setUser={setUser}
+                                onAuthSuccess={() => setActiveTab("Play")}
+                            />
+                        }
+
+                        {activeTab === 'Register' &&
+                            <AuthPanel
+                                signingUp={true}
+                                setUser={setUser}
+                                onAuthSuccess={() => setActiveTab("Play")}
+                            />
+                        }
                 </section>
             </section>
         </main>

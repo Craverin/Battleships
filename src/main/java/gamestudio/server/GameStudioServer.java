@@ -1,13 +1,9 @@
 package gamestudio.server;
 
 import gamestudio.server.service.CommentService;
-import gamestudio.server.service.PlayerStatsService;
 import gamestudio.server.service.RatingService;
 import gamestudio.server.service.ScoreService;
-import gamestudio.server.service.jpa.CommentServiceJPA;
-import gamestudio.server.service.jpa.PlayerStatsServiceJPA;
-import gamestudio.server.service.jpa.RatingServiceJPA;
-import gamestudio.server.service.jpa.ScoreServiceJPA;
+import gamestudio.server.service.jpa.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
@@ -40,9 +36,6 @@ public class GameStudioServer
     {
         return new CommentServiceJPA();
     }
-
-    @Bean
-    public PlayerStatsService playerStatsService() { return new PlayerStatsServiceJPA(); }
 
     @Bean
     public RestTemplate restTemplate()

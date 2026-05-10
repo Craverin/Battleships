@@ -1,18 +1,21 @@
 package gamestudio.server.entity;
 
-import gamestudio.server.service.exception.CommentException;
 import jakarta.persistence.*;
-
 import java.io.Serializable;
-import java.util.Date;
 
 @Entity
-@Table(name = "player_stats")
+@Table(name = "player_stats",
+       uniqueConstraints = {
+        @UniqueConstraint(
+                name = "UniqueGameAndUserId",
+                columnNames = {"game", "user_id"}
+        )
+   }
+)
 @NamedQuery(name = "PlayerStats.getPlayerStats",
             query = "SELECT s FROM PlayerStats s WHERE s.game=:game AND s.player=:player")
 @NamedQuery(name = "PlayerStats.getRank",
         query = "SELECT COUNT(s) FROM PlayerStats s WHERE s.game=:game AND (s.bestScore > :bestScore OR (s.bestScore = :bestScore AND s.totalScore > :totalScore))")
-
 public class PlayerStats implements Serializable
 {
     @Id
@@ -20,13 +23,22 @@ public class PlayerStats implements Serializable
     private int ident;
 
     private String player;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     private String game;
+
     @Column(name = "games_played")
     private int gamesPlayed;
+
     @Column(name = "games_won")
     private int gamesWon;
+
     @Column(name = "total_score")
     private int totalScore;
+
     @Column(name = "best_score")
     private int bestScore;
 

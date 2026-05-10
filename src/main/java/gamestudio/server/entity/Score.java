@@ -1,10 +1,7 @@
 package gamestudio.server.entity;
 
 import gamestudio.server.service.exception.ScoreException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
@@ -20,6 +17,11 @@ public class Score
     private int ident;
 
     private String game;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private String player;
     private int points;
     private Date playedOn;

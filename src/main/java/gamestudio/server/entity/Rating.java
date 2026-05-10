@@ -2,13 +2,17 @@ package gamestudio.server.entity;
 
 import gamestudio.server.dto.RatingDistribution;
 import gamestudio.server.service.exception.RatingException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
+@Table(uniqueConstraints = {
+        @UniqueConstraint(
+                name = "UniqueGameAndUserId",
+                columnNames = {"game", "user_id"}
+        )
+    }
+)
 @Entity
 @NamedQuery(name = "Rating.getAverageRating",
             query = "SELECT ROUND(avg(r.rating), 1) FROM Rating r WHERE r.game=:game")
@@ -23,6 +27,10 @@ public class Rating
     @Id
     @GeneratedValue
     private int ident;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     private String player;
     private String game;

@@ -6,10 +6,12 @@ import gamestudio.server.service.PlayerStatsService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Transactional
+@Service
 public class PlayerStatsServiceJPA implements PlayerStatsService
 {
     @PersistenceContext

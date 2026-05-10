@@ -1,10 +1,7 @@
 package gamestudio.server.entity;
 
 import gamestudio.server.service.exception.CommentException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -21,6 +18,11 @@ public class Comment implements Serializable
     private int ident;
 
     private String player;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     private String game;
     private String comment;
     private Date commentedOn;
