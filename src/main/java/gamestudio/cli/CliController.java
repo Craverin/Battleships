@@ -21,7 +21,7 @@ public class CliController
 {
     private final String playerName;
     private final Scanner sc;
-    private final GameService gameService;
+    private GameService gameService;
     private final ScoreService scoreRep;
     private final RatingService ratingRep;
     private final CommentService commentRep;
@@ -41,7 +41,7 @@ public class CliController
         this.ratingRep = ratingRep;
         this.commentRep = commentRep;
         this.pl = pl;
-        this.gameService = new GameService();
+      //  this.gameService = new GameService();
         this.playerName = playerName;
 
         this.sc = new Scanner(System.in);
@@ -50,10 +50,6 @@ public class CliController
 
     public void playGame() throws InterruptedException
     {
-        pl.addPlayerStats("battleships", "me", 2250, true);
-        pl.addPlayerStats("battleships", "me", 250, false);
-        pl.addPlayerStats("battleships", "me", 1550, true);
-
         var resp = gameService.createGame();
 
         gameId = resp.gameId();
@@ -214,7 +210,7 @@ public class CliController
                 System.out.println(ANSI_RED.unicode + "Invalid comment" + ANSI_RESET.unicode);
                 return;
             }
-            commentRep.addComment(new Comment(playerName, "battleships", arg.trim(), new Date()));
+         //   commentRep.addComment(new Comment(playerName, "battleships", arg.trim(), new Date()));
         }
 
         else if (query.equals("rating"))
@@ -227,7 +223,7 @@ public class CliController
                 return;
             }
 
-            ratingRep.setRating(new Rating(playerName, "battleships", rating, new Date()));
+         //   ratingRep.setRating(new Rating(playerName, "battleships", rating, new Date()));
         }
 
         else System.out.println(ANSI_RED.unicode + "Invalid command!" + ANSI_RESET.unicode);
@@ -248,7 +244,7 @@ public class CliController
     private void addNewScore(int score)
     {
         List<Score> scores = scoreRep.getTopScores("battleships");
-        int topScore = scoreRep.getTopScore("battleships", playerName);
+        int topScore = scoreRep.getMyTopScore("battleships");
 
         System.out.println();
 
@@ -266,7 +262,7 @@ public class CliController
             }
         }
 
-        scoreRep.addScore(new Score(playerName, "battleships", score, new Date()));
+      //  scoreRep.addScore(new Score(playerName, "battleships", score, new Date()));
         scores = scoreRep.getTopScores("battleships");
 
         System.out.println();

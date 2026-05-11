@@ -2,6 +2,7 @@ package gamestudio.server.service.rest;
 
 import gamestudio.server.entity.Score;
 import gamestudio.server.service.ScoreService;
+import gamestudio.server.service.exception.ScoreException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -18,10 +19,15 @@ public class ScoreServiceRestClient implements ScoreService
         this.url = "http://localhost:8080/api/score";
     }
 
-    @Override
+
     public void addScore(Score score)
     {
         restTemplate.postForEntity(url, score, Void.class);
+    }
+
+    @Override
+    public void addScore(String game, int userId, String username, int score) throws ScoreException {
+
     }
 
     @Override
@@ -33,9 +39,9 @@ public class ScoreServiceRestClient implements ScoreService
     }
 
     @Override
-    public int getTopScore(String game, String player)
+    public int getMyTopScore(String game)
     {
-        Integer score = restTemplate.getForObject(url + "/" + game + "/players/" + player, Integer.class);
+        Integer score = restTemplate.getForObject(url + "/" + game, Integer.class);
 
         return score == null ? -1 : score;
     }

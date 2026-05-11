@@ -1,24 +1,40 @@
 package gamestudio.server.service.jpa;
 
+import gamestudio.server.dto.AddCommentRequest;
 import gamestudio.server.entity.Comment;
+import gamestudio.server.entity.User;
 import gamestudio.server.service.CommentService;
+import gamestudio.server.service.authentication.CurrentUserService;
 import gamestudio.server.service.exception.CommentException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Transactional
+@Service
 public class CommentServiceJPA implements CommentService
 {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
-    public void addComment(Comment comment) throws CommentException
+    private final CurrentUserService currentUserService;
+
+    public CommentServiceJPA(CurrentUserService currentUserService)
     {
-        entityManager.persist(comment);
+        this.currentUserService = currentUserService;
+    }
+
+    @Override
+    public void addComment(String game, AddCommentRequest comment) throws CommentException
+    {
+        int userId = currentUserService.getCurrentUserId();
+        User user = entityManager.getReference(User.class, userId);
+
+        entityManager.persist(new Comment(user, game, comment.comment(), new Date()));
     }
 
     @Override
@@ -28,11 +44,12 @@ public class CommentServiceJPA implements CommentService
                 .setParameter("game", game).getResultList();
     }
 
-    @Override
-    public List<Comment> getPlayerComments(String game, String player)
+    public List<Comment> getMyComments(String game)
     {
+        int userId = currentUserService.getCurrentUserId();
+
         return entityManager.createNamedQuery("Comment.getPlayerComments", Comment.class)
-            .setParameter("game", game).setParameter("player", player).getResultList();
+            .setParameter("game", game).setParameter("userId", userId).getResultList();
     }
 
     @Override

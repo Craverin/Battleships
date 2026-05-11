@@ -1,10 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import styles from "./LeaderboardPanel.module.css";
-import {getPlayerStats, getTopPlayers} from "../../api/leaderboardApi.js";
+import {getMyStats, getTopPlayers} from "../../api/leaderboardApi.js";
 
 export const LeaderboardPanel = ({leaderboard: topPlayers, playerStats: curPlayerStats}) => {
-    if (!topPlayers) return;
-
     const [leaderboard, setLeaderboard] = useState(topPlayers);
     const [playerStats, setPlayerStats] = useState(curPlayerStats);
 
@@ -47,21 +45,34 @@ export const LeaderboardPanel = ({leaderboard: topPlayers, playerStats: curPlaye
     }
 
     if (playerStats)
-        playerStats.winRatio = (playerStats.gamesWon / playerStats.gamesPlayed) * 100;
+        playerStats.winRatio = Math.round((playerStats.gamesWon / playerStats.gamesPlayed) * 100);
 
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const visiblePlayers = leaderboard.slice(startIndex, endIndex);
 
+    const leaderboardTopRef = useRef(null);
+    const isFirstRenderRef = useRef(true);
+
+    useEffect(() => {
+        if (isFirstRenderRef.current)
+        {
+            isFirstRenderRef.current = false;
+            return;
+        }
+
+        leaderboardTopRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }, [page]);
+
     useEffect(() => {
         const updateLeaderboard = async () => {
             const leaderboard = await getTopPlayers({sortBy: sortBy, sortType: sortType});
-            const playerStats = await getPlayerStats("ThatsIt")
-
-            console.log(playerStats);
             setLeaderboard(leaderboard);
-            setPlayerStats(playerStats);
         };
+
         updateLeaderboard();
     }, [sortBy, sortType]);
 
@@ -109,7 +120,7 @@ export const LeaderboardPanel = ({leaderboard: topPlayers, playerStats: curPlaye
                     </div>
             </section>
 
-            <section className={styles.tableCard}>
+            <section ref={leaderboardTopRef} className={styles.tableCard}>
                 <div className="table-responsive">
                     <table className={styles.leaderboardTable}>
                         <thead>

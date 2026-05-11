@@ -34,15 +34,15 @@ public class RatingController
         return ratingService.getRatingSummary(game);
     }
 
-    @GetMapping("/{game}/players/{player}")
-    public int getRating(@PathVariable String game, @PathVariable String player)
+    @GetMapping("/{game}/me")
+    public int getMyRating(@PathVariable String game)
     {
-        return ratingService.getRating(game, player);
+        return ratingService.getMyRating(game);
     }
 
-    @PostMapping
-    public void setRating(@RequestBody Rating rating)
+    @PostMapping("/{game}")
+    public void setRating(@PathVariable String game, @RequestBody int rating)
     {
-        ratingService.setRating(rating);
+        ratingService.setRating(game, rating);
     }
 }

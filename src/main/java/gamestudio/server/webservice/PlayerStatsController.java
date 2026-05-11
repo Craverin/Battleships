@@ -15,10 +15,10 @@ public class PlayerStatsController
 
     public PlayerStatsController(PlayerStatsService playerStatsService) { this.playerStatsService = playerStatsService; }
 
-    @GetMapping("/{player}/{game}")
-    public PlayerStatResponse getPlayerStats(@PathVariable String game, @PathVariable String player)
+    @GetMapping("/{game}/me")
+    public PlayerStatResponse getMyStats(@PathVariable String game)
     {
-        return playerStatsService.getPlayerStats(game, player);
+        return playerStatsService.getMyStats(game);
     }
 
     @GetMapping("/{game}")

@@ -23,7 +23,7 @@ public class JdbcRatingService implements RatingService
         this.dataSource = dataSource;
     }
 
-    @Override
+
     public void setRating(Rating rating)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
@@ -38,6 +38,11 @@ public class JdbcRatingService implements RatingService
         }
         catch (SQLException e) { throw new RatingException("Failed to insert rating", e); }
         finally { DataSourceUtils.releaseConnection(connection, dataSource); }
+    }
+
+    @Override
+    public void setRating(String game, int rating) throws RatingException {
+
     }
 
     @Override
@@ -70,7 +75,12 @@ public class JdbcRatingService implements RatingService
     }
 
     @Override
-    public int getRating(String game, String player)
+    public int getMyRating(String game) throws RatingException {
+        return 0;
+    }
+
+
+    public int getRating(String player, String game)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement statement = connection.prepareStatement(SELECT_RATING))

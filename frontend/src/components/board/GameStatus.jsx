@@ -1,16 +1,17 @@
-import styles from "./Board.module.css";
+import styles from "./GameStatus.module.css";
 import React, {useState} from "react";
 import {setReady} from "../../api/gameApi.js";
 
 export const GameStatus = ({opponentJoined,
                            opponentReady,
+                           opponentDisconnected,
                            isReady,
                            setIsReady,
                            isYourTurn = false,
                            gameId,
-                           playerToken}) => {
+                           playerToken,
+                           score}) => {
     const isBattlePhase = opponentReady && isReady;
-
     const getOpponentStatus = () => {
         if (opponentReady)
         {
@@ -58,10 +59,23 @@ export const GameStatus = ({opponentJoined,
                 {isBattlePhase ? "Battle phase" : "Setup phase"}
             </span>
 
+            {isBattlePhase && (
+                <div className={styles.scoreBadge}>
+                    <span className={styles.scoreLabel}>Score</span>
+                    <strong className={styles.scoreValue}>{score}</strong>
+                </div>
+            )}
+
             <div className={styles.boardTopActions}>
-                {!isBattlePhase && (
+                {!isBattlePhase && !opponentDisconnected && (
                     <span className={`${styles.topPill} ${opponentStatus.className}`}>
                         {opponentStatus.text}
+                    </span>
+                )}
+
+                {!isBattlePhase && opponentDisconnected && (
+                    <span className={`${styles.topPill} ${styles.disconnectedPill}`}>
+                        Opponent disconnected
                     </span>
                 )}
 
@@ -85,7 +99,13 @@ export const GameStatus = ({opponentJoined,
                     </button>
                 )}
 
-                {isBattlePhase && (
+                {isBattlePhase && opponentDisconnected && (
+                    <span className={`${styles.topPill} ${styles.disconnectedPill}`}>
+                        Opponent disconnected
+                    </span>
+                )}
+
+                {isBattlePhase && !opponentDisconnected && (
                     <span className={`${styles.topPill} ${battleStatus.className}`}>
                         {battleStatus.currentTurn}
                     </span>

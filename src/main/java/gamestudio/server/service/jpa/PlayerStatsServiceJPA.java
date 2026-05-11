@@ -2,7 +2,9 @@ package gamestudio.server.service.jpa;
 
 import gamestudio.server.dto.PlayerStatResponse;
 import gamestudio.server.entity.PlayerStats;
+import gamestudio.server.entity.User;
 import gamestudio.server.service.PlayerStatsService;
+import gamestudio.server.service.authentication.CurrentUserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -17,17 +19,23 @@ public class PlayerStatsServiceJPA implements PlayerStatsService
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
-    public void addPlayerStats(String game, String player, int score, boolean isWinner)
+    private final CurrentUserService currentUserService;
+
+    public PlayerStatsServiceJPA(CurrentUserService currentUserService)
     {
+        this.currentUserService = currentUserService;
+    }
+
+    @Override
+    public void recordGameResult(String game, int userId, String username, int score, boolean isWinner)
+    {
+        User user = entityManager.getReference(User.class, userId);
         List<PlayerStats> stats = entityManager.createNamedQuery("PlayerStats.getPlayerStats", PlayerStats.class)
-                .setParameter("game", game).setParameter("player", player).getResultList();
+                .setParameter("game", game).setParameter("userId", userId).getResultList();
 
         int gamesWonIncrement = isWinner ? 1 : 0;
         if (stats.isEmpty())
-        {
-            entityManager.persist(new PlayerStats(player, game, 1, gamesWonIncrement, score, score));
-        }
+            entityManager.persist(new PlayerStats(user, game, 1, gamesWonIncrement, score, score));
 
         else
         {
@@ -40,10 +48,11 @@ public class PlayerStatsServiceJPA implements PlayerStatsService
     }
 
     @Override
-    public PlayerStatResponse getPlayerStats(String game, String player)
+    public PlayerStatResponse getMyStats(String game)
     {
+        int userId = currentUserService.getCurrentUserId();
         List<PlayerStats> stats = entityManager.createNamedQuery("PlayerStats.getPlayerStats", PlayerStats.class)
-                .setParameter("game", game).setParameter("player", player).getResultList();
+                .setParameter("game", game).setParameter("userId", userId).getResultList();
 
         PlayerStats stat = stats.get(0);
         return new PlayerStatResponse(stat.getIdent(),

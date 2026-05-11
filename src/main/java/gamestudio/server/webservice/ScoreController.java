@@ -23,16 +23,10 @@ public class ScoreController
         return scoreService.getTopScores(game);
     }
 
-    @GetMapping("/{game}/players/{player}")
-    public int getTopScore(@PathVariable String game, @PathVariable String player)
+    @GetMapping("/{game}/me")
+    public int getMyTopScore(@PathVariable String game)
     {
-        return scoreService.getTopScore(game, player);
-    }
-
-    @PostMapping
-    public void addScore(@RequestBody Score score)
-    {
-        scoreService.addScore(score);
+        return scoreService.getMyTopScore(game);
     }
 
 }

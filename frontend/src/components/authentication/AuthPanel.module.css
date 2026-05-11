@@ -9,6 +9,7 @@
     width: min(100%, 480px);
     padding: 28px;
     border-radius: 24px;
+
     background:
             linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(15, 23, 42, 0.96)),
             #0b1220;
@@ -45,17 +46,19 @@
     line-height: 1.55;
 }
 
+
 .authTabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+
     margin-bottom: 18px;
     padding: 6px;
     border-radius: 18px;
+
     background-color: #020617;
     border: 1px solid #26344d;
 }
-
 
 .authTabButton {
     --bs-btn-color: #94a3b8;
@@ -86,37 +89,36 @@
     --bs-btn-hover-border-color: #5eead4;
 }
 
-.authErrorMessage {
-    margin-bottom: 14px;
-    padding: 10px 12px;
-    border-radius: 14px;
 
-    color: #fecaca;
-    background:
-            linear-gradient(135deg, rgba(248, 113, 113, 0.12), rgba(15, 23, 42, 0.96)),
-            #0f172a;
-    border: 1px solid rgba(248, 113, 113, 0.42);
 
-    font-size: 13px;
-    font-weight: 800;
-    line-height: 1.45;
-}
-
+.authErrorMessage,
 .authSuccessMessage {
     margin-bottom: 14px;
     padding: 10px 12px;
     border-radius: 14px;
 
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.authErrorMessage {
+    color: #fecaca;
+    background:
+            linear-gradient(135deg, rgba(248, 113, 113, 0.12), rgba(15, 23, 42, 0.96)),
+            #0f172a;
+    border: 1px solid rgba(248, 113, 113, 0.42);
+}
+
+.authSuccessMessage {
     color: #ccfbf1;
     background:
             linear-gradient(135deg, rgba(20, 184, 166, 0.14), rgba(15, 23, 42, 0.96)),
             #0f172a;
     border: 1px solid rgba(45, 212, 191, 0.45);
-
-    font-size: 13px;
-    font-weight: 800;
-    line-height: 1.45;
 }
+
+
 
 .authForm {
     display: grid;
@@ -138,9 +140,11 @@
     min-height: 44px;
     padding: 0 14px;
     border-radius: 14px;
+
     color: #f8fafc;
     background-color: #020617;
     border: 1px solid #26344d;
+
     font-size: 14px;
 }
 
@@ -171,6 +175,7 @@
     min-height: 44px;
     margin-top: 4px;
     border-radius: 14px;
+
     font-size: 14px;
     font-weight: 800;
 }
@@ -179,22 +184,28 @@
     box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.22);
 }
 
+
 .authFooterText {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
+
     margin: 18px 0 0;
+
     color: #94a3b8;
     font-size: 13px;
+    text-align: center;
 }
 
 .authInlineButton {
     appearance: none;
     padding: 0;
+    border: 0;
+
     color: #5eead4;
     background: transparent;
-    border: 0;
+
     font: inherit;
     font-weight: 800;
     cursor: pointer;
@@ -203,4 +214,48 @@
 .authInlineButton:hover {
     color: #99f6e4;
     text-decoration: underline;
+}
+
+
+@media (max-width: 560px) {
+    .authPanel {
+        padding: 0;
+    }
+
+    .authCard {
+        padding: 24px;
+        border-radius: 22px;
+    }
+
+    .authTitle {
+        font-size: 30px;
+    }
+
+    .authFooterText {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+@media (max-width: 400px) {
+    .authCard {
+        padding: 20px;
+    }
+
+    .authTitle {
+        font-size: 27px;
+    }
+
+    .authText {
+        font-size: 13px;
+    }
+
+    .authTabs {
+        gap: 6px;
+        padding: 5px;
+    }
+
+    .authTabButton {
+        font-size: 12px;
+    }
 }

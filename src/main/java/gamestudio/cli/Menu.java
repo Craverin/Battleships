@@ -40,7 +40,7 @@ public class Menu
 
     void showUserComments(String player)
     {
-        List<Comment> comments = commentService.getPlayerComments("battleships", player);
+        List<Comment> comments = commentService.getMyComments("battleships");
 
         if (comments.isEmpty())
         {
@@ -95,7 +95,7 @@ public class Menu
 
     void showRatingPage(String player)
     {
-        int userRating = ratingService.getRating("battleships", player);
+        int userRating = ratingService.getMyRating("battleships");
         float averageRating = ratingService.getAverageRating("battleships");
 
         System.out.println(ANSI_CYAN.unicode + "\n=== Rating ===" + ANSI_RESET.unicode);
@@ -112,7 +112,7 @@ public class Menu
 
     void showScoresPage(String player)
     {
-        int userScore = scoreService.getTopScore("battleships", player);
+        int userScore = scoreService.getMyTopScore("battleships");
         List<Score> scores = scoreService.getTopScores("battleships");
 
         System.out.println(ANSI_CYAN.unicode + "\n=== Scores ===" + ANSI_RESET.unicode);

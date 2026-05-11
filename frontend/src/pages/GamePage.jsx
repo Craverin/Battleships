@@ -9,10 +9,10 @@ import {CombatBoard} from "../components/board/CombatBoard.jsx";
 import {PlaceholderBoard} from "../components/board/PlaceholderBoard.jsx";
 import {GameOverPanel} from "../components/board/GameOverPanel.jsx";
 import {LeaderboardPanel} from "../components/community/LeaderboardPanel.jsx";
-import {getPlayerStats, getTopPlayers} from "../api/leaderboardApi.js";
+import {getMyStats, getTopPlayers} from "../api/leaderboardApi.js";
 import {ReviewsPanel} from "../components/community/ReviewsPanel.jsx";
-import {getComments, getPlayerComments, getRating, getRatingSummary} from "../api/reviewsApi.js";
-import {getCurrentUser} from "../api/authApi.js";
+import {getComments, getMyComments, getMyRating, getRatingSummary} from "../api/reviewsApi.js";
+import {getCurrentUser, logout} from "../api/authApi.js";
 import {AuthPanel} from "../components/authentication/AuthPanel.jsx";
 
 export const BOARD_SIZE = 10;
@@ -30,6 +30,7 @@ export const GamePage = ({
     const [isReady, setIsReady] = useState(false);
     const [opponentJoined, setOpponentJoined] = useState(!isHost);
     const [opponentReady, setOpponentReady] = useState(false);
+    const [opponentDisconnected, setOpponentDisconnected] = useState(false);
     const [friendButtonActive, setFriendButtonActive] = useState(true);
     const [joinCode, setJoinCode] = useState("");
 
@@ -66,6 +67,7 @@ export const GamePage = ({
         setGameId(id);
         setPlayerToken(token);
         setInviteCode(invCode);
+        setOpponentDisconnected(false);
     }
 
     const startNewGame = async () => {
@@ -76,6 +78,7 @@ export const GamePage = ({
         setIsReady(false);
         setOpponentJoined(false);
         setOpponentReady(false);
+        setOpponentDisconnected(false);
         setHostCells(undefined);
         setOpponentCells(undefined);
 
@@ -136,6 +139,7 @@ export const GamePage = ({
 
             console.log(data);
             setGamePhase(data.phase);
+            setScore(data.score);
             setHostCells(data.hostBoard);
             setOpponentCells(data.opponentBoard);
             setIsYourTurn(data.yourTurn);
@@ -149,6 +153,8 @@ export const GamePage = ({
             setIsWinner(data.isWinner);
             setScore(data.score);
         });
+
+        sseHandler.addEventListener("opponent-disconnected", () => setOpponentDisconnected(true));
 
         return () => sseHandler.close();
     },[gameId, playerToken]);
@@ -172,7 +178,7 @@ export const GamePage = ({
                     <div className={styles.menuHeader}>
                         <p className={styles.eyebrow}>Battleship</p>
                     </div>
-                    <div className="d-flex gap-2">
+                    <div className="d-flex gap-2 flex-wrap">
                         <button
                             type="button"
                             className={`
@@ -192,12 +198,15 @@ export const GamePage = ({
                                 ${activeTab === "Top" ? styles.menuTabButtonActive : ""}
                            `}
                             onClick={async () => {
-                                const leaderboard = await getTopPlayers({sortBy: "winRatio"});
-                                const playerStats = await getPlayerStats("ThatsIt")
+                                const leaderboard = await getTopPlayers({});
+                                if (user)
+                                {
+                                    const playerStats = await getMyStats();
+                                    console.log(playerStats);
+                                    setPlayerStats(playerStats);
+                                }
 
-                                console.log(playerStats);
                                 setLeaderboard(leaderboard);
-                                setPlayerStats(playerStats);
                                 setActiveTab("Top");
                             }}
                         >
@@ -211,14 +220,18 @@ export const GamePage = ({
                                 ${activeTab === "Reviews" ? styles.menuTabButtonActive : ""}
                            `}
                             onClick={async () => {
-                                const playerComments = await getPlayerComments("NavalAce_054");
+                                if (user)
+                                {
+                                    const playerComments = await getMyComments();
+                                    const playerRating = await getMyRating();
+                                    setPlayerComments(playerComments);
+                                    setPlayerRating(playerRating);
+                                }
+
                                 const comments = await getComments();
-                                const playerRating = await getRating("NavalAce_054");
                                 const ratingSummary = await getRatingSummary();
 
-                                setPlayerComments(playerComments);
                                 setComments(comments);
-                                setPlayerRating(playerRating);
                                 setRatingSummary(ratingSummary);
                                 setActiveTab("Reviews")
                             }}
@@ -230,23 +243,50 @@ export const GamePage = ({
                     <div className={styles.accountBlock}>
                         <p className={styles.blockLabel}>Account</p>
 
-                        <div className={styles.accountActions}>
-                            <button
-                                type="button"
-                                className={`btn ${styles.accountButton}`}
-                                onClick={() => setActiveTab("Login")}
-                            >
-                                Log in
-                            </button>
+                        {user ? (
+                            <div className={styles.accountUserCard}>
+                                <div className={styles.accountAvatar}>
+                                    {user.username.toUpperCase().charAt(0)}
+                                </div>
 
-                            <button
-                                type="button"
-                                className={`btn ${styles.accountButton} ${styles.accountButtonPrimary}`}
-                                onClick={() => setActiveTab("Register")}
-                            >
-                                Sign up
-                            </button>
-                        </div>
+                                <div className={styles.accountUserInfo}>
+                                    <span className={styles.accountUserLabel}>Signed in as</span>
+                                    <strong className={styles.accountUsername}>
+                                        {user.username}
+                                    </strong>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className={styles.accountLogoutButton}
+                                    onClick={async () => {
+                                        await logout();
+                                        setUser(undefined);
+                                        setActiveTab("Play");
+                                    }}
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <div className={styles.accountActions}>
+                                <button
+                                    type="button"
+                                    className={`btn ${styles.accountButton}`}
+                                    onClick={() => setActiveTab("Login")}
+                                >
+                                    Log in
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={`btn ${styles.accountButton} ${styles.accountButtonPrimary}`}
+                                    onClick={() => setActiveTab("Register")}
+                                >
+                                    Sign up
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className={styles.modeBlock}>
@@ -264,18 +304,18 @@ export const GamePage = ({
                                 <span className={styles.modeDescription}>Invite another player</span>
                             </button>
 
-                            <button
-                                type="button"
-                                disabled={!isHost || opponentJoined}
-                                onClick={() => setFriendButtonActive(!friendButtonActive)}
-                                className={`
-                                    ${styles.modeCard}
-                                    ${friendButtonActive ? "" : styles.modeCardActive}
-                                `}
-                            >
-                                <span className={styles.modeTitle}>Bot</span>
-                                <span className={styles.modeDescription}>Practice alone</span>
-                            </button>
+                            {/*<button*/}
+                            {/*    type="button"*/}
+                            {/*    disabled={!isHost || opponentJoined}*/}
+                            {/*    onClick={() => setFriendButtonActive(!friendButtonActive)}*/}
+                            {/*    className={`*/}
+                            {/*        ${styles.modeCard}*/}
+                            {/*        ${friendButtonActive ? "" : styles.modeCardActive}*/}
+                            {/*    `}*/}
+                            {/*>*/}
+                            {/*    <span className={styles.modeTitle}>Bot</span>*/}
+                            {/*    <span className={styles.modeDescription}>Practice alone</span>*/}
+                            {/*</button>*/}
                         </div>
                     </div>
 
@@ -355,9 +395,10 @@ export const GamePage = ({
                 <section
                     className={`
                         ${styles.boardCard}
-                        ${activeTab === 'Login' || activeTab === 'Register' ?  styles.boardCardAuth : ""}
-                        `}
-                    >
+                        ${activeTab === 'Login' || activeTab === 'Register' ? styles.boardCardAuth : ""}
+                        ${activeTab === 'Top' || activeTab === 'Reviews' ? "m-0" : ""}
+                    `}
+                >
                         {activeTab === 'Top' &&
                             <LeaderboardPanel leaderboard={leaderboard} playerStats={playerStats}/>
                         }
@@ -366,11 +407,13 @@ export const GamePage = ({
                             <div>
                                 <GameStatus opponentJoined={opponentJoined}
                                             opponentReady={opponentReady}
+                                            opponentDisconnected={opponentDisconnected}
                                             isReady={isReady}
                                             setIsReady={setIsReady}
                                             isYourTurn={isYourTurn}
                                             gameId={gameId}
                                             playerToken={playerToken}
+                                            score={score}
                                 />
 
                                 {(gamePhase === '' || gamePhase === "PLACEMENT") && (
@@ -397,10 +440,12 @@ export const GamePage = ({
 
                         {activeTab === 'Reviews' && (
                             <ReviewsPanel
-                                playerComments={playerComments}
-                                comments={comments}
-                                playerRating={playerRating}
+                                playerComments={playerComments ?? []}
+                                comments={comments ?? []}
+                                playerRating={playerRating ?? -1}
                                 ratingSummary={ratingSummary}
+                                isAuthorized={!!user}
+                                onLoginClick={() => setActiveTab("Login")}
                             />
                         )}
 

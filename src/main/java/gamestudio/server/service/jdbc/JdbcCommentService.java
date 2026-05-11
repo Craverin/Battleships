@@ -1,5 +1,6 @@
 package gamestudio.server.service.jdbc;
 
+import gamestudio.server.dto.AddCommentRequest;
 import gamestudio.server.entity.Comment;
 import gamestudio.server.service.CommentService;
 import gamestudio.server.service.exception.CommentException;
@@ -23,7 +24,7 @@ public class JdbcCommentService implements CommentService
         this.dataSource = dataSource;
     }
 
-    @Override
+
     public void addComment(Comment comment)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
@@ -41,6 +42,11 @@ public class JdbcCommentService implements CommentService
     }
 
     @Override
+    public void addComment(String game, AddCommentRequest comment) throws CommentException {
+
+    }
+
+    @Override
     public List<Comment> getComments(String game)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
@@ -54,7 +60,12 @@ public class JdbcCommentService implements CommentService
     }
 
     @Override
-    public List<Comment> getPlayerComments(String game, String player)
+    public List<Comment> getMyComments(String game) throws CommentException {
+        return List.of();
+    }
+
+
+    public List<Comment> getMyComments(String player, String game)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement statement = connection.prepareStatement(SELECT_PLAYER_COMMENTS))
@@ -70,22 +81,23 @@ public class JdbcCommentService implements CommentService
 
     private List<Comment> getComments(PreparedStatement statement)
     {
-        try (ResultSet rs = statement.executeQuery())
-        {
-            List<Comment> comments = new ArrayList<>();
-            while (rs.next())
-            {
-                comments.add(new Comment(
-                       rs.getString(1),
-                       rs.getString(2),
-                       rs.getString(3),
-                       rs.getTimestamp(4))
-                );
-            }
-
-            return comments;
-        }
-        catch (SQLException e) { throw new CommentException("Failed to select comments", e); }
+        return List.of();
+//        try (ResultSet rs = statement.executeQuery())
+//        {
+//            List<Comment> comments = new ArrayList<>();
+//            while (rs.next())
+//            {
+//                comments.add(new Comment(
+//                       rs.getString(1),
+//                       rs.getString(2),
+//                       rs.getString(3),
+//                       rs.getTimestamp(4))
+//                );
+//            }
+//
+//            return comments;
+//        }
+//        catch (SQLException e) { throw new CommentException("Failed to select comments", e); }
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.Date;
 @NamedQuery(name = "Score.getTopScores",
             query = "SELECT s FROM Score s WHERE s.game=:game ORDER BY s.points DESC")
 @NamedQuery(name = "Score.getTopScore",
-            query = "SELECT max(s.points) FROM Score s WHERE s.game=:game AND s.player=:player")
+            query = "SELECT max(s.points) FROM Score s WHERE s.game=:game AND s.user.ident=:userId")
 public class Score
 {
     @Id
@@ -28,10 +28,11 @@ public class Score
 
     public Score() {}
 
-    public Score(String player, String game, int points, Date playedOn)
+    public Score(User user, String game, int points, Date playedOn)
     {
+        this.user = user;
+        this.player = user.getUsername();
         this.game = game.trim();
-        this.player = player.trim();
 
         if (game.isEmpty() || player.isEmpty()) throw new ScoreException("Invalid game or player");
         if (points < 0) throw new ScoreException("Invalid score");
@@ -82,6 +83,7 @@ public class Score
                 ", playedOn=" + playedOn +
                 '}';
     }
+
 
     public int getIdent() { return ident; }
 

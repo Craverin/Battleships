@@ -45,9 +45,4 @@ public class SpringClient
         return new CommentServiceRestClient(restTemplate);
     }
 
-    @Bean
-    public PlayerStatsService playerStatsService()
-    {
-        return new PlayerStatsServiceJPA();
-    }
 }

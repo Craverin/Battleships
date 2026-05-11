@@ -17,10 +17,15 @@ public class RatingServiceRestClient implements RatingService
         this.url = "http://localhost:8080/api/rating";
     }
 
-    @Override
+
     public void setRating(Rating rating)
     {
         restTemplate.postForEntity(url, rating, Void.class);
+    }
+
+    @Override
+    public void setRating(String game, int rating) throws RatingException {
+
     }
 
     @Override
@@ -37,9 +42,9 @@ public class RatingServiceRestClient implements RatingService
     }
 
     @Override
-    public int getRating(String game, String player)
+    public int getMyRating(String game)
     {
-        Integer rating = restTemplate.getForObject(url + "/" + game + "/players/" + player, Integer.class);
+        Integer rating = restTemplate.getForObject(url + "/" + game, Integer.class);
 
         return rating == null ? -1 : rating;
     }

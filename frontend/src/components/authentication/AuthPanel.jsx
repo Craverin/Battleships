@@ -141,7 +141,13 @@ export const AuthPanel = ({signingUp: signUp = true, setUser, onAuthSuccess}) =>
                     </div>
                 )}
 
-                <form className={styles.authForm}>
+                <form
+                    className={styles.authForm}
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        handleSubmit();
+                    }}
+                >
                     <div className={styles.authField}>
                         <label className={styles.authLabel}>
                             Username
@@ -152,7 +158,10 @@ export const AuthPanel = ({signingUp: signUp = true, setUser, onAuthSuccess}) =>
                             value={username}
                             className={`form-control ${styles.authInput}`}
                             placeholder="Enter username"
-                            onChange={event => setUsername(event.target.value)}
+                            onChange={event => {
+                                setUsername(event.target.value);
+                                setError("");
+                            }}
                         />
                     </div>
 
@@ -199,7 +208,7 @@ export const AuthPanel = ({signingUp: signUp = true, setUser, onAuthSuccess}) =>
                     }
 
                     <button
-                        type="button"
+                        type="submit"
                         className={`btn ${styles.authSubmitButton}`}
                         disabled={!username.trim() || password.trim().length < 8 || (signingUp && repeatPassword.trim() !== password.trim())}
                         onClick={handleSubmit}

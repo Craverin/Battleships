@@ -7,17 +7,22 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 24px;
+    gap: 18px;
     margin-bottom: 18px;
 }
 
-.leaderboardEyebrow {
+.leaderboardEyebrow,
+.currentPlayerLabel {
     margin: 0 0 6px;
     color: #5eead4;
     font-size: 12px;
     font-weight: 800;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+}
+
+.currentPlayerLabel {
+    color: #99f6e4;
 }
 
 .leaderboardTitle {
@@ -33,21 +38,26 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     min-height: 30px;
     padding: 0 12px;
     border-radius: 999px;
+
     color: #ccfbf1;
     background-color: #0f3438;
     border: 1px solid #2dd4bf;
+
     font-size: 12px;
     font-weight: 800;
     white-space: nowrap;
 }
 
+
 .currentPlayerCard {
     margin-bottom: 18px;
     padding: 18px;
     border-radius: 22px;
+
     background:
             linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(15, 23, 42, 0.96)),
             #0f172a;
@@ -60,15 +70,6 @@
     justify-content: space-between;
     gap: 18px;
     margin-bottom: 16px;
-}
-
-.currentPlayerLabel {
-    margin: 0 0 6px;
-    color: #99f6e4;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
 }
 
 .currentPlayerName {
@@ -84,13 +85,16 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     min-width: 66px;
     min-height: 42px;
     padding: 0 14px;
     border-radius: 999px;
+
     color: #042f2e;
     background-color: #5eead4;
     border: 1px solid #99f6e4;
+
     font-size: 16px;
     font-weight: 900;
     white-space: nowrap;
@@ -147,10 +151,13 @@
     border-radius: 22px;
     background: #0b1220;
     border: 1px solid #1e293b;
+
+    overflow-x: auto;
 }
 
 .leaderboardTable {
     width: 100%;
+    min-width: 760px;
     margin: 0;
     border-collapse: separate;
     border-spacing: 0 8px;
@@ -205,6 +212,7 @@
             #0f172a;
 }
 
+
 .sortButton {
     appearance: none;
     padding: 0;
@@ -227,6 +235,7 @@
     color: #5eead4;
 }
 
+
 .rankCell {
     width: 52px;
     color: #f8fafc;
@@ -238,6 +247,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+
     min-width: 210px;
 }
 
@@ -245,11 +255,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     width: 34px;
     height: 34px;
+    flex: 0 0 auto;
     border-radius: 999px;
+
     color: #042f2e;
     background-color: #5eead4;
+
     font-size: 13px;
     font-weight: 900;
 }
@@ -260,10 +274,14 @@
     font-size: 14px;
     line-height: 1.1;
     font-weight: 800;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .numericCell {
-    text-align: right;
+    text-align: left;
     font-weight: 800;
     white-space: nowrap;
 }
@@ -300,18 +318,20 @@
     --bs-btn-active-bg: #0f3438;
     --bs-btn-active-border-color: #2dd4bf;
 
+    --bs-btn-disabled-color: #64748b;
+    --bs-btn-disabled-bg: #111827;
+    --bs-btn-disabled-border-color: #26344d;
+
     min-width: 38px;
     min-height: 34px;
     padding: 0 10px;
+
     border-radius: 12px;
     font-size: 12px;
     font-weight: 800;
 }
 
 .pageButton:disabled {
-    --bs-btn-disabled-color: #64748b;
-    --bs-btn-disabled-bg: #111827;
-    --bs-btn-disabled-border-color: #26344d;
     cursor: not-allowed;
 }
 
@@ -327,10 +347,14 @@
 
 @media (max-width: 980px) {
     .leaderboardHeader,
-    .tableHeader,
+    .currentPlayerTop,
     .paginationRow {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .currentRankBadge {
+        width: max-content;
     }
 
     .currentStatsGrid {
@@ -338,12 +362,43 @@
     }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
     .leaderboardTitle {
         font-size: 28px;
     }
 
+    .currentPlayerCard,
+    .tableCard {
+        padding: 16px;
+        border-radius: 20px;
+    }
+
+    .currentPlayerName {
+        font-size: 22px;
+    }
+
+    .paginationText {
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 460px) {
     .currentStatsGrid {
         grid-template-columns: 1fr;
+    }
+
+    .leaderboardPill {
+        width: max-content;
+    }
+
+    .currentPlayerCard,
+    .tableCard {
+        padding: 14px;
+    }
+
+    .pageButton {
+        min-width: 34px;
+        min-height: 32px;
+        padding: 0 8px;
     }
 }

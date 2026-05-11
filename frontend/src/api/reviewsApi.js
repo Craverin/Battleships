@@ -2,22 +2,23 @@ import {request} from "./httpClient.js";
 
 export const getComments = (game = "battleships") => request(`/comments/${game}`)
 
-export const getPlayerComments = (player, game = "battleships") => {
-    return request(`/comments/${game}/players/${player}`)
+export const getMyComments = (game = "battleships") => {
+    return request(`/comments/${game}/me`)
 }
 
-export const addComment = (player, game = "battleships", comment, commentedOn) => {
-    return request('/comments', {
+export const addComment =  (game = "battleships", comment) => {
+    return request(`/comments/${game}`, {
         method: 'POST',
-        body: {player, game, comment, commentedOn}
+        body: {comment}
     });
 }
 export const getRatingSummary = (game = "battleships") => request(`/rating/${game}/summary`)
 
-export const getRating = (player, game = "battleships") => request(`/rating/${game}/players/${player}`)
-export const setRating = (player, game = "battleships", rating, ratedOn) => {
-    return request('/rating', {
+export const getMyRating = (game = "battleships") => request(`/rating/${game}/me`)
+
+export const setRating = (game = "battleships", rating) => {
+    return request(`/rating/${game}`, {
         method: 'POST',
-        body: {player, game, rating, ratedOn}
+        body: rating
     });
 }

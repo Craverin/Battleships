@@ -1,9 +1,12 @@
 package gamestudio.server.webservice;
 
+import gamestudio.server.dto.AddCommentRequest;
 import gamestudio.server.entity.Comment;
 import gamestudio.server.service.CommentService;
+import gamestudio.server.service.authentication.CurrentUserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -11,7 +14,6 @@ import java.util.List;
 public class CommentController
 {
     private final CommentService commentService;
-
     public CommentController(CommentService commentService)
     {
         this.commentService = commentService;
@@ -23,15 +25,15 @@ public class CommentController
         return commentService.getComments(game);
     }
 
-    @GetMapping("/{game}/players/{player}")
-    public List<Comment> getPlayerComments(@PathVariable String game, @PathVariable String player)
+    @GetMapping("/{game}/me")
+    public List<Comment> getMyComments(@PathVariable String game)
     {
-        return commentService.getPlayerComments(game, player);
+        return commentService.getMyComments(game);
     }
 
-    @PostMapping
-    public void addComment(@RequestBody Comment comment)
+    @PostMapping("/{game}")
+    public void addComment(@PathVariable String game, @RequestBody AddCommentRequest comment)
     {
-        commentService.addComment(comment);
+        commentService.addComment(game, comment);
     }
 }

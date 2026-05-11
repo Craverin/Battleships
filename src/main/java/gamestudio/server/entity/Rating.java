@@ -19,7 +19,7 @@ import java.util.Date;
 @NamedQuery(name = "Rating.getRatingDistribution",
         query = "SELECT new gamestudio.server.dto.RatingDistribution(r.rating, COUNT(r)) FROM Rating r WHERE r.game=:game GROUP BY r.rating ORDER by r.rating DESC")
 @NamedQuery(name = "Rating.getRating",
-            query = "SELECT r.rating FROM Rating r WHERE r.game=:game AND r.player=:player")
+            query = "SELECT r FROM Rating r WHERE r.game=:game AND r.user.ident=:userId")
 @NamedQuery(name = "Rating.getRatingCount",
             query = "SELECT count(r.rating) FROM Rating r WHERE r.game=:game")
 public class Rating
@@ -39,16 +39,18 @@ public class Rating
 
     public Rating() {}
 
-    public Rating(String player, String game, int rating, Date ratedOn)
+    public Rating(User user, String game, int rating, Date ratedOn)
     {
-       this.player = player.trim();
-       this.game = game.trim();
-       if (player.isEmpty() || game.isEmpty()) throw new RatingException("Invalid player or game");
+        this.user = user;
+        this.player = user.getUsername();
 
-       this.rating = rating;
-       if (rating <= 0 || rating > 5) throw new RatingException("Invalid rating");
+        this.game = game.trim();
+        if (player.isEmpty() || game.isEmpty()) throw new RatingException("Invalid player or game");
 
-       this.ratedOn = ratedOn;
+        this.rating = rating;
+        if (rating <= 0 || rating > 5) throw new RatingException("Invalid rating");
+
+        this.ratedOn = ratedOn;
     }
 
 

@@ -1,5 +1,6 @@
-import styles from "./Board.module.css";
 import React, {useState} from "react";
+import boardStyles from "./Board.module.css";
+import styles from "./CombatBoard.module.css";
 import {BOARD_SIZE} from "../../pages/GamePage.jsx";
 import {shoot} from "../../api/gameApi.js";
 
@@ -39,13 +40,13 @@ export const CombatBoard = ({gameId, playerToken, cells, isHost = true}) => {
     const gridSize = BOARD_SIZE + 1;
 
     return (
-        <div className={`card border-0 shadow-lg ${styles.boardCard}`}>
+        <div className={`card border-0 shadow-lg ${boardStyles.boardCard}`}>
             <div className="card-body p-3 p-md-4">
-                <div className={styles.boardViewport}>
+                <div className={boardStyles.boardViewport}>
                     <div
-                        className={styles.board}
+                        className={boardStyles.board}
                     >
-                        <div className={styles.grid}>
+                        <div className={boardStyles.grid}>
                             {Array.from({ length: gridSize * gridSize }).map((_, index) => {
                                 const row = Math.floor(index / gridSize);
                                 const col = index % gridSize;
@@ -62,8 +63,8 @@ export const CombatBoard = ({gameId, playerToken, cells, isHost = true}) => {
                                         className={
                                             [
                                                 styles.combatCell,
-                                                isMarkup ? styles.markupCell : styles.playCell,
-                                                isCorner ? styles.cornerCell : ""
+                                                isMarkup ? boardStyles.markupCell : boardStyles.cell,
+                                                isCorner ? boardStyles.cornerCell : ""
                                             ]
                                                 .filter(Boolean)
                                                 .join(" ")

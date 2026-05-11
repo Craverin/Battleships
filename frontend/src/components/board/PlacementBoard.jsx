@@ -1,7 +1,13 @@
 import React, {useEffect, useState} from "react";
-import styles from "./Board.module.css";
+import boardStyles from "./Board.module.css";
+import styles from "./PlacementBoard.module.css";
 import {moveShip} from "../../api/gameApi.js";
 import {BOARD_SIZE} from "../../pages/GamePage.jsx";
+
+const CELL_SIZE = 34;
+const CELL_GAP = 4;
+const BOARD_PADDING = 12;
+const GRID_STEP = CELL_SIZE + CELL_GAP;
 
 export const getCellLabel = (row, col) => {
     if (row === 0 && col === 0) return "";
@@ -24,19 +30,14 @@ const getShipGridStyle = (ship) => {
 const getDroppedCellCoordinates = (event, boardElement) => {
     const board = boardElement.getBoundingClientRect();
 
-    const cellSize = 34;
-    const gap = 4;
-    const padding = 12;
-    const step = cellSize + gap;
-
     const offsetX = parseFloat(event.dataTransfer.getData("offsetX"));
     const offsetY = parseFloat(event.dataTransfer.getData("offsetY"));
 
-    const x = event.clientX - board.left - padding - offsetX;
-    const y = event.clientY - board.top - padding - offsetY;
+    const x = event.clientX - board.left - BOARD_PADDING - offsetX;
+    const y = event.clientY - board.top - BOARD_PADDING - offsetY;
 
-    const gridCol = Math.floor(x / step);
-    const gridRow = Math.floor(y / step);
+    const gridCol = Math.floor(x / GRID_STEP);
+    const gridRow = Math.floor(y / GRID_STEP);
 
     return {
         row: gridRow - 1,
@@ -50,26 +51,20 @@ const handleDragStart = (event, shipId) => {
     const dragOffsetX = Math.floor(event.clientX - ship.left);
     const dragOffsetY = Math.floor(event.clientY - ship.top);
 
-    const cellSize = 34;
-    const shipLengthX = ship.right - ship.left;
-    const shipLengthY = ship.bottom - ship.top;
-
-    const lengthX = Math.floor(shipLengthX / cellSize);
-    const lengthY = Math.floor(shipLengthY / cellSize);
-
     event.dataTransfer.setData("shipId", shipId);
     event.dataTransfer.setData("offsetX", dragOffsetX.toString());
     event.dataTransfer.setData("offsetY", dragOffsetY.toString());
-    event.dataTransfer.setData("lengthX", lengthX.toString());
-    event.dataTransfer.setData("lengthY", lengthY.toString());
 }
 
-const isValidCoordinates = (row, col, shipLengthX, shipLengthY) => {
-    if (row < 0 || row > 9 || col < 0 || col > 9) return false;
-    if ((row + shipLengthY - 1) > 9 || (col + shipLengthX - 1) > 9) return false;
+const isValidPlacement = (row, col, length, orientation) => {
+    if (row < 0 || row >= BOARD_SIZE || col < 0 || col >= BOARD_SIZE)
+        return false;
 
-    return true;
-}
+    const endRow = orientation === "VERTICAL" ? row + length - 1 : row;
+    const endCol = orientation === "HORIZONTAL" ? col + length - 1 : col;
+
+    return endRow < BOARD_SIZE && endCol < BOARD_SIZE;
+};
 
 const getOccupiedCoordinates = (row, col, length, orientation, includeAdjacent = false) => {
     let startRow, startCol, endRow, endCol;
@@ -109,9 +104,8 @@ const getOccupiedCoordinates = (row, col, length, orientation, includeAdjacent =
     return coords;
 }
 
-const canPlaceShip = (ships, shipId, row, col, lengthX, lengthY) => {
-    const orientation = lengthX === 0 ? "VERTICAL" : "HORIZONTAL";
-    const movingShipCoords = getOccupiedCoordinates(row, col, lengthX === 0 ? lengthY : lengthX, orientation);
+const canPlaceShip = (ships, shipId, row, col, length, orientation) => {
+    const movingShipCoords = getOccupiedCoordinates(row, col, length, orientation);
 
     return !ships.some(ship => {
         if (ship.shipId === shipId) return false;
@@ -125,36 +119,63 @@ const canPlaceShip = (ships, shipId, row, col, lengthX, lengthY) => {
     });
 }
 
-export const PlacementBoard = ({gameId, playerToken, ships: boardShips, isLocked = false}) => {
-    if (!boardShips) return;
-
+export const PlacementBoard = ({gameId, playerToken, ships: boardShips = [], isLocked = false}) => {
     const [ships, setShips] = useState(boardShips);
     const gridSize = BOARD_SIZE + 1;
+
+    const handleMoveShip = async (shipId, row, col, orientation) => {
+        if (!gameId) return;
+
+        const resp = await moveShip(gameId, shipId, playerToken, {row, col, orientation});
+        setShips(resp.ships);
+    }
 
     const handleBoardDrop = (event) => {
         event.preventDefault();
 
         const shipId = event.dataTransfer.getData("shipId");
-        const lengthX = parseInt(event.dataTransfer.getData("lengthX"));
-        const lengthY = parseInt(event.dataTransfer.getData("lengthY"));
+        const ship = ships.find(ship => String(ship.shipId) === String(shipId));
 
-        console.log(`length: ${lengthX}, ${lengthY}`);
+        if (!ship) return;
+
         const {row, col} = getDroppedCellCoordinates(event, event.currentTarget);
         console.log(`(row, col) = (${row}, ${col})`);
 
-        if (!isValidCoordinates(row, col, lengthX, lengthY) || !canPlaceShip(ships, shipId, row, col, lengthX, lengthY))
+        if (isValidPlacement(row, col, ship.length, ship.orientation) && canPlaceShip(ships, shipId, row, col, ship.length, ship.orientation))
+            handleMoveShip(shipId, row, col, ship.orientation);
+    }
+
+    const handleRotation = (event, ship) => {
+        const shipRect = event.currentTarget.getBoundingClientRect();
+
+        const offset = ship.orientation === "HORIZONTAL"
+                               ? event.clientX - shipRect.left
+                               : event.clientY - shipRect.top;
+
+        const index = Math.floor(offset / GRID_STEP);
+
+        const newOrientation = ship.orientation === "HORIZONTAL" ? "VERTICAL" : "HORIZONTAL";
+
+        let newRow;
+        let newCol;
+
+        if (ship.orientation === "HORIZONTAL")
         {
-            // maybe add some animation
+            newRow = ship.row - index;
+            newCol = ship.col + index;
         }
 
         else
         {
-            const handleMoveShip = async () => {
-                if (!gameId) return;
-                const resp = await moveShip(gameId, shipId, playerToken, {row, col});
-                setShips(resp.ships);
-            }
-            handleMoveShip();
+            newRow = ship.row + index;
+            newCol = ship.col - index;
+        }
+
+        console.log(`${newRow} ${newCol}`);
+        if (isValidPlacement(newRow, newCol, ship.length, newOrientation)
+            && canPlaceShip(ships, ship.shipId, newRow, newCol, ship.length, newOrientation))
+        {
+            handleMoveShip(ship.shipId, newRow, newCol, newOrientation);
         }
     }
 
@@ -164,15 +185,15 @@ export const PlacementBoard = ({gameId, playerToken, ships: boardShips, isLocked
     }, [boardShips]);
 
     return (
-        <div className={`card border-0 shadow-lg ${styles.boardCard}`}>
+        <div className={`card border-0 shadow-lg ${boardStyles.boardCard}`}>
             <div className="card-body p-3 p-md-4">
-                <div className={styles.boardViewport}>
+                <div className={boardStyles.boardViewport}>
                     <div
-                        className={styles.board}
+                        className={boardStyles.board}
                         onDragOver={event => event.preventDefault()}
                         onDrop={event => handleBoardDrop(event)}
                     >
-                        <div className={styles.grid}>
+                        <div className={boardStyles.grid}>
                             {Array.from({ length: gridSize * gridSize }).map((_, index) => {
                                 const row = Math.floor(index / gridSize);
                                 const col = index % gridSize;
@@ -184,9 +205,9 @@ export const PlacementBoard = ({gameId, playerToken, ships: boardShips, isLocked
                                         key={`${row}-${col}`}
                                         className={
                                         [
-                                            styles.cell,
-                                            isMarkup ? styles.markupCell : styles.playCell,
-                                            isCorner ? styles.cornerCell : ""
+                                            boardStyles.cell,
+                                            isMarkup ? boardStyles.markupCell : styles.playCell,
+                                            isCorner ? boardStyles.cornerCell : ""
                                         ]
                                             .filter(Boolean)
                                             .join(" ")}
@@ -208,7 +229,10 @@ export const PlacementBoard = ({gameId, playerToken, ships: boardShips, isLocked
                                         style={getShipGridStyle(ship)}
                                         disabled={isLocked}
                                         draggable={!isLocked}
-                                        onDragStart={event => handleDragStart(event, ship.shipId) }
+                                        onDragStart={event => handleDragStart(event, ship.shipId)}
+                                        onClick={event => {
+                                            handleRotation(event, ship);
+                                        }}
                                     >
                                         {Array.from({length: ship.length}).map((_, index) => (
                                             <span

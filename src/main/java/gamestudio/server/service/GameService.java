@@ -2,7 +2,13 @@ package gamestudio.server.service;
 
 import gamestudio.server.domain.*;
 import gamestudio.server.dto.*;
+import gamestudio.server.dto.authentication.AuthUser;
+import gamestudio.server.service.authentication.CurrentUserService;
+import gamestudio.server.service.jpa.PlayerStatsServiceJPA;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,6 +21,9 @@ public class GameService
 {
     private final Map<String, UUID> inviteCodes;
     private final Map<UUID, Game> games;
+    private final CurrentUserService currentUserService;
+    private final PlayerStatsService playerStatsService;
+    private final ScoreService scoreService;
 
     private static final Map<CellState, CellStateView> opponentCellStateMap = new HashMap<>()
     {
@@ -29,10 +38,14 @@ public class GameService
         }
     };
 
-    public GameService()
+
+    public GameService(CurrentUserService currentUserService, PlayerStatsService playerStatsService, ScoreService scoreService)
     {
         this.games = new ConcurrentHashMap<>();
         this.inviteCodes = new ConcurrentHashMap<>();
+        this.currentUserService = currentUserService;
+        this.playerStatsService = playerStatsService;
+        this.scoreService = scoreService;
     }
 
     public CreateGameResponse createGame()
@@ -43,6 +56,8 @@ public class GameService
 
         games.put(gameId, game);
         inviteCodes.put(inviteCode, gameId);
+
+        currentUserService.getCurrentAuthUserOptional().ifPresent(game::setHostUser);
 
         return new CreateGameResponse(gameId, game.getHostToken(), inviteCode);
     }
@@ -60,7 +75,12 @@ public class GameService
 
     public UUID joinGame(UUID gameId)
     {
-        return games.get(gameId).addPlayer();
+        Game game = games.get(gameId);
+        UUID opponentToken = game.addPlayer();
+
+        currentUserService.getCurrentAuthUserOptional().ifPresent(game::setOpponentUser);
+
+        return opponentToken;
     }
 
     public UUID joinGame(UUID gameId, CellState[][] cells, List<Ship> ships)
@@ -137,7 +157,10 @@ public class GameService
         game.updateScore(shotResult, playerToken, Game.BASE_SCORE_PER_HIT);
 
         if (hostBoard.getShips().isEmpty() || opponentBoard.getShips().isEmpty())
+        {
             game.markGameAsFinished();
+            recordGameStats(game);
+        }
 
         return new CombatViewResponse(game.getPhase(),
                                       shotResult,
@@ -197,4 +220,30 @@ public class GameService
         inviteCodes.values().remove(gameId);
         games.remove(gameId);
     }
+
+    private void recordGameStats(Game game)
+    {
+        if (game.isStatsRecorded()) return;
+
+        recordStatsForPlayer(game, game.getHostToken());
+        recordStatsForPlayer(game, game.getOpponentToken());
+
+        game.markStatsRecorded();
+    }
+
+    private void recordStatsForPlayer(Game game, UUID playerToken)
+    {
+        AuthUser authUser = game.getUserByToken(playerToken);
+        if (authUser == null) return;
+
+
+        playerStatsService.recordGameResult("battleships",
+                                                  authUser.id(),
+                                                  authUser.username(),
+                                                  game.getScore(playerToken),
+                                                  playerToken.equals(game.getWinner()));
+
+        scoreService.addScore("battleships", authUser.id(), authUser.username(), game.getScore(playerToken));
+    }
+
 }

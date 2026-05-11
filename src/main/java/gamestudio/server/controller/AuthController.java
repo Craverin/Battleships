@@ -2,7 +2,7 @@ package gamestudio.server.controller;
 
 import gamestudio.server.dto.authentication.AuthRequest;
 import gamestudio.server.dto.authentication.UserResponse;
-import gamestudio.server.service.AuthService;
+import gamestudio.server.service.authentication.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 

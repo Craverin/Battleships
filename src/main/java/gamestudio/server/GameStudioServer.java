@@ -8,10 +8,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EntityScan("gamestudio.server.entity")
+@EnableScheduling
 public class GameStudioServer
 {
     public static void main(String[] args)
@@ -19,27 +21,4 @@ public class GameStudioServer
         SpringApplication.run(GameStudioServer.class, args);
     }
 
-    @Bean
-    public ScoreService scoreService()
-    {
-        return new ScoreServiceJPA();
-    }
-
-    @Bean
-    public RatingService ratingService()
-    {
-        return new RatingServiceJPA();
-    }
-
-    @Bean
-    public CommentService commentService()
-    {
-        return new CommentServiceJPA();
-    }
-
-    @Bean
-    public RestTemplate restTemplate()
-    {
-        return new RestTemplate();
-    }
 }

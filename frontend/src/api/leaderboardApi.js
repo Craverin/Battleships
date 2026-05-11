@@ -1,8 +1,7 @@
 import {request} from "./httpClient.js";
 
-export const getPlayerStats = (player, game = "battleships") => {
-    if (!player) return;
-    return request(`/stats/${player}/${game}`);
+export const getMyStats = (game = "battleships") => {
+    return request(`/stats/${game}/me`);
 }
 
 export const getTopPlayers = ({game = "battleships", sortBy = "bestScore", sortType = "DESC"}) => {

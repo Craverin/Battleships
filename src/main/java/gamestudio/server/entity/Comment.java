@@ -10,7 +10,7 @@ import java.util.Date;
 @NamedQuery(name = "Comment.getComments",
             query = "SELECT c FROM Comment c WHERE c.game=:game ORDER BY c.commentedOn DESC")
 @NamedQuery(name = "Comment.getPlayerComments",
-            query = "SELECT c FROM Comment c WHERE c.game=:game AND c.player=:player ORDER BY c.commentedOn DESC")
+            query = "SELECT c FROM Comment c WHERE c.game=:game AND c.user.ident=:userId ORDER BY c.commentedOn DESC")
 public class Comment implements Serializable
 {
     @Id
@@ -29,9 +29,10 @@ public class Comment implements Serializable
 
     public Comment() {}
 
-    public Comment(String player, String game, String comment, Date commentedOn)
+    public Comment(User user, String game, String comment, Date commentedOn)
     {
-        this.player = player.trim();
+        this.user = user;
+        this.player = user.getUsername();
         this.game = game.trim();
         this.comment = comment.trim();
         if (player.isEmpty() || game.isEmpty() || comment.isEmpty()) throw new CommentException("Invalid comment");

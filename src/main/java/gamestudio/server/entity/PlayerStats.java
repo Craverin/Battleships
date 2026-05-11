@@ -13,7 +13,7 @@ import java.io.Serializable;
    }
 )
 @NamedQuery(name = "PlayerStats.getPlayerStats",
-            query = "SELECT s FROM PlayerStats s WHERE s.game=:game AND s.player=:player")
+            query = "SELECT s FROM PlayerStats s WHERE s.game=:game AND s.user.ident=:userId")
 @NamedQuery(name = "PlayerStats.getRank",
         query = "SELECT COUNT(s) FROM PlayerStats s WHERE s.game=:game AND (s.bestScore > :bestScore OR (s.bestScore = :bestScore AND s.totalScore > :totalScore))")
 public class PlayerStats implements Serializable
@@ -44,10 +44,11 @@ public class PlayerStats implements Serializable
 
     public PlayerStats() {}
 
-    public PlayerStats(String player, String game, int gamesPlayed,
+    public PlayerStats(User user, String game, int gamesPlayed,
                        int gamesWon, int totalScore, int bestScore)
     {
-        this.player = player.trim();
+        this.user = user;
+        this.player = user.getUsername();
         this.game = game.trim();
         this.gamesPlayed = gamesPlayed;
         this.gamesWon = gamesWon;

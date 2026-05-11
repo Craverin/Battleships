@@ -4,38 +4,50 @@ import gamestudio.server.dto.RatingDistribution;
 import gamestudio.server.dto.RatingDistributionResponse;
 import gamestudio.server.dto.RatingSummaryResponse;
 import gamestudio.server.entity.Rating;
+import gamestudio.server.entity.User;
 import gamestudio.server.service.RatingService;
+import gamestudio.server.service.authentication.CurrentUserService;
 import gamestudio.server.service.exception.RatingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Transactional
+@Service
 public class RatingServiceJPA implements RatingService
 {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
-    public void setRating(Rating rating) throws RatingException
-    {
-        List<Rating> ratings = entityManager.createQuery(
-                "SELECT r FROM Rating r WHERE r.game=:game AND r.player=:player",
-                    Rating.class
-        )
-        .setParameter("game", rating.getGame())
-        .setParameter("player", rating.getPlayer())
-        .getResultList();
+    private final CurrentUserService currentUserService;
 
-        if (ratings.isEmpty()) entityManager.persist(rating);
+    public RatingServiceJPA(CurrentUserService currentUserService)
+    {
+        this.currentUserService = currentUserService;
+    }
+
+    @Override
+    public void setRating(String game, int rating) throws RatingException
+    {
+        int userId = currentUserService.getCurrentUserId();
+        User user = entityManager.getReference(User.class, userId);
+
+        List<Rating> ratings = entityManager.createNamedQuery("Rating.getRating", Rating.class)
+                .setParameter("game", game).setParameter("userId", userId).getResultList();
+
+        if (ratings.isEmpty())
+            entityManager.persist(new Rating(user, game, rating, new Date()));
+
         else
         {
             Rating existingRating = ratings.get(0);
-            existingRating.setRating(rating.getRating());
-            existingRating.setRatedOn(rating.getRatedOn());
+            existingRating.setRating(rating);
+            existingRating.setRatedOn(new Date());
         }
     }
 
@@ -72,12 +84,13 @@ public class RatingServiceJPA implements RatingService
     }
 
     @Override
-    public int getRating(String game, String player) throws RatingException
+    public int getMyRating(String game) throws RatingException
     {
-        List<Integer> rating = entityManager.createNamedQuery("Rating.getRating", Integer.class)
-                    .setParameter("game", game).setParameter("player", player).getResultList();
+        int userId = currentUserService.getCurrentUserId();
+        List<Rating> rating = entityManager.createNamedQuery("Rating.getRating", Rating.class)
+                    .setParameter("game", game).setParameter("userId", userId).getResultList();
 
-        return rating.isEmpty() ? -1 : rating.get(0);
+        return rating.isEmpty() ? -1 : rating.get(0).getRating();
     }
 
     @Override

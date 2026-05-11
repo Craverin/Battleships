@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface ScoreService
 {
-    void addScore(Score score) throws ScoreException;
+    void addScore(String game, int userId, String username, int score) throws ScoreException;
     List<Score> getTopScores(String game) throws ScoreException;
-    int getTopScore(String game, String player) throws ScoreException;
+    int getMyTopScore(String game) throws ScoreException;
     void reset() throws ScoreException;
 }

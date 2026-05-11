@@ -24,10 +24,22 @@ public class SecurityConfig
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/logout").authenticated()
                         .requestMatchers(HttpMethod.GET, "/auth/me").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/logout").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/rating/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/stats/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/rating/**").authenticated()
+
+                        .requestMatchers("/games/**").permitAll()
+                        .requestMatchers("/events/**").permitAll()
+
                         .requestMatchers("/error").permitAll()
-                        .anyRequest().permitAll()
+
+                        .anyRequest().denyAll()
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .build();

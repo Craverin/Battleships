@@ -1,10 +1,9 @@
-package gamestudio.server.service;
+package gamestudio.server.service.authentication;
 
 import gamestudio.server.dto.authentication.AuthRequest;
 import gamestudio.server.dto.authentication.AuthUser;
 import gamestudio.server.dto.authentication.UserResponse;
 import gamestudio.server.entity.User;
-import gamestudio.server.service.jpa.UserServiceJPA;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;

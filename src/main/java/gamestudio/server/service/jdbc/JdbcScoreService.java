@@ -23,7 +23,6 @@ public class JdbcScoreService implements ScoreService
         this.dataSource = dataSource;
     }
 
-    @Override
     public void addScore(Score score)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
@@ -39,31 +38,43 @@ public class JdbcScoreService implements ScoreService
         finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
+
+    @Override
+    public void addScore(String game, int userId, String username, int score) throws ScoreException {
+
+    }
+
     @Override
     public List<Score> getTopScores(String game)
     {
-        Connection connection = DataSourceUtils.getConnection(dataSource);
-        try (PreparedStatement statement = connection.prepareStatement(SELECT_TOP10_SCORES))
-        {
-            statement.setString(1, game);
-            try (ResultSet rs = statement.executeQuery())
-            {
-                List<Score> scores = new ArrayList<>();
-                while (rs.next())
-                {
-                    scores.add(new Score(rs.getString(1),
-                               rs.getString(2),
-                               rs.getInt(3),
-                               rs.getTimestamp(4)));
-                }
-                return scores;
-            }
-        }
-        catch (SQLException e) { throw new ScoreException("Failed to select score", e); }
-        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
+        return List.of();
+//        Connection connection = DataSourceUtils.getConnection(dataSource);
+//        try (PreparedStatement statement = connection.prepareStatement(SELECT_TOP10_SCORES))
+//        {
+//            statement.setString(1, game);
+//            try (ResultSet rs = statement.executeQuery())
+//            {
+//                List<Score> scores = new ArrayList<>();
+//                while (rs.next())
+//                {
+//                    scores.add(new Score(rs.getString(1),
+//                               rs.getString(2),
+//                               rs.getInt(3),
+//                               rs.getTimestamp(4)));
+//                }
+//                return scores;
+//            }
+//        }
+//        catch (SQLException e) { throw new ScoreException("Failed to select score", e); }
+//        finally { DataSourceUtils.releaseConnection(connection, dataSource); }
     }
 
-    public int getTopScore(String game, String player)
+    @Override
+    public int getMyTopScore(String game) throws ScoreException {
+        return 0;
+    }
+
+    public int getMyTopScore(String game, String player)
     {
         Connection connection = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement statement = connection.prepareStatement(SELECT_TOP_SCORE))

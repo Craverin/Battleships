@@ -1,4 +1,4 @@
-package gamestudio.server.service.jpa;
+package gamestudio.server.service.authentication;
 
 import gamestudio.server.entity.User;
 import jakarta.persistence.EntityManager;

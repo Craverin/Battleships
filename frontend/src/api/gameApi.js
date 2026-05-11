@@ -1,5 +1,4 @@
 import {request} from "./httpClient.js";
-// Add API BASE /games, maybe change it
 
 export const createGame = () => {
     return request("/games", {method: "POST"});

@@ -1,5 +1,6 @@
 package gamestudio.server.service.rest;
 
+import gamestudio.server.dto.AddCommentRequest;
 import gamestudio.server.entity.Comment;
 import gamestudio.server.service.CommentService;
 import gamestudio.server.service.exception.CommentException;
@@ -20,9 +21,7 @@ public class CommentServiceRestClient implements CommentService
     }
 
     @Override
-    public void addComment(Comment comment)
-    {
-        restTemplate.postForEntity(url, comment, Void.class);
+    public void addComment(String game, AddCommentRequest comment) throws CommentException {
     }
 
     @Override
@@ -34,9 +33,9 @@ public class CommentServiceRestClient implements CommentService
     }
 
     @Override
-    public List<Comment> getPlayerComments(String game, String player)
+    public List<Comment> getMyComments(String game)
     {
-        Comment[] comments = restTemplate.getForObject(url + "/" + game + "/players/" + player, Comment[].class);
+        Comment[] comments = restTemplate.getForObject(url + "/" + game, Comment[].class);
 
         return comments == null ? List.of() : Arrays.asList(comments);
     }

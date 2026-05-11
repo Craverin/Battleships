@@ -1,15 +1,28 @@
 import React, {useEffect, useRef, useState} from "react";
 import styles from "./ReviewsPanel.module.css";
-import {addComment, getComments, getPlayerComments, getRatingSummary, setRating} from "../../api/reviewsApi.js";
+import {addComment, getComments, getMyComments, getRatingSummary, setRating} from "../../api/reviewsApi.js";
 
-export const ReviewsPanel = ({playerComments: userComments, comments: allComments, playerRating: rating, ratingSummary: ratingSum}) => {
-    if (!userComments || !allComments || !ratingSum || !rating) return;
-
+export const ReviewsPanel = ({playerComments: userComments = [],
+                              comments: allComments = [],
+                              playerRating: rating = -1,
+                              ratingSummary: ratingSum,
+                              isAuthorized = false,
+                              onLoginClick}) => {
     const pageSize = 10;
-    const totalComments = allComments.length;
-    const totalPages = Math.ceil(totalComments/ pageSize);
     const visiblePageCount = 5;
-    const pagesAroundCurrent = (visiblePageCount - 1) / 2;
+
+    const emptyRatingSummary =
+    {
+        averageRating: -1,
+        totalRatings: 0,
+        ratingDistribution: [
+            { rating: 5, count: 0, percent: 0 },
+            { rating: 4, count: 0, percent: 0 },
+            { rating: 3, count: 0, percent: 0 },
+            { rating: 2, count: 0, percent: 0 },
+            { rating: 1, count: 0, percent: 0 },
+        ],
+    };
 
     const [page, setPage] = useState(1);
 
@@ -17,14 +30,25 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
     const [playerComments, setPlayerComments] = useState(userComments);
     const [playerComment, setPlayerComment] = useState("");
     const [playerRating, setPlayerRating] = useState(rating);
-    const [ratingSummary, setRatingSummary] = useState(ratingSum);
+    const [ratingSummary, setRatingSummary] = useState(ratingSum ?? emptyRatingSummary);
+
+    const playerCommentIds = new Set(playerComments.map(comment => comment.ident));
+
+    const orderedComments = [
+        ...playerComments,
+        ...comments.filter(comment => !playerCommentIds.has(comment.ident)),
+    ];
+
+    const totalComments = orderedComments.length;
+    const totalPages = Math.max(1, Math.ceil(totalComments / pageSize));
+
+    const actualVisiblePageCount = Math.min(visiblePageCount, totalPages);
+    const pagesAroundCurrent = (actualVisiblePageCount - 1) / 2;
 
     const startIndex = (page - 1) * pageSize;
-    let endIndex = startIndex + pageSize;
+    const endIndex = Math.min(startIndex + pageSize, totalComments);
 
-    const visiblePlayerComments = playerComments.slice(startIndex, endIndex);
-    endIndex = (endIndex - visiblePlayerComments.length) <= 0 ? 0 : endIndex - visiblePlayerComments.length;
-    const visibleComments = comments.slice(startIndex, endIndex);
+    const visibleComments = orderedComments.slice(startIndex, endIndex);
 
     const starsActive = playerRating === -1 ? 0 : playerRating;
     const [starButtonsActive, setStarButtonsActive] = useState({starsActive})
@@ -62,7 +86,10 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
 
     const showPlayerComment = (comment, isPlayerComment = false) => {
         return (
-            <section className={`${styles.reviewCard} ${isPlayerComment ? styles.reviewCardOwn : ""}`}>
+            <section
+                key={comment.ident}
+                className={`${styles.reviewCard} ${isPlayerComment ? styles.reviewCardOwn : ""}`}
+            >
                 <div className={styles.reviewTop}>
                     <div className={styles.reviewerInfo}>
                        <span className={styles.reviewerAvatar}>
@@ -89,12 +116,13 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
     }
 
     const addNewComment = async (comment) => {
-        await addComment("NavalAce_054", "battleships", comment, new Date());
-        const newPlayerComments = await getPlayerComments('NavalAce_054');
-        const newComments = await getComments();
+        if (!isAuthorized) return;
 
-        setPlayerComments(newPlayerComments);
-        setComments(newComments);
+        await addComment("battleships", comment);
+
+        setPlayerComment("");
+        setPlayerComments(await getMyComments());
+        setComments(await getComments());
     }
 
     const commentsTopRef = useRef(null);
@@ -135,6 +163,19 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                             <p className={styles.cardLabel}>Your review</p>
                             <h2 className={styles.cardTitle}>Leave feedback</h2>
                         </div>
+                        {!isAuthorized && (
+                            <div className={styles.authNotice}>
+                                <span>Log in to rate the game and leave comments.</span>
+
+                                <button
+                                    type="button"
+                                    className={styles.authNoticeButton}
+                                    onClick={onLoginClick}
+                                >
+                                    Log in
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className={styles.ratingPicker}>
@@ -144,6 +185,7 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                                 <button
                                     key={starCount}
                                     type="button"
+                                    disabled={!isAuthorized}
                                     className={`
                                         ${styles.starButton}
                                         ${starButtonsActive.starsActive >= starCount ? styles.starButtonActive : ""}
@@ -151,8 +193,11 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                                     onMouseEnter={() => setStarButtonsActive({starsActive: starCount})}
                                     onMouseLeave={() => setStarButtonsActive({starsActive})}
                                     onClick = {async () => {
-                                        await setRating('NavalAce_054', 'battleships', starCount, new Date());
-                                        setPlayerRating(starCount);
+                                        if (isAuthorized)
+                                        {
+                                            await setRating('battleships', starCount);
+                                            setPlayerRating(starCount);
+                                        }
                                     }}
                                 >
                                     ★
@@ -182,7 +227,12 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                         value={playerComment}
                         onChange={(event) => setPlayerComment(event.target.value)}
                         className={`form-control ${styles.reviewTextarea}`}
-                        placeholder="Share your thoughts about the game..."
+                        placeholder=
+                            {
+                                isAuthorized
+                                ? "Share your thoughts about the game..."
+                                : "Log in to leave a comment"
+                            }
                         rows={5}
                     />
 
@@ -190,7 +240,7 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                         <button
                             type="button"
                             className={`btn ${styles.submitCommentButton}`}
-                            disabled={playerComment?.trim().length === 0}
+                            disabled={!isAuthorized || playerComment?.trim().length === 0}
                             onClick={() => addNewComment(playerComment)}
                         >
                             Submit comment
@@ -202,7 +252,7 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                     <p className={styles.cardLabel}>Average rating</p>
 
                     <div className={styles.averageRating}>
-                        <strong className={styles.averageValue}>{ratingSummary.averageRating}</strong>
+                        <strong className={styles.averageValue}>{ratingSummary.averageRating === -1 ? 0 : ratingSummary.averageRating}</strong>
                         <span className={styles.averageMax}>/ 5</span>
                     </div>
 
@@ -211,7 +261,11 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                     </div>
 
                     <p className={styles.summaryText}>
-                        {`Based on ${ratingSummary.totalRatings} player reviews.`}
+                        {
+                            ratingSummary.averageRating === -1
+                            ? 'Be first to rate the game!'
+                            : `Based on ${ratingSummary.totalRatings} player reviews.`
+                        }
                     </p>
 
                     <div className={styles.ratingBreakdown}>
@@ -256,8 +310,7 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                 </div>
 
                 <div className={styles.reviewsList}>
-                    {visiblePlayerComments && visiblePlayerComments.map(comment => showPlayerComment(comment, true))}
-                    {visibleComments && visibleComments.map(comment => showPlayerComment(comment))}
+                    {visibleComments.map(comment => showPlayerComment(comment, playerCommentIds.has(comment.ident)))}
                 </div>
 
                 <div className={styles.commentsPaginationRow}>
@@ -286,7 +339,7 @@ export const ReviewsPanel = ({playerComments: userComments, comments: allComment
                             {'<'}
                         </button>
 
-                        {Array.from({length: 5}).map((_, index) => {
+                        {Array.from({length: actualVisiblePageCount}).map((_, index) => {
                             const pageNum = getPageNum(index);
                             return (
                                 <button
