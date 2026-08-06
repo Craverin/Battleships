@@ -1,7 +1,5 @@
 package gamestudio.server.entity;
 
-import gamestudio.server.dto.RatingDistribution;
-import gamestudio.server.service.exception.RatingException;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -45,10 +43,10 @@ public class Rating
         this.player = user.getUsername();
 
         this.game = game.trim();
-        if (player.isEmpty() || game.isEmpty()) throw new RatingException("Invalid player or game");
+        if (player.isEmpty() || game.isEmpty()) throw new IllegalStateException("Invalid player or game");
 
         this.rating = rating;
-        if (rating <= 0 || rating > 5) throw new RatingException("Invalid rating");
+        if (rating <= 0 || rating > 5) throw new IllegalStateException("Invalid rating");
 
         this.ratedOn = ratedOn;
     }

@@ -2,13 +2,9 @@ package gamestudio.server.service;
 
 import gamestudio.server.domain.*;
 import gamestudio.server.dto.*;
-import gamestudio.server.dto.authentication.AuthUser;
+import gamestudio.server.security.principal.ApplicationPrincipal;
 import gamestudio.server.service.authentication.CurrentUserService;
-import gamestudio.server.service.jpa.PlayerStatsServiceJPA;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -52,6 +48,17 @@ public class GameService
     {
         Game game = new Game();
         UUID gameId = game.createGame();
+
+        games.put(gameId, game);
+        currentUserService.getCurrentAuthUserOptional().ifPresent(game::setHostUser);
+
+        return new CreateGameResponse(gameId, game.getHostToken());
+    }
+
+    public CreatePrivateGameResponse createPrivateGame()
+    {
+        Game game = new Game();
+        UUID gameId = game.createGame();
         String inviteCode = generateInviteCode();
 
         games.put(gameId, game);
@@ -59,10 +66,11 @@ public class GameService
 
         currentUserService.getCurrentAuthUserOptional().ifPresent(game::setHostUser);
 
-        return new CreateGameResponse(gameId, game.getHostToken(), inviteCode);
+        return new CreatePrivateGameResponse(gameId, game.getHostToken(), inviteCode);
     }
 
-    public CreateGameResponse createGame(CellState[][] cells, List<Ship> ships)
+
+    public CreatePrivateGameResponse createPrivateGame(CellState[][] cells, List<Ship> ships)
     {
         Game game = new Game();
         UUID gameId = game.createGame(cells, ships);
@@ -70,12 +78,15 @@ public class GameService
 
         games.put(gameId, game);
         inviteCodes.put(inviteCode, gameId);
-        return new CreateGameResponse(gameId, game.getHostToken(), inviteCode);
+        return new CreatePrivateGameResponse(gameId, game.getHostToken(), inviteCode);
     }
 
     public UUID joinGame(UUID gameId)
     {
+        // todo атомарность
         Game game = games.get(gameId);
+        if (game.getOpponentToken() != null) return null;
+
         UUID opponentToken = game.addPlayer();
 
         currentUserService.getCurrentAuthUserOptional().ifPresent(game::setOpponentUser);
@@ -233,17 +244,17 @@ public class GameService
 
     private void recordStatsForPlayer(Game game, UUID playerToken)
     {
-        AuthUser authUser = game.getUserByToken(playerToken);
-        if (authUser == null) return;
+        ApplicationPrincipal applicationPrincipal = game.getUserByToken(playerToken);
+        if (applicationPrincipal == null) return;
 
 
         playerStatsService.recordGameResult("battleships",
-                                                  authUser.id(),
-                                                  authUser.username(),
+                                                  applicationPrincipal.userId(),
+                                                  applicationPrincipal.username(),
                                                   game.getScore(playerToken),
                                                   playerToken.equals(game.getWinner()));
 
-        scoreService.addScore("battleships", authUser.id(), authUser.username(), game.getScore(playerToken));
+        scoreService.addScore("battleships", applicationPrincipal.userId(), applicationPrincipal.username(), game.getScore(playerToken));
     }
 
 }

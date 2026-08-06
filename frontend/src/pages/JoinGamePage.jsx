@@ -1,4 +1,4 @@
-import {joinGame} from "../api/gameApi.js";
+import {joinGame} from "../api/gameEntryApi.js";
 import {GamePage} from "./GamePage.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router";

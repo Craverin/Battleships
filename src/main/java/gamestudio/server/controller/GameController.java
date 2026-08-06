@@ -5,6 +5,7 @@ import gamestudio.server.domain.Game;
 import gamestudio.server.domain.GamePhase;
 import gamestudio.server.dto.*;
 import gamestudio.server.service.GameService;
+import gamestudio.server.service.MatchmakingService;
 import gamestudio.server.service.SseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,24 +26,6 @@ public class GameController
     {
         this.gameService = gameService;
         this.sseService = sseService;
-    }
-
-    @PostMapping
-    public CreateGameResponse createGame()
-    {
-        return gameService.createGame();
-    }
-
-    @PostMapping("/{inviteCode}/join")
-    public JoinGameResponse joinGame(@PathVariable String inviteCode)
-    {
-        UUID gameId = gameService.getGameIdByInviteCode(inviteCode);
-        UUID opponentToken = gameService.joinGame(gameId);
-        UUID hostToken = gameService.getGame(gameId).getHostToken();
-
-        sseService.sendToPlayer(gameId, hostToken, "opponent-joined", "");
-
-        return new JoinGameResponse(gameId, opponentToken, "guest");
     }
 
     @PostMapping("/{gameId}/ready")

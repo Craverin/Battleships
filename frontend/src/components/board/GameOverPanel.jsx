@@ -1,9 +1,18 @@
 import styles from "./GameOverPanel.module.css"
 import {useNavigate} from "react-router";
 
-export const GameOverPanel = ({isWinner = false, startNewGame}) => {
+export const GameOverPanel = ({isWinner = false, opponentDisconnected, startNewGame}) => {
     const navigate = useNavigate();
     const getLabelsInfo = () => {
+        if (opponentDisconnected)
+        {
+            return {
+                title: "Match interrupted",
+                titleClassName: styles.gameOverTitleInterrupted,
+                text: "Your opponent disconnected."
+            };
+        }
+
         if (isWinner)
         {
             return {
@@ -23,7 +32,12 @@ export const GameOverPanel = ({isWinner = false, startNewGame}) => {
 
     return (
         <div className={styles.gameOverOverlay}>
-            <div className={styles.gameOverCard}>
+            <div
+                className={`
+                    ${styles.gameOverCard}
+                    ${opponentDisconnected ? styles.gameOverCardInterrupted : ""}
+                `}
+            >
                 <span className={styles.gameOverLabel}>Game over</span>
 
                 <h3 className={`${styles.gameOverTitle} ${labelsInfo.titleClassName}`}>

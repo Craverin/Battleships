@@ -1,6 +1,5 @@
 package gamestudio.server.entity;
 
-import gamestudio.server.service.exception.CommentException;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -35,7 +34,7 @@ public class Comment implements Serializable
         this.player = user.getUsername();
         this.game = game.trim();
         this.comment = comment.trim();
-        if (player.isEmpty() || game.isEmpty() || comment.isEmpty()) throw new CommentException("Invalid comment");
+        if (player.isEmpty() || game.isEmpty() || comment.isEmpty()) throw new IllegalStateException("Invalid comment");
         this.commentedOn = commentedOn;
     }
 

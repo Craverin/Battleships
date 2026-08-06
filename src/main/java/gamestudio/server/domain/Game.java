@@ -1,15 +1,14 @@
 package gamestudio.server.domain;
 
 import gamestudio.server.dto.ShotResult;
-import gamestudio.server.dto.authentication.AuthUser;
-import gamestudio.server.entity.User;
+import gamestudio.server.security.principal.ApplicationPrincipal;
 
 import java.util.*;
 
 public class Game
 {
     private UUID gameId, hostToken, opponentToken;
-    private AuthUser hostUser, opponentUser;
+    private ApplicationPrincipal hostUser, opponentUser;
     private boolean hostReady, opponentReady, isHostTurn, statsRecorded;
     private Map<UUID, Board> boards;
     private Map<UUID, Integer> scores;
@@ -162,17 +161,17 @@ public class Game
 
     public void markGameAsFinished() { gamePhase = GamePhase.FINISHED; }
 
-    public void setHostUser(AuthUser hostUser)
+    public void setHostUser(ApplicationPrincipal hostUser)
     {
         this.hostUser = hostUser;
     }
 
-    public void setOpponentUser(AuthUser opponentUser)
+    public void setOpponentUser(ApplicationPrincipal opponentUser)
     {
         this.opponentUser = opponentUser;
     }
 
-    public AuthUser getUserByToken(UUID playerToken)
+    public ApplicationPrincipal getUserByToken(UUID playerToken)
     {
         if (playerToken.equals(hostToken)) return hostUser;
         if (playerToken.equals(opponentToken)) return opponentUser;

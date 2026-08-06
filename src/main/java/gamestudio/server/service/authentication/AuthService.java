@@ -1,7 +1,9 @@
 package gamestudio.server.service.authentication;
 
 import gamestudio.server.dto.authentication.AuthRequest;
-import gamestudio.server.dto.authentication.AuthUser;
+import gamestudio.server.repository.UserRepository;
+import gamestudio.server.security.principal.ApplicationPrincipal;
+import gamestudio.server.security.principal.AuthUser;
 import gamestudio.server.dto.authentication.UserResponse;
 import gamestudio.server.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +27,10 @@ import java.util.List;
 @Service
 public class AuthService
 {
-    private final UserServiceJPA userService;
+    private final UserRepository userService;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserServiceJPA userService, PasswordEncoder passwordEncoder)
+    public AuthService(UserRepository userService, PasswordEncoder passwordEncoder)
     {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -95,8 +97,9 @@ public class AuthService
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not logged in");
 
-        AuthUser authUser = (AuthUser) authentication.getPrincipal();
-        return new UserResponse(authUser.id(), authUser.username());
+        ApplicationPrincipal applicationPrincipal = (ApplicationPrincipal) authentication.getPrincipal();
+
+        return new UserResponse(applicationPrincipal.userId(), applicationPrincipal.username());
     }
 
     public void logout(HttpServletRequest request)

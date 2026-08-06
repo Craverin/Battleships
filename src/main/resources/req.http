@@ -1,0 +1,557 @@
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "Pride_Queen",
+  "password": "Queen8421"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "DragonSlayerEx",
+  "password": "Dragon77"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "ShadowKnight",
+  "password": "Shadow903"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "MysticFalcon",
+  "password": "Falcon204"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "OceanWarrior",
+  "password": "Ocean558"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "NeonSamurai",
+  "password": "Neon7744"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "FrostPhoenix",
+  "password": "Frost319"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "CrimsonWolf",
+  "password": "Wolf6290"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "ThunderBlade",
+  "password": "Blade118"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "SilverArrow",
+  "password": "Silver94"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "LunarHunter",
+  "password": "Lunar682"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "IronVoyager",
+  "password": "Iron3571"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "VelvetStorm",
+  "password": "Velvet06"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "GoldenRaven",
+  "password": "Raven451"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "StormEmpress",
+  "password": "Storm881"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "WildCorsair",
+  "password": "Corsair29"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "NovaPaladin",
+  "password": "Nova7352"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "SilentViper",
+  "password": "Viper604"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "AquaLegend",
+  "password": "Aqua9271"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "FlameWizard",
+  "password": "Flame830"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "DarkVoyager",
+  "password": "Voyager12"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "CrystalMage",
+  "password": "Crystal73"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "RoyalPirate",
+  "password": "Pirate506"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "BraveSpecter",
+  "password": "Specter84"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "EmberQueen",
+  "password": "Ember642"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "NightRanger",
+  "password": "Ranger19"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "SteelMermaid",
+  "password": "Mermaid35"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "SkyChampion",
+  "password": "SkyChamp82"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "VenomDancer",
+  "password": "Venom714"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "RogueCaptain",
+  "password": "Rogue260"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "StarValkyrie",
+  "password": "Star9017"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "GhostAdmiral",
+  "password": "Ghost533"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "RubyReaper",
+  "password": "Ruby7364"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "SolarKnight",
+  "password": "Solar428"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "IceWarden",
+  "password": "IceWard8"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "TitanSailor",
+  "password": "Titan219"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "PearlOracle",
+  "password": "Pearl940"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "RavenDuchess",
+  "password": "Duchess51"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "BladeHunter",
+  "password": "Hunter707"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "MoonCaptain",
+  "password": "Moon8651"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "ArcaneFox",
+  "password": "Arcane43"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "IronLotus",
+  "password": "Lotus329"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "StormDuchess",
+  "password": "Duchess92"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "NeonKraken",
+  "password": "Kraken781"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "ShadowSirena",
+  "password": "Sirena624"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "DragonEmpress",
+  "password": "Empress18"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "FrostCorsair",
+  "password": "Frost904"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "VelvetArcher",
+  "password": "Archer557"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "ThunderOracle",
+  "password": "Oracle823"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "CrimsonSailor",
+  "password": "Sailor469"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "MysticRogue",
+  "password": "Mystic30"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "LunarBlade",
+  "password": "Lunar770"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "AquaPaladin",
+  "password": "Paladin47"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "GoldenSpecter",
+  "password": "Golden52"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "NovaPirate",
+  "password": "Pirate815"
+}
+
+###
+
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "PrideWarrior",
+  "password": "Warrior64"
+}

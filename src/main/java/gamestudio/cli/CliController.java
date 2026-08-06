@@ -3,8 +3,6 @@ package gamestudio.cli;
 import gamestudio.server.domain.*;
 import gamestudio.server.dto.CombatViewResponse;
 import gamestudio.server.dto.ShotResult;
-import gamestudio.server.entity.Comment;
-import gamestudio.server.entity.Rating;
 import gamestudio.server.entity.Score;
 import gamestudio.server.service.*;
 
@@ -50,7 +48,7 @@ public class CliController
 
     public void playGame() throws InterruptedException
     {
-        var resp = gameService.createGame();
+        var resp = gameService.createPrivateGame();
 
         gameId = resp.gameId();
         game = gameService.getGame(gameId);

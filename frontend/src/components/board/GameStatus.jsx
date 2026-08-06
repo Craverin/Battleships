@@ -13,6 +13,14 @@ export const GameStatus = ({opponentJoined,
                            score}) => {
     const isBattlePhase = opponentReady && isReady;
     const getOpponentStatus = () => {
+        if (opponentDisconnected)
+        {
+            return {
+                text: "Opponent disconnected",
+                className: styles.disconnectedPill
+            };
+        }
+
         if (opponentReady)
         {
             return {
@@ -67,17 +75,17 @@ export const GameStatus = ({opponentJoined,
             )}
 
             <div className={styles.boardTopActions}>
-                {!isBattlePhase && !opponentDisconnected && (
+                {!isBattlePhase && (
                     <span className={`${styles.topPill} ${opponentStatus.className}`}>
                         {opponentStatus.text}
                     </span>
                 )}
 
-                {!isBattlePhase && opponentDisconnected && (
-                    <span className={`${styles.topPill} ${styles.disconnectedPill}`}>
-                        Opponent disconnected
-                    </span>
-                )}
+                {/*{!isBattlePhase && opponentDisconnected && (*/}
+                {/*    <span className={`${styles.topPill} ${styles.disconnectedPill}`}>*/}
+                {/*        Opponent disconnected*/}
+                {/*    </span>*/}
+                {/*)}*/}
 
                 {!isBattlePhase && opponentJoined && (
                     <button

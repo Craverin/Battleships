@@ -1,6 +1,7 @@
 import {PlacementBoard} from "../components/board/PlacementBoard.jsx";
 import {GameStatus} from "../components/board/GameStatus.jsx";
-import {createGame, getShips} from "../api/gameApi.js";
+import {createGame} from "../api/gameEntryApi.js";
+import {getShips} from "../api/gameApi.js";
 import {useEffect, useState} from "react";
 import styles from "./GamePage.module.css"
 import {subscribeToSse} from "../api/sseApi.js";
@@ -14,6 +15,9 @@ import {ReviewsPanel} from "../components/community/ReviewsPanel.jsx";
 import {getComments, getMyComments, getMyRating, getRatingSummary} from "../api/reviewsApi.js";
 import {getCurrentUser, logout} from "../api/authApi.js";
 import {AuthPanel} from "../components/authentication/AuthPanel.jsx";
+import {FriendGamePanel} from "./FriendGamePanel.jsx";
+import {MatchmakingPanel} from "./MatchmakingPanel.jsx";
+import {cancelSearch, findGame} from "../api/matchmakingApi.js";
 
 export const BOARD_SIZE = 10;
 
@@ -21,24 +25,21 @@ export const GamePage = ({
                         gameId: gameUUID,
                         playerToken: token,
                         inviteCode: invCode}) => {
-    const [isHost, setIsHost] = useState(!invCode);
-
     const location = useLocation();
     const navigate = useNavigate();
 
     const [isYourTurn, setIsYourTurn] = useState();
     const [isReady, setIsReady] = useState(false);
-    const [opponentJoined, setOpponentJoined] = useState(!isHost);
+    const [opponentJoined, setOpponentJoined] = useState(invCode);
     const [opponentReady, setOpponentReady] = useState(false);
     const [opponentDisconnected, setOpponentDisconnected] = useState(false);
-    const [friendButtonActive, setFriendButtonActive] = useState(true);
-    const [joinCode, setJoinCode] = useState("");
+    const [opponentMode, setOpponentMode] = useState(invCode ? "FRIEND" : "RANDOM");
+    const [matchmakingStatus, setMatchmakingStatus] = useState('IDLE');
 
     const [gameId, setGameId] = useState(gameUUID);
     const [gamePhase, setGamePhase] = useState('');
     const [playerToken, setPlayerToken] = useState(token);
     const [inviteCode, setInviteCode] = useState(invCode);
-    const [isInviteCopied, setIsInviteCopied] = useState(false);
     const [ships, setShips] = useState([]);
 
     const [hostCells, setHostCells] = useState();
@@ -58,8 +59,6 @@ export const GamePage = ({
 
     const [user, setUser] = useState();
 
-    const inviteLink = inviteCode ? `${window.location.origin}/games/${inviteCode}/join` : "";
-
     const initializeGame = async () => {
         const {gameId: id, hostToken: token, inviteCode: invCode} = await createGame();
 
@@ -76,6 +75,7 @@ export const GamePage = ({
         setIsWinner(undefined);
         setIsYourTurn(undefined);
         setIsReady(false);
+        setMatchmakingStatus('IDLE');
         setOpponentJoined(false);
         setOpponentReady(false);
         setOpponentDisconnected(false);
@@ -84,6 +84,35 @@ export const GamePage = ({
 
         await initializeGame();
     };
+
+    const handleFindGame = async () => {
+        setActiveTab('Play');
+        setMatchmakingStatus('SEARCHING');
+        const {gameId: id, playerToken: token, status} = await findGame();
+
+        console.log(`${id} ${token} ${matchmakingStatus}`);
+        if (status === 'MATCHED')
+        {
+            setOpponentJoined(true);
+            setMatchmakingStatus('MATCHED');
+        }
+
+        setGameId(id);
+        setPlayerToken(token);
+        setMatchmakingStatus(status);
+    }
+
+    const handleCancelSearch = async () => {
+        setActiveTab('Play');
+        setMatchmakingStatus('CANCELLING');
+        await cancelSearch(gameId, playerToken);
+
+        setMatchmakingStatus('IDLE');
+        setGameId(undefined);
+        setPlayerToken(undefined);
+        setShips([]);
+        setGamePhase('');
+    }
 
     useEffect(() => {
         if (location.state?.autoCreateGame)
@@ -105,23 +134,14 @@ export const GamePage = ({
         tryGetCurrentUser()
     }, []);
 
-    const copyInviteLink = async () => {
-        if (!inviteLink) return;
-
-        await navigator.clipboard.writeText(inviteLink);
-
-        setIsInviteCopied(true);
-
-        setTimeout(() => {
-            setIsInviteCopied(false);
-        }, 1400);
-    };
-
     useEffect(  () => {
         if (!gameId || !playerToken) return;
 
         const sseHandler = subscribeToSse(gameId, playerToken);
-        sseHandler.addEventListener("opponent-joined", () => setOpponentJoined(true));
+        sseHandler.addEventListener("opponent-joined", () => {
+            setOpponentJoined(true);
+            if (opponentMode === 'RANDOM') setMatchmakingStatus('MATCHED');
+        });
         sseHandler.addEventListener("opponent-ready", () => setOpponentReady(true));
 
         sseHandler.addEventListener("battle-started", event => {
@@ -154,7 +174,9 @@ export const GamePage = ({
             setScore(data.score);
         });
 
-        sseHandler.addEventListener("opponent-disconnected", () => setOpponentDisconnected(true));
+        sseHandler.addEventListener("opponent-disconnected", () => {
+            setOpponentDisconnected(true);
+        });
 
         return () => sseHandler.close();
     },[gameId, playerToken]);
@@ -163,13 +185,12 @@ export const GamePage = ({
         if (!gameId || !playerToken) return;
         const getBoardShips = async () => {
             const ships = await getShips(gameId, playerToken);
+            console.log(ships);
             setShips(ships);
         }
 
         getBoardShips();
     }, [gameId, playerToken]);
-
-
 
     return (
         <main className={styles.gamePage}>
@@ -192,6 +213,7 @@ export const GamePage = ({
                         </button>
                         <button
                             type="button"
+                            disabled={opponentJoined}
                             className={`
                                 btn
                                 ${styles.menuTabButton}
@@ -214,6 +236,7 @@ export const GamePage = ({
                         </button>
                         <button
                             type="button"
+                            disabled={opponentJoined}
                             className={`
                                 btn
                                 ${styles.menuTabButton}
@@ -243,6 +266,7 @@ export const GamePage = ({
                     <div className={styles.accountBlock}>
                         <p className={styles.blockLabel}>Account</p>
 
+                        {/*todo move to AccountPanel*/}
                         {user ? (
                             <div className={styles.accountUserCard}>
                                 <div className={styles.accountAvatar}>
@@ -272,6 +296,7 @@ export const GamePage = ({
                             <div className={styles.accountActions}>
                                 <button
                                     type="button"
+                                    disabled={opponentJoined}
                                     className={`btn ${styles.accountButton}`}
                                     onClick={() => setActiveTab("Login")}
                                 >
@@ -280,6 +305,7 @@ export const GamePage = ({
 
                                 <button
                                     type="button"
+                                    disabled={opponentJoined}
                                     className={`btn ${styles.accountButton} ${styles.accountButtonPrimary}`}
                                     onClick={() => setActiveTab("Register")}
                                 >
@@ -294,101 +320,45 @@ export const GamePage = ({
                         <div className={styles.modeGrid}>
                             <button
                                 type="button"
-                                onClick={() => setFriendButtonActive(!friendButtonActive)}
+                                disabled={invCode || opponentJoined}
+                                onClick={() => setOpponentMode("RANDOM")}
                                 className={`
                                     ${styles.modeCard}
-                                    ${friendButtonActive ? styles.modeCardActive : ""}
+                                    ${opponentMode === "RANDOM" ? styles.modeCardActive : ""}
+                                `}
+                            >
+                                <span className={styles.modeTitle}>Random</span>
+                                <span className={styles.modeDescription}>Play with other people</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                disabled={invCode || opponentJoined}
+                                onClick={() => setOpponentMode("FRIEND")}
+                                className={`
+                                    ${styles.modeCard}
+                                    ${opponentMode === "FRIEND" ? styles.modeCardActive : ""}
                                 `}
                             >
                                 <span className={styles.modeTitle}>Friend</span>
                                 <span className={styles.modeDescription}>Invite another player</span>
                             </button>
-
-                            {/*<button*/}
-                            {/*    type="button"*/}
-                            {/*    disabled={!isHost || opponentJoined}*/}
-                            {/*    onClick={() => setFriendButtonActive(!friendButtonActive)}*/}
-                            {/*    className={`*/}
-                            {/*        ${styles.modeCard}*/}
-                            {/*        ${friendButtonActive ? "" : styles.modeCardActive}*/}
-                            {/*    `}*/}
-                            {/*>*/}
-                            {/*    <span className={styles.modeTitle}>Bot</span>*/}
-                            {/*    <span className={styles.modeDescription}>Practice alone</span>*/}
-                            {/*</button>*/}
                         </div>
                     </div>
 
-                    <div className={styles.inviteBlock}>
-                        <div className={styles.inviteHeader}>
-                            <p className={styles.blockLabel}>Invite</p>
-                            <span className={styles.inviteBadge}>Private game</span>
-                        </div>
-
-                        <div className={styles.inviteLinkBox}>
-                            <span className={styles.inviteLinkText}>
-                                {
-                                    !inviteCode
-                                    ? `Create game to generate invite link`
-                                    : inviteLink
-                                }
-                            </span>
-
-                            <button
-                                type="button"
-                                className={`
-                                    ${styles.copyButton}
-                                    ${isInviteCopied ? styles.copyButtonCopied : ""}
-                                `}
-                                onClick={copyInviteLink}
-                                disabled={!inviteCode}
-                            >
-                                {isInviteCopied ? "✓ Copied" : "Copy"}
-                            </button>
-                        </div>
-
-                        <div className={styles.codeBox}>
-                            <span className={styles.codeLabel}>Game code</span>
-                            <strong className={styles.codeValue}>{inviteCode}</strong>
-                        </div>
-
-                        <p className={styles.hintText}>
-                            Share the link or send the code to your opponent.
-                        </p>
-                    </div>
-
-                    <div className={styles.menuActions}>
-                        <button
-                            type="button"
-                            className={styles.primaryButton}
-                            onClick={() => initializeGame()}
-                            disabled={opponentJoined || !isHost}
-                        >
-                            Create game
-                        </button>
-
-                        <div className={styles.joinBlock}>
-                            <span className={styles.codeLabel}>Join game</span>
-
-                            <input
-                                type="text"
-                                value={joinCode}
-                                maxLength={6}
-                                onChange={(event) => setJoinCode(event.target.value)}
-                                placeholder="Enter invite code"
-                                className={styles.joinCodeInput}
-                            />
-
-                            <button
-                                type="button"
-                                className={styles.secondaryButton}
-                                disabled={joinCode.trim().length !== 6}
-                                onClick={() => navigate(`/games/${joinCode.trim()}/join`)}
-                            >
-                                Join by code
-                            </button>
-                        </div>
-                    </div>
+                    {opponentMode === "RANDOM"
+                        ? <MatchmakingPanel
+                            status={matchmakingStatus}
+                            onFind={handleFindGame}
+                            onCancel={handleCancelSearch}
+                           />
+                        : <FriendGamePanel
+                            inviteCode={inviteCode}
+                            opponentJoined={opponentJoined}
+                            isHost={!invCode}
+                            initializeGame={initializeGame}
+                          />
+                    }
                 </aside>
 
 
@@ -419,7 +389,14 @@ export const GamePage = ({
                                 {(gamePhase === '' || gamePhase === "PLACEMENT") && (
                                     <div className={styles.boardsRow}>
                                         <PlacementBoard gameId={gameId} playerToken={playerToken} ships={ships} isLocked={isReady} />
-                                        <PlaceholderBoard opponentJoined={opponentJoined} opponentReady={opponentReady} isReady={isReady} />
+                                        <PlaceholderBoard
+                                            opponentJoined={opponentJoined}
+                                            opponentReady={opponentReady}
+                                            opponentMode={opponentMode}
+                                            status={matchmakingStatus}
+                                            isReady={isReady}
+                                            isGameCreated={!!gameId}
+                                        />
                                     </div>
                                 )}
 
@@ -432,8 +409,8 @@ export const GamePage = ({
                                     </div>
                                 )}
 
-                                {gamePhase === "FINISHED" &&
-                                    <GameOverPanel isWinner={isWinner} startNewGame={startNewGame} />
+                                {(gamePhase === "FINISHED" || opponentDisconnected) &&
+                                    <GameOverPanel isWinner={isWinner} opponentDisconnected={opponentDisconnected} startNewGame={startNewGame} />
                                 }
                             </div>
                         )}

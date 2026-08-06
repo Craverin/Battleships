@@ -1,6 +1,10 @@
 import React, {useState} from "react";
 import {login, register} from "../../api/authApi.js"
 import styles from "./AuthPanel.module.css";
+import googleIcon from '../../assets/google.svg'
+import gitHubIcon from '../../assets/github.svg'
+
+const BACKEND_URL = 'http://localhost:8080';
 
 export const AuthPanel = ({signingUp: signUp = true, setUser, onAuthSuccess}) => {
     const [signingUp, setSigningUp] = useState(signUp);
@@ -141,6 +145,38 @@ export const AuthPanel = ({signingUp: signUp = true, setUser, onAuthSuccess}) =>
                     </div>
                 )}
 
+                <div className={styles.authSocialButtons}>
+                    <a
+                        href={`${BACKEND_URL}/oauth2/authorization/google`}
+                        className={`${styles.authSocialButton} ${styles.authGoogleButton}`}
+                    >
+                        <img
+                            src={googleIcon}
+                            className={styles.authProviderIcon}
+                            alt=""
+                        />
+
+                        Continue with Google
+                    </a>
+
+                    <a
+                        href={`${BACKEND_URL}/oauth2/authorization/github`}
+                        className={`${styles.authSocialButton} ${styles.authGithubButton}`}
+                    >
+                        <img
+                            src={gitHubIcon}
+                            className={styles.authProviderIcon}
+                            alt=""
+                        />
+
+                        Continue with GitHub
+                    </a>
+                </div>
+
+                <div className={styles.authDivider}>
+                    <span>or continue with username</span>
+                </div>
+
                 <form
                     className={styles.authForm}
                     onSubmit={(event) => {
@@ -211,7 +247,6 @@ export const AuthPanel = ({signingUp: signUp = true, setUser, onAuthSuccess}) =>
                         type="submit"
                         className={`btn ${styles.authSubmitButton}`}
                         disabled={!username.trim() || password.trim().length < 8 || (signingUp && repeatPassword.trim() !== password.trim())}
-                        onClick={handleSubmit}
                     >
                         {
                             signingUp

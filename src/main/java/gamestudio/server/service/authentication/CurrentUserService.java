@@ -1,6 +1,6 @@
 package gamestudio.server.service.authentication;
 
-import gamestudio.server.dto.authentication.AuthUser;
+import gamestudio.server.security.principal.ApplicationPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,31 +13,32 @@ import java.util.Optional;
 @Service
 public class CurrentUserService
 {
-    public AuthUser getCurrentAuthUser()
+    public ApplicationPrincipal getCurrentAuthUser()
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not logged in");
 
-        return (AuthUser) authentication.getPrincipal();
+        return (ApplicationPrincipal) authentication.getPrincipal();
     }
 
-    public Optional<AuthUser> getCurrentAuthUserOptional()
+    public Optional<ApplicationPrincipal> getCurrentAuthUserOptional()
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
             return Optional.empty();
 
-        AuthUser authUser = (AuthUser) authentication.getPrincipal();
-        if (authUser == null)
+        ApplicationPrincipal applicationPrincipal = (ApplicationPrincipal) authentication.getPrincipal();
+
+        if (applicationPrincipal == null)
             return Optional.empty();
 
-        return Optional.of(authUser);
+        return Optional.of(applicationPrincipal);
     }
 
-    public int getCurrentUserId() { return getCurrentAuthUser().id(); }
+    public int getCurrentUserId() { return getCurrentAuthUser().userId(); }
 
     public String getCurrentUsername() { return getCurrentAuthUser().username(); }
 }

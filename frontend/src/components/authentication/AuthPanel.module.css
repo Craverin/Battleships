@@ -216,6 +216,105 @@
     text-decoration: underline;
 }
 
+.authSocialButtons {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.authSocialButton {
+    min-height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 0 14px;
+    border: 1px solid;
+    border-radius: 14px;
+
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
+
+    transition:
+            background-color 160ms ease,
+            border-color 160ms ease,
+            box-shadow 160ms ease,
+            transform 160ms ease;
+}
+
+.authSocialButton:hover {
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.authSocialButton:active {
+    transform: translateY(0);
+}
+
+.authSocialButton:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.22);
+}
+
+.authGoogleButton {
+    color: #0f172a;
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.authGoogleButton:hover {
+    color: #020617;
+    background-color: #ffffff;
+    border-color: #5eead4;
+}
+
+.authGithubButton {
+    color: #f8fafc;
+    background-color: #111827;
+    border-color: #334155;
+}
+
+.authGithubButton:hover {
+    color: #ffffff;
+    background-color: #172033;
+    border-color: #5eead4;
+}
+
+.authProviderIcon {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+}
+
+.authDivider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 0 0 16px;
+
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.authDivider::before,
+.authDivider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background-color: #26344d;
+}
+
+.authDivider span {
+    white-space: nowrap;
+}
 
 @media (max-width: 560px) {
     .authPanel {

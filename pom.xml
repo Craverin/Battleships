@@ -96,6 +96,11 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+
     </dependencies>
 
 
@@ -104,6 +109,10 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+
+                <configuration>
+                    <mainClass>gamestudio.server.GameStudioServer</mainClass>
+                </configuration>
 			</plugin>
 		</plugins>
 	</build>

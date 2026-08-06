@@ -1,6 +1,5 @@
 package gamestudio.server.entity;
 
-import gamestudio.server.service.exception.ScoreException;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -34,8 +33,8 @@ public class Score
         this.player = user.getUsername();
         this.game = game.trim();
 
-        if (game.isEmpty() || player.isEmpty()) throw new ScoreException("Invalid game or player");
-        if (points < 0) throw new ScoreException("Invalid score");
+        if (game.isEmpty() || player.isEmpty()) throw new IllegalStateException("Invalid game or player");
+        if (points < 0) throw new IllegalStateException("Invalid score");
 
         this.points = points;
         this.playedOn = playedOn;

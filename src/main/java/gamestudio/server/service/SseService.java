@@ -71,16 +71,16 @@ public class SseService
         if (map.isEmpty()) emitters.remove(gameId);
     }
 
-    private void notifyOpponentDisconnected(UUID gameId, UUID disconnectedPlayerToken)
-    {
+    private void notifyOpponentDisconnected(UUID gameId, UUID disconnectedPlayerToken) {
         Game game = gameService.getGame(gameId);
         if (game == null || game.getPhase() == GamePhase.FINISHED) return;
 
         UUID opponentToken = disconnectedPlayerToken.equals(game.getOpponentToken())
-                             ? game.getHostToken()
-                             : game.getOpponentToken();
+                ? game.getHostToken()
+                : game.getOpponentToken();
 
         sendToPlayer(gameId, opponentToken, "opponent-disconnected", "");
+        
     }
 
     @Scheduled(fixedRate = 5_000)
