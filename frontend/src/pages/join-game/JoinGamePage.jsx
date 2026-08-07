@@ -109,7 +109,7 @@ export const JoinGamePage = () => {
             gameId={gameData.gameId}
             playerToken={gameData.playerToken}
             inviteCode={inviteCode}
-            role={gameData.role}
+            hostUsername={gameData.opponentUsername}
         />
     );
 

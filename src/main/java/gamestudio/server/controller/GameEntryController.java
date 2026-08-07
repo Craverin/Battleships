@@ -1,7 +1,9 @@
 package gamestudio.server.controller;
 
+import gamestudio.server.domain.Game;
 import gamestudio.server.dto.CreatePrivateGameResponse;
 import gamestudio.server.dto.JoinGameResponse;
+import gamestudio.server.security.principal.ApplicationPrincipal;
 import gamestudio.server.service.GameService;
 import gamestudio.server.service.SseService;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,11 +37,16 @@ public class GameEntryController
     public JoinGameResponse joinPrivateGame(@PathVariable String inviteCode)
     {
         UUID gameId = gameService.getGameIdByInviteCode(inviteCode);
+        Game game = gameService.getGame(gameId);
+
         UUID opponentToken = gameService.joinGame(gameId);
-        UUID hostToken = gameService.getGame(gameId).getHostToken();
+        UUID hostToken = game.getHostToken();
 
-        sseService.sendToPlayer(gameId, hostToken, "opponent-joined", "");
+        String hostUsername = game.getUsername(hostToken);
+        String opponentUsername = game.getUsername(opponentToken);
 
-        return new JoinGameResponse(gameId, opponentToken, "guest");
+        sseService.sendToPlayer(gameId, hostToken, "opponent-joined", opponentUsername);
+
+        return new JoinGameResponse(gameId, opponentToken, hostUsername);
     }
 }

@@ -10,13 +10,15 @@ export const GameStatus = ({opponentJoined,
                            isYourTurn = false,
                            gameId,
                            playerToken,
-                           score}) => {
+                           score,
+                           opponentName}) => {
+    console.log(`GAMESTATUS RECEIVED ${opponentName}`);
     const isBattlePhase = opponentReady && isReady;
     const getOpponentStatus = () => {
         if (opponentDisconnected)
         {
             return {
-                text: "Opponent disconnected",
+                text: `${opponentName} disconnected`,
                 className: styles.disconnectedPill
             };
         }
@@ -24,7 +26,7 @@ export const GameStatus = ({opponentJoined,
         if (opponentReady)
         {
             return {
-                text: "Opponent ready",
+                text: `${opponentName} is ready`,
                 className: styles.opponentReadyPill
             };
         }
@@ -32,7 +34,7 @@ export const GameStatus = ({opponentJoined,
         if (opponentJoined)
         {
             return {
-                text: "Opponent joined",
+                text: `Opponent found: ${opponentName}`,
                 className: styles.opponentJoinedPill
             };
         }
@@ -47,7 +49,7 @@ export const GameStatus = ({opponentJoined,
         if (isBattlePhase)
         {
             return {
-                currentTurn: isYourTurn ? "Your turn" : "Opponent's turn",
+                currentTurn: isYourTurn ? "Your turn" : `${opponentName}'s turn`,
                 className: isYourTurn ? styles.yourTurnPill : styles.opponentTurnPill
             };
         }

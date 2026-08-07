@@ -4,6 +4,7 @@ import gamestudio.server.domain.Game;
 import gamestudio.server.dto.CreateGameResponse;
 import gamestudio.server.dto.MatchmakingResponse;
 import gamestudio.server.dto.MatchmakingStatus;
+import gamestudio.server.security.principal.ApplicationPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,13 +35,16 @@ public class MatchmakingService
                 UUID playerToken = gameService.joinGame(gameId);
                 if (playerToken == null) continue;
 
-                return new MatchmakingResponse(gameId, playerToken, MatchmakingStatus.MATCHED);
+                Game game = gameService.getGame(gameId);
+                String hostUsername = game.getUsername(game.getHostToken());
+
+                return new MatchmakingResponse(gameId, playerToken, hostUsername, MatchmakingStatus.MATCHED);
             }
 
             CreateGameResponse game = gameService.createGame();
             waitingGames.offer(game.gameId());
 
-            return new MatchmakingResponse(game.gameId(), game.playerToken(), MatchmakingStatus.SEARCHING);
+            return new MatchmakingResponse(game.gameId(), game.playerToken(), null, MatchmakingStatus.SEARCHING);
         }
     }
 

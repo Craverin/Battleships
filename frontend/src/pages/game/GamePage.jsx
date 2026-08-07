@@ -20,17 +20,18 @@ import {MatchmakingPanel} from "./components/MatchmakingPanel.jsx";
 import {cancelSearch, findGame} from "../../api/matchmakingApi.js";
 import {AccountPanel} from "./components/AccountPanel.jsx";
 import {AccountSettingsPanel} from "./components/AccountSettingsPanel.jsx";
-import {changePassword, changeUsername} from "../../api/credentialsApi.js";
 
 export const BOARD_SIZE = 10;
 
 export const GamePage = ({
                         gameId: gameUUID,
                         playerToken: token,
-                        inviteCode: invCode}) => {
+                        inviteCode: invCode,
+                        hostUsername: hostName}) => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const [isHost, setIsHost] = useState(!invCode);
     const [isYourTurn, setIsYourTurn] = useState();
     const [isReady, setIsReady] = useState(false);
     const [opponentJoined, setOpponentJoined] = useState(invCode);
@@ -61,6 +62,8 @@ export const GamePage = ({
     const [ratingSummary, setRatingSummary] = useState();
 
     const [user, setUser] = useState();
+    const [hostUsername, setHostUsername] = useState("Guest");
+    const [opponentUsername, setOpponentUsername] = useState("Guest");
 
     const initializeGame = async () => {
         const {gameId: id, hostToken: token, inviteCode: invCode} = await createGame();
@@ -91,15 +94,17 @@ export const GamePage = ({
     const handleFindGame = async () => {
         setActiveTab('Play');
         setMatchmakingStatus('SEARCHING');
-        const {gameId: id, playerToken: token, status} = await findGame();
+        const {gameId: id, playerToken: token, opponentUsername, status} = await findGame();
 
-        console.log(`${id} ${token} ${matchmakingStatus}`);
         if (status === 'MATCHED')
         {
+            setIsHost(false);
+            setHostUsername(opponentUsername);
             setOpponentJoined(true);
             setMatchmakingStatus('MATCHED');
         }
 
+        setIsHost(true);
         setGameId(id);
         setPlayerToken(token);
         setMatchmakingStatus(status);
@@ -147,8 +152,10 @@ export const GamePage = ({
         if (!gameId || !playerToken) return;
 
         const sseHandler = subscribeToSse(gameId, playerToken);
-        sseHandler.addEventListener("opponent-joined", () => {
+        sseHandler.addEventListener("opponent-joined", event => {
             setOpponentJoined(true);
+            setOpponentUsername(event.data);
+
             if (opponentMode === 'RANDOM') setMatchmakingStatus('MATCHED');
         });
         sseHandler.addEventListener("opponent-ready", () => setOpponentReady(true));
@@ -363,6 +370,7 @@ export const GamePage = ({
                                             gameId={gameId}
                                             playerToken={playerToken}
                                             score={score}
+                                            opponentName={isHost ? opponentUsername : hostUsername}
                                 />
 
                                 {(gamePhase === '' || gamePhase === "PLACEMENT") && (

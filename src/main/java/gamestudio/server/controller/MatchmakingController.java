@@ -1,7 +1,9 @@
 package gamestudio.server.controller;
 
+import gamestudio.server.domain.Game;
 import gamestudio.server.dto.MatchmakingResponse;
 import gamestudio.server.dto.MatchmakingStatus;
+import gamestudio.server.security.principal.ApplicationPrincipal;
 import gamestudio.server.service.GameService;
 import gamestudio.server.service.MatchmakingService;
 import gamestudio.server.service.SseService;
@@ -32,8 +34,11 @@ public class MatchmakingController
 
         if (resp.status().equals(MatchmakingStatus.MATCHED))
         {
-            UUID hostToken = gameService.getGame(gameId).getHostToken();
-            sseService.sendToPlayer(gameId, hostToken, "opponent-joined", "");
+            Game game = gameService.getGame(gameId);
+            UUID hostToken = game.getHostToken();
+
+            String opponentUsername = game.getUsername(game.getOpponentToken());
+            sseService.sendToPlayer(gameId, hostToken, "opponent-joined", opponentUsername);
         }
 
         return resp;

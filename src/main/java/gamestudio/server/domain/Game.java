@@ -179,6 +179,18 @@ public class Game
         return null;
     }
 
+    public String getUsername(UUID playerToken)
+    {
+        if (!playerToken.equals(hostToken) && !playerToken.equals(opponentToken))
+            return null;
+
+        String username = "Guest";
+        ApplicationPrincipal user = getUserByToken(playerToken);
+        if (user != null) username = user.username();
+
+        return username;
+    }
+
     public boolean isStatsRecorded() { return statsRecorded; }
 
     public void markStatsRecorded()
