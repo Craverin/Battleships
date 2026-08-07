@@ -1,4 +1,4 @@
-import styles from "./GamePage.module.css"
+import styles from "./FriendGamePanel.module.css"
 import {useState} from "react";
 
 export const FriendGamePanel = ({inviteCode, opponentJoined, isHost, initializeGame}) => {

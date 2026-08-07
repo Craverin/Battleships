@@ -1,7 +1,7 @@
 import mainStyles from "./Board.module.css";
 import styles from "./PlaceholderBoard.module.css";
 import React from "react";
-import {BOARD_SIZE} from "../../pages/GamePage.jsx";
+import {BOARD_SIZE} from "../../pages/game/GamePage.jsx";
 import {getCellLabel} from "./PlacementBoard.jsx";
 
 

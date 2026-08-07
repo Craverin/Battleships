@@ -2,7 +2,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 0 16px;
+    padding: 0;
 }
 
 .authCard {
@@ -18,7 +18,7 @@
 }
 
 .authHeader {
-    margin-bottom: 18px;
+    margin-bottom: 12px;
 }
 
 .authEyebrow {
@@ -190,7 +190,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-
+    
     margin: 18px 0 0;
 
     color: #94a3b8;

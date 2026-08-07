@@ -1,5 +1,5 @@
-import {joinGame} from "../api/gameEntryApi.js";
-import {GamePage} from "./GamePage.jsx";
+import {joinGame} from "../../api/gameEntryApi.js";
+import {GamePage} from "../game/GamePage.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router";
 import styles from "./JoinGamePage.module.css"

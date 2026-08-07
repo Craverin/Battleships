@@ -1,0 +1,221 @@
+.blockLabel {
+    margin: 0 0 10px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.inviteBlock {
+    padding-top: 12px;
+    margin-top: 14px;
+    border-top: 1px solid #1e293b;
+}
+
+.inviteHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.inviteBadge {
+    padding: 4px 8px;
+    border-radius: 999px;
+
+    color: #99f6e4;
+    background-color: #134e4a;
+    border: 1px solid #2dd4bf;
+
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.inviteLinkBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    min-width: 0;
+    padding: 7px;
+    border-radius: 14px;
+
+    background: #020617;
+    border: 1px solid #26344d;
+}
+
+.inviteLinkText {
+    min-width: 0;
+    flex: 1;
+
+    color: #dbeafe;
+    font-size: 13px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.copyButton {
+    flex: 0 0 auto;
+
+    padding: 7px 10px;
+    border-radius: 10px;
+
+    color: #ccfbf1;
+    background-color: #0f766e;
+    border: 1px solid #14b8a6;
+
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+
+    transition:
+            color 0.15s ease,
+            background-color 0.15s ease,
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+}
+
+.copyButton:not(:disabled):hover {
+    background-color: #115e59;
+    border-color: #5eead4;
+    box-shadow: 0 0 0 2px #2dd4bf33;
+}
+
+.copyButtonCopied,
+.copyButtonCopied:not(:disabled):hover {
+    color: #042f2e;
+    background-color: #5eead4;
+    border-color: #99f6e4;
+}
+
+.copyButton:disabled {
+    color: #94a3b8;
+    background-color: #1e293b;
+    border-color: #475569;
+    cursor: not-allowed;
+    opacity: 0.55;
+    box-shadow: none;
+}
+
+.codeBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-top: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+
+    background: #0b1220;
+    border: 1px solid #26344d;
+}
+
+.codeLabel {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.codeValue {
+    color: #fef3c7;
+    font-size: 20px;
+    letter-spacing: 0.12em;
+}
+
+.hintText {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.menuActions {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.primaryButton,
+.secondaryButton {
+    min-height: 40px;
+    border-radius: 14px;
+
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.primaryButton {
+    color: #042f2e;
+    background: #5eead4;
+    border: 1px solid #99f6e4;
+}
+
+.secondaryButton {
+    color: #cbd5e1;
+    background: #0f172a;
+    border: 1px solid #334155;
+}
+
+.primaryButton:not(:disabled):hover {
+    background: #99f6e4;
+    border-color: #ccfbf1;
+    box-shadow: 0 0 0 3px #5eead433;
+}
+
+.secondaryButton:not(:disabled):hover {
+    color: #f8fafc;
+    background: #111c33;
+    border-color: #5eead4;
+    box-shadow: 0 0 0 3px #5eead422;
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+    color: #94a3b8;
+    background: #1e293b;
+    border-color: #475569;
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+}
+
+.joinBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.joinCodeInput {
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 14px;
+
+    color: #f5f8ff;
+    background-color: #0b1326;
+    border: 1px solid #223155;
+}
+
+@media(max-width: 560px) {
+    .inviteHeader {
+        align-items: flex-start;
+    }
+
+    .inviteLinkBox {
+        align-items: stretch;
+    }
+
+    .copyButton {
+        padding-inline: 9px;
+    }
+
+    .codeValue {
+        font-size: 17px;
+    }
+}

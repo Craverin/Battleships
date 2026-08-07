@@ -1,6 +1,6 @@
 
-import {GamePage} from "./pages/GamePage.jsx";
-import {JoinGamePage} from "./pages/JoinGamePage.jsx";
+import {GamePage} from "./pages/game/GamePage.jsx";
+import {JoinGamePage} from "./pages/join-game/JoinGamePage.jsx";
 import {Routes, Route} from "react-router";
 
 const App = () => {

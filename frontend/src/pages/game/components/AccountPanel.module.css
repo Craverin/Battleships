@@ -1,0 +1,159 @@
+.accountBlock {
+    padding-top: 12px;
+    margin-top: 14px;
+    border-top: 1px solid #1e293b;
+}
+
+.accountActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.accountButton {
+    --bs-btn-color: #cbd5e1;
+    --bs-btn-bg: #0f172a;
+    --bs-btn-border-color: #26344d;
+
+    --bs-btn-hover-color: #f8fafc;
+    --bs-btn-hover-bg: #111c33;
+    --bs-btn-hover-border-color: #5eead4;
+
+    --bs-btn-active-color: #ccfbf1;
+    --bs-btn-active-bg: #0f3438;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.accountButtonPrimary {
+    --bs-btn-color: #042f2e;
+    --bs-btn-bg: #5eead4;
+    --bs-btn-border-color: #99f6e4;
+
+    --bs-btn-hover-color: #022c22;
+    --bs-btn-hover-bg: #2dd4bf;
+    --bs-btn-hover-border-color: #5eead4;
+
+    --bs-btn-active-color: #022c22;
+    --bs-btn-active-bg: #14b8a6;
+    --bs-btn-active-border-color: #2dd4bf;
+}
+
+.accountUserCard {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 12px;
+    border-radius: 16px;
+
+    background:
+            linear-gradient(135deg, rgba(20, 184, 166, 0.10), rgba(15, 23, 42, 0.96)),
+            #0f172a;
+    border: 1px solid rgba(45, 212, 191, 0.35);
+}
+
+.accountUserCard:hover {
+    cursor: pointer;
+}
+
+.accountAvatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+
+    color: #042f2e;
+    background-color: #5eead4;
+
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.accountUserInfo {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.accountUserLabel {
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.accountUsername {
+    color: #f8fafc;
+    font-size: 14px;
+    font-weight: 900;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.accountLogoutButton {
+    min-height: 30px;
+    padding: 0 10px;
+
+    border-radius: 999px;
+    color: #cbd5e1;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+
+    transition:
+            color 0.15s ease,
+            background-color 0.15s ease,
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+}
+
+.accountLogoutButton:hover {
+    color: #fecaca;
+    background-color: #2a1118;
+    border-color: #f87171;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.14);
+}
+
+.blockLabel {
+    margin: 0 0 10px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 560px) {
+    .accountActions {
+        grid-template-columns: 1fr;
+    }
+
+    .accountUserCard {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .accountLogoutButton {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+}

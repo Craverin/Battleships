@@ -27,7 +27,7 @@ public class OAuthAccountService
     @Transactional
     public AuthUser findOrCreate(String id, AuthProvider provider, String usernameCandidate, String email)
     {
-        OAuthAccount account = accountRepository.findById(provider, id);
+        OAuthAccount account = accountRepository.findByProvidedUserId(provider, id);
         if (account == null)
         {
             String username = usernameCandidate;
@@ -38,7 +38,7 @@ public class OAuthAccountService
             }
 
             User user = userService.save(new User(username, null, new Date()));
-            account = accountRepository.save(new OAuthAccount(user, provider, id, email));
+            accountRepository.save(new OAuthAccount(user, provider, id, email));
             return new AuthUser(user.getIdent(), user.getUsername());
         }
 

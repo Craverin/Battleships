@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import boardStyles from "./Board.module.css";
 import styles from "./PlacementBoard.module.css";
 import {moveShip} from "../../api/gameApi.js";
-import {BOARD_SIZE} from "../../pages/GamePage.jsx";
+import {BOARD_SIZE} from "../../pages/game/GamePage.jsx";
 
 const CELL_SIZE = 34;
 const CELL_GAP = 4;

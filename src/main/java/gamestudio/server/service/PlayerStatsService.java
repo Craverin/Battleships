@@ -51,6 +51,8 @@ public class PlayerStatsService
         List<PlayerStats> stats = entityManager.createNamedQuery("PlayerStats.getPlayerStats", PlayerStats.class)
                 .setParameter("game", game).setParameter("userId", userId).getResultList();
 
+        if (stats.isEmpty()) return null;
+
         PlayerStats stat = stats.get(0);
         return new PlayerStatResponse(stat.getIdent(),
                 stat.getGame(),

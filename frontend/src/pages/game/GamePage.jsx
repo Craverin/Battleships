@@ -1,23 +1,26 @@
-import {PlacementBoard} from "../components/board/PlacementBoard.jsx";
-import {GameStatus} from "../components/board/GameStatus.jsx";
-import {createGame} from "../api/gameEntryApi.js";
-import {getShips} from "../api/gameApi.js";
+import {PlacementBoard} from "../../components/board/PlacementBoard.jsx";
+import {GameStatus} from "../../components/board/GameStatus.jsx";
+import {createGame} from "../../api/gameEntryApi.js";
+import {getShips} from "../../api/gameApi.js";
 import {useEffect, useState} from "react";
 import styles from "./GamePage.module.css"
-import {subscribeToSse} from "../api/sseApi.js";
+import {subscribeToSse} from "../../api/sseApi.js";
 import {useLocation, useNavigate} from "react-router";
-import {CombatBoard} from "../components/board/CombatBoard.jsx";
-import {PlaceholderBoard} from "../components/board/PlaceholderBoard.jsx";
-import {GameOverPanel} from "../components/board/GameOverPanel.jsx";
-import {LeaderboardPanel} from "../components/community/LeaderboardPanel.jsx";
-import {getMyStats, getTopPlayers} from "../api/leaderboardApi.js";
-import {ReviewsPanel} from "../components/community/ReviewsPanel.jsx";
-import {getComments, getMyComments, getMyRating, getRatingSummary} from "../api/reviewsApi.js";
-import {getCurrentUser, logout} from "../api/authApi.js";
-import {AuthPanel} from "../components/authentication/AuthPanel.jsx";
-import {FriendGamePanel} from "./FriendGamePanel.jsx";
-import {MatchmakingPanel} from "./MatchmakingPanel.jsx";
-import {cancelSearch, findGame} from "../api/matchmakingApi.js";
+import {CombatBoard} from "../../components/board/CombatBoard.jsx";
+import {PlaceholderBoard} from "../../components/board/PlaceholderBoard.jsx";
+import {GameOverPanel} from "../../components/board/GameOverPanel.jsx";
+import {LeaderboardPanel} from "../../components/community/LeaderboardPanel.jsx";
+import {getMyStats, getTopPlayers} from "../../api/leaderboardApi.js";
+import {ReviewsPanel} from "../../components/community/ReviewsPanel.jsx";
+import {getComments, getMyComments, getMyRating, getRatingSummary} from "../../api/reviewsApi.js";
+import {getCurrentUser, logout} from "../../api/authApi.js";
+import {AuthPanel} from "../../components/authentication/AuthPanel.jsx";
+import {FriendGamePanel} from "./components/FriendGamePanel.jsx";
+import {MatchmakingPanel} from "./components/MatchmakingPanel.jsx";
+import {cancelSearch, findGame} from "../../api/matchmakingApi.js";
+import {AccountPanel} from "./components/AccountPanel.jsx";
+import {AccountSettingsPanel} from "./components/AccountSettingsPanel.jsx";
+import {changePassword, changeUsername} from "../../api/credentialsApi.js";
 
 export const BOARD_SIZE = 10;
 
@@ -114,6 +117,12 @@ export const GamePage = ({
         setGamePhase('');
     }
 
+    const handleLogout = async () => {
+        await logout();
+        setUser(undefined);
+        setActiveTab("Play");
+    }
+
     useEffect(() => {
         if (location.state?.autoCreateGame)
         {
@@ -192,6 +201,22 @@ export const GamePage = ({
         getBoardShips();
     }, [gameId, playerToken]);
 
+
+    const getSectionClassName = () => {
+        const className = styles.boardCard;
+
+        if (activeTab === 'Settings')
+            return className.concat(" m-0 ", styles.boardCardCentered);
+
+        if (activeTab === 'Login' || activeTab === 'Register')
+            return className.concat(" ", styles.boardCardCentered);
+
+        if (activeTab === 'Top' || activeTab === 'Reviews')
+            return className.concat(" m-0");
+
+        return className;
+    }
+
     return (
         <main className={styles.gamePage}>
             <section className={styles.gameShell}>
@@ -211,6 +236,7 @@ export const GamePage = ({
                         >
                             Play
                         </button>
+
                         <button
                             type="button"
                             disabled={opponentJoined}
@@ -263,57 +289,14 @@ export const GamePage = ({
                         </button>
                     </div>
 
-                    <div className={styles.accountBlock}>
-                        <p className={styles.blockLabel}>Account</p>
-
-                        {/*todo move to AccountPanel*/}
-                        {user ? (
-                            <div className={styles.accountUserCard}>
-                                <div className={styles.accountAvatar}>
-                                    {user.username.toUpperCase().charAt(0)}
-                                </div>
-
-                                <div className={styles.accountUserInfo}>
-                                    <span className={styles.accountUserLabel}>Signed in as</span>
-                                    <strong className={styles.accountUsername}>
-                                        {user.username}
-                                    </strong>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    className={styles.accountLogoutButton}
-                                    onClick={async () => {
-                                        await logout();
-                                        setUser(undefined);
-                                        setActiveTab("Play");
-                                    }}
-                                >
-                                    Logout
-                                </button>
-                            </div>
-                        ) : (
-                            <div className={styles.accountActions}>
-                                <button
-                                    type="button"
-                                    disabled={opponentJoined}
-                                    className={`btn ${styles.accountButton}`}
-                                    onClick={() => setActiveTab("Login")}
-                                >
-                                    Log in
-                                </button>
-
-                                <button
-                                    type="button"
-                                    disabled={opponentJoined}
-                                    className={`btn ${styles.accountButton} ${styles.accountButtonPrimary}`}
-                                    onClick={() => setActiveTab("Register")}
-                                >
-                                    Sign up
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                    <AccountPanel
+                        user={user}
+                        opponentJoined={opponentJoined}
+                        onLogin={() => setActiveTab('Login')}
+                        onLogout={handleLogout}
+                        onSignUp={() => setActiveTab('Register')}
+                        onShowSettings={() => setActiveTab('Settings')}
+                    />
 
                     <div className={styles.modeBlock}>
                         <p className={styles.blockLabel}>Opponent</p>
@@ -363,11 +346,7 @@ export const GamePage = ({
 
 
                 <section
-                    className={`
-                        ${styles.boardCard}
-                        ${activeTab === 'Login' || activeTab === 'Register' ? styles.boardCardAuth : ""}
-                        ${activeTab === 'Top' || activeTab === 'Reviews' ? "m-0" : ""}
-                    `}
+                    className={getSectionClassName()}
                 >
                         {activeTab === 'Top' &&
                             <LeaderboardPanel leaderboard={leaderboard} playerStats={playerStats}/>
@@ -439,6 +418,14 @@ export const GamePage = ({
                                 signingUp={true}
                                 setUser={setUser}
                                 onAuthSuccess={() => setActiveTab("Play")}
+                            />
+                        }
+
+                        {activeTab === 'Settings' &&
+                            <AccountSettingsPanel
+                                currentUsername={user.username}
+                                setUser={setUser}
+                                redirectToHomePage={() => setActiveTab('Play')}
                             />
                         }
                 </section>

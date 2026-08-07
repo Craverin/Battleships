@@ -31,6 +31,14 @@ public class UserRepository
         return Optional.ofNullable(user);
     }
 
+    public Optional<User> findById(int id)
+    {
+        User user = entityManager.createNamedQuery("User.findById", User.class)
+                .setParameter("id", id).getSingleResultOrNull();
+
+        return Optional.ofNullable(user);
+    }
+
     public User save(User user)
     {
         entityManager.persist(user);

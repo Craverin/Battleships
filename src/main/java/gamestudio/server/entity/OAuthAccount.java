@@ -11,7 +11,7 @@ import jakarta.persistence.*;
                 columnNames = {"provider", "provider_user_id"}
         )
 )
-@NamedQuery(name = "OAuthAccount.findById",
+@NamedQuery(name = "OAuthAccount.findByProvidedUserId",
             query = "SELECT u FROM OAuthAccount u WHERE u.provider=:provider AND u.providerUserId=:id")
 public class OAuthAccount
 {

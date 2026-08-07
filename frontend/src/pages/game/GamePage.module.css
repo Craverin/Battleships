@@ -1,0 +1,322 @@
+.gamePage {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding: 24px 28px;
+    color: #f8fafc;
+    background:
+            radial-gradient(circle at 20% 10%, #0f766e, transparent 28%),
+            radial-gradient(circle at 80% 20%, #1d4ed8, transparent 26%),
+            #020617;
+}
+
+.gameShell {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 36px;
+
+    width: min(100%, 1420px);
+    margin: 0 auto;
+}
+
+.gameMenu {
+    width: 310px;
+    flex: 0 0 310px;
+
+    padding: 22px;
+    border-radius: 24px;
+
+    background:
+            linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.96));
+    border: 1px solid #1e293b;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+.menuHeader {
+    margin-bottom: 16px;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: #5eead4;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.menuTabButton {
+    --bs-btn-color: #94a3b8;
+    --bs-btn-bg: #0f172a;
+    --bs-btn-border-color: #26344d;
+
+    --bs-btn-hover-color: #f8fafc;
+    --bs-btn-hover-bg: #111c33;
+    --bs-btn-hover-border-color: #2dd4bf;
+
+    --bs-btn-active-color: #ccfbf1;
+    --bs-btn-active-bg: #0f3438;
+    --bs-btn-active-border-color: #2dd4bf;
+
+    min-height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.menuTabButtonActive {
+    --bs-btn-color: #ccfbf1;
+    --bs-btn-bg: #0f3438;
+    --bs-btn-border-color: #2dd4bf;
+
+    --bs-btn-hover-color: #ccfbf1;
+    --bs-btn-hover-bg: #134e4a;
+    --bs-btn-hover-border-color: #5eead4;
+}
+
+
+.modeGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.modeCard {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+
+    color: #cbd5e1;
+    background: #0f172a;
+    border: 1px solid #26344d;
+
+    text-align: left;
+    cursor: pointer;
+
+    transition:
+            transform 0.15s ease,
+            border-color 0.15s ease,
+            background-color 0.15s ease;
+}
+
+.modeCard:not(:disabled):hover {
+    transform: translateY(-1px);
+    border-color: #2dd4bf;
+    background: #111c33;
+}
+
+.modeCard:disabled {
+    color: #94a3b8;
+    background-color: #1e293b;
+    border-color: #475569;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.modeCardActive {
+    color: #ccfbf1;
+    background: #0f3438;
+    border-color: #2dd4bf;
+}
+
+.modeTitle {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.modeDescription {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.blockLabel {
+    margin: 0 0 10px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.modeBlock {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #1e293b;
+}
+
+.boardCard {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+
+    padding: 24px;
+    margin-top: 20px;
+    border-radius: 28px;
+
+    background: #071120;
+    overflow-x: auto;
+}
+
+.boardCardCentered {
+    min-height: 720px;
+    padding: 0;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
+}
+
+.boardsViewport {
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.boardsRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 24px;
+
+    width: max-content;
+    min-width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .gamePage {
+        padding: 22px;
+    }
+
+    .gameShell {
+        gap: 24px;
+    }
+
+    .gameMenu {
+        width: 290px;
+        flex-basis: 290px;
+    }
+
+    .boardCard {
+        padding: 20px;
+    }
+
+    .boardsRow {
+        gap: 18px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .gameShell {
+        flex-direction: column;
+    }
+
+    .gameMenu {
+        width: 100%;
+        max-width: none;
+        flex: none;
+    }
+
+    .boardCard {
+        width: 100%;
+        margin-top: 0;
+    }
+
+    .modeGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .gamePage {
+        padding: 18px;
+    }
+
+    .gameMenu,
+    .boardCard {
+        border-radius: 22px;
+    }
+
+    .gameMenu {
+        padding: 18px;
+    }
+
+    .boardCard {
+        padding: 16px;
+    }
+
+    .boardCardCentered {
+        min-height: 560px;
+        padding-top: 28px;
+    }
+
+    .boardsRow {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 560px) {
+    .gamePage {
+        padding: 14px;
+    }
+
+    .gameMenu {
+        padding: 16px;
+        border-radius: 20px;
+    }
+
+    .modeGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .accountActions {
+        grid-template-columns: 1fr;
+    }
+
+    .accountUserCard {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .accountLogoutButton {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .inviteHeader {
+        align-items: flex-start;
+    }
+
+    .inviteLinkBox {
+        align-items: stretch;
+    }
+
+    .copyButton {
+        padding-inline: 9px;
+    }
+
+    .codeValue {
+        font-size: 17px;
+    }
+
+    .boardCard {
+        padding: 12px;
+        border-radius: 20px;
+    }
+
+    .boardCardCentered {
+        min-height: auto;
+        padding: 8px 0 0;
+    }
+}

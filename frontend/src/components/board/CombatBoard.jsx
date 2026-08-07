@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import boardStyles from "./Board.module.css";
 import styles from "./CombatBoard.module.css";
-import {BOARD_SIZE} from "../../pages/GamePage.jsx";
+import {BOARD_SIZE} from "../../pages/game/GamePage.jsx";
 import {shoot} from "../../api/gameApi.js";
 
 const getCellMarker = (cellState) => {

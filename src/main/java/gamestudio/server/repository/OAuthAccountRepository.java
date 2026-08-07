@@ -12,9 +12,9 @@ public class OAuthAccountRepository
     @PersistenceContext
     private EntityManager entityManager;
 
-    public OAuthAccount findById(AuthProvider provider, String id)
+    public OAuthAccount findByProvidedUserId(AuthProvider provider, String id)
     {
-        return entityManager.createNamedQuery("OAuthAccount.findById", OAuthAccount.class)
+        return entityManager.createNamedQuery("OAuthAccount.findByProvidedUserId", OAuthAccount.class)
                 .setParameter("provider", provider).setParameter("id", id).getSingleResultOrNull();
     }
 

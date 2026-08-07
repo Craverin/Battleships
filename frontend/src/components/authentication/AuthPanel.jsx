@@ -15,6 +15,38 @@ export const AuthPanel = ({signingUp: signUp = true, setUser, onAuthSuccess}) =>
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
+    const clearInputs = () => {
+        setUsername("");
+        setPassword("");
+        setRepeatPassword("");
+        setError("");
+        setSuccess("");
+    }
+
+    const handleSubmit = async () => {
+        setError("");
+        setSuccess("");
+
+        try
+        {
+            if (signingUp)
+            {
+                await register(username.trim(), password);
+
+                setSigningUp(false);
+                setPassword("");
+                setRepeatPassword("");
+                setSuccess("Account created. You can log in now.");
+                return;
+            }
+
+            const user = await login(username.trim(), password);
+
+            setUser(user);
+            onAuthSuccess();
+        } catch (error) { setError(error.message);}
+    };
+
     const getFooterText = () => {
         if (signingUp)
         {
@@ -51,38 +83,6 @@ export const AuthPanel = ({signingUp: signUp = true, setUser, onAuthSuccess}) =>
             </p>
         )
     }
-
-    const clearInputs = () => {
-        setUsername("");
-        setPassword("");
-        setRepeatPassword("");
-        setError("");
-        setSuccess("");
-    }
-
-    const handleSubmit = async () => {
-        setError("");
-        setSuccess("");
-
-        try
-        {
-            if (signingUp)
-            {
-                await register(username.trim(), password);
-
-                setSigningUp(false);
-                setPassword("");
-                setRepeatPassword("");
-                setSuccess("Account created. You can log in now.");
-                return;
-            }
-
-            const user = await login(username.trim(), password);
-
-            setUser(user);
-            onAuthSuccess?.();
-        } catch (error) { setError(error.message);}
-    };
 
     return (
         <div className={styles.authPanel}>
