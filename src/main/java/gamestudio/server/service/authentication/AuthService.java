@@ -65,12 +65,15 @@ public class AuthService
         String password = request.password();
 
         if (username == null || username.trim().isEmpty() || password == null)
-            throw new RuntimeException("Invalid username or password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
 
-        User user = userService.findByUsername(request.username())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+        username = username.trim();
 
-        if (!passwordEncoder.matches(request.password(), user.getPasswordHash()))
+        User user = userService.findByUsername(username).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password")
+        );
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash()))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
 
         AuthUser authUser = new AuthUser(user.getIdent(), user.getUsername());

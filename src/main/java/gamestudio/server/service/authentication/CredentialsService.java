@@ -4,8 +4,10 @@ import gamestudio.server.dto.ChangePasswordRequest;
 import gamestudio.server.entity.User;
 import gamestudio.server.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
@@ -26,16 +28,21 @@ public class CredentialsService
 
     public void changeUsername(String username)
     {
+        if (username == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username");
+
         username = username.trim();
 
         if (username.length() < 4)
-            throw new IllegalStateException("Username too short");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username too short");
 
         if (userRepository.findByUsername(username).isPresent())
-            throw new IllegalStateException("Username already exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
 
         int userId = currentUserService.getCurrentUserId();
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found")
+        );
 
         user.setUsername(username);
     }
@@ -45,26 +52,31 @@ public class CredentialsService
         String currentPassword = passwordRequest.currentPassword();
         String newPassword = passwordRequest.newPassword();
 
-
         if (newPassword == null || newPassword.length() < 8)
-            throw new IllegalStateException("Password too short");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password too short");
 
         int userId = currentUserService.getCurrentUserId();
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found")
+        );
 
         String storedPasswordHash = user.getPasswordHash();
-        String newPasswordHash = passwordEncoder.encode(newPassword);
 
-        if (currentPassword.isEmpty() && storedPasswordHash == null)
+        if (storedPasswordHash == null)
         {
-            user.setPasswordHash(newPasswordHash);
+            if (currentPassword != null && !currentPassword.isEmpty())
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+
+            user.setPasswordHash(passwordEncoder.encode(newPassword));
             return;
         }
 
-        System.out.println(newPassword);
-        if (passwordEncoder.matches(newPassword, storedPasswordHash))
-            throw new IllegalStateException("Incorrect password");
+        if (!passwordEncoder.matches(currentPassword, storedPasswordHash))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
 
-        user.setPasswordHash(newPasswordHash);
+        if (passwordEncoder.matches(newPassword, storedPasswordHash))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "New password is the same as old password");
+
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
     }
 }

@@ -1,9 +1,9 @@
 package gamestudio;
 
-import gamestudio.server.domain.Board;
 import gamestudio.server.domain.Game;
 import gamestudio.server.domain.GamePhase;
 import gamestudio.server.dto.ShotResult;
+import gamestudio.server.security.principal.AuthUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,8 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameTest
 {
     private Game game;
-    private UUID hostToken;
-    private UUID opponentToken;
 
     @BeforeEach
     void setUp()
@@ -24,17 +22,17 @@ class GameTest
     }
 
     @Test
-    void createGame_noExistingGame_initializesGameIdHostTokenBoardAndScore()
+    void createGame_initializesGameIdHostTokenBoardAndScore()
     {
         UUID gameId = game.createGame();
         UUID hostToken = game.getHostToken();
 
         assertNotNull(gameId);
         assertEquals(gameId, game.getGameId());
-
         assertNotNull(hostToken);
         assertNotNull(game.getBoard(hostToken));
         assertEquals(0, game.getScore(hostToken));
+        assertEquals(GamePhase.PLACEMENT, game.getPhase());
     }
 
     @Test
@@ -51,130 +49,190 @@ class GameTest
     }
 
     @Test
-    void getOpponentBoard_hostToken_returnsOpponentBoard()
+    void getOpponentBoard_forHostAndOpponent_returnsOtherPlayersBoard()
     {
         createGameWithTwoPlayers();
-        Board opponentBoard = game.getBoard(opponentToken);
 
-        assertSame(opponentBoard, game.getOpponentBoard(hostToken));
+        assertSame(game.getBoard(game.getOpponentToken()), game.getOpponentBoard(game.getHostToken()));
+        assertSame(game.getBoard(game.getHostToken()), game.getOpponentBoard(game.getOpponentToken()));
     }
 
     @Test
-    void getOpponentBoard_opponentToken_returnsHostBoard()
-    {
-        createGameWithTwoPlayers();
-        Board hostBoard = game.getBoard(hostToken);
-
-        assertSame(hostBoard, game.getOpponentBoard(opponentToken));
-    }
-
-    @Test
-    void getPhase_bothPlayersHaveShips_returnsCombat()
+    void getPhase_afterBothPlayersJoin_staysPlacementUntilBothReady()
     {
         createGameWithTwoPlayers();
 
         assertEquals(GamePhase.PLACEMENT, game.getPhase());
+
+        assertTrue(game.setReady(game.getHostToken()));
+        assertEquals(GamePhase.PLACEMENT, game.getPhase());
+
+        assertTrue(game.setReady(game.getOpponentToken()));
+        assertEquals(GamePhase.COMBAT, game.getPhase());
+        assertNotNull(game.getCurrentTurn());
     }
 
     @Test
-    void getPhase_hostHasNoShips_returnsFinished()
+    void setReady_unknownToken_returnsFalseAndDoesNotChangePhase()
     {
         createGameWithTwoPlayers();
-        game.getBoard(hostToken).getShips().clear();
 
-        assertEquals(GamePhase.FINISHED, game.getPhase());
+        assertFalse(game.setReady(UUID.randomUUID()));
+        assertEquals(GamePhase.PLACEMENT, game.getPhase());
     }
 
     @Test
-    void getPhase_opponentHasNoShips_returnsFinished()
+    void getWinner_beforeGameIsFinished_returnsNull()
     {
         createGameWithTwoPlayers();
-        game.getBoard(opponentToken).getShips().clear();
+        game.getBoard(game.getHostToken()).getShips().clear();
 
-        assertEquals(GamePhase.FINISHED, game.getPhase());
+        assertNull(game.getWinner());
     }
 
     @Test
-    void getWinner_hostHasNoShips_returnsOpponentToken()
+    void getWinner_finishedGameWithNoHostShips_returnsOpponentToken()
     {
         createGameWithTwoPlayers();
-        game.getBoard(hostToken).getShips().clear();
+        game.getBoard(game.getHostToken()).getShips().clear();
+        game.markGameAsFinished();
 
-        assertEquals(opponentToken, game.getWinner());
+        assertEquals(game.getOpponentToken(), game.getWinner());
     }
 
     @Test
-    void getWinner_opponentHasNoShips_returnsHostToken()
+    void getWinner_finishedGameWithNoOpponentShips_returnsHostToken()
     {
         createGameWithTwoPlayers();
-        game.getBoard(opponentToken).getShips().clear();
+        game.getBoard(game.getOpponentToken()).getShips().clear();
+        game.markGameAsFinished();
 
-        assertEquals(hostToken, game.getWinner());
-    }
-
-
-    @Test
-    void addScore_miss_doesNotIncreaseScore()
-    {
-        game.createGame();
-        UUID createdHostToken = game.getHostToken();
-
-        game.updateScore(ShotResult.MISS, createdHostToken, 10);
-        assertEquals(0, game.getScore(createdHostToken));
+        assertEquals(game.getHostToken(), game.getWinner());
     }
 
     @Test
-    void addScore_firstHit_increasesScoreByBaseScore()
+    void changeCurrentTurn_hit_keepsCurrentPlayer()
     {
-        game.createGame();
-        UUID createdHostToken = game.getHostToken();
+        createCombatGame();
+        UUID currentPlayer = game.getCurrentTurn();
 
-        game.updateScore(ShotResult.HIT, createdHostToken, 10);
-        assertEquals(10, game.getScore(createdHostToken));
+        game.changeCurrentTurn(ShotResult.HIT);
+
+        assertEquals(currentPlayer, game.getCurrentTurn());
     }
 
     @Test
-    void addScore_consecutiveHits_appliesIncreasingMultiplier()
+    void changeCurrentTurn_sunk_keepsCurrentPlayer()
     {
-        game.createGame();
-        UUID createdHostToken = game.getHostToken();
+        createCombatGame();
+        UUID currentPlayer = game.getCurrentTurn();
 
-        game.updateScore(ShotResult.HIT, createdHostToken, 10);
-        game.updateScore(ShotResult.HIT, createdHostToken, 10);
+        game.changeCurrentTurn(ShotResult.SUNK);
 
-        assertEquals(30, game.getScore(createdHostToken));
+        assertEquals(currentPlayer, game.getCurrentTurn());
     }
 
     @Test
-    void addScore_missAfterHit_resetsHitStreak()
+    void changeCurrentTurn_miss_switchesPlayer()
     {
-        game.createGame();
-        UUID createdHostToken = game.getHostToken();
+        createCombatGame();
+        UUID currentPlayer = game.getCurrentTurn();
 
-        game.updateScore(ShotResult.HIT, createdHostToken, 10);
-        game.updateScore(ShotResult.HIT, createdHostToken, 10);
-        game.updateScore(ShotResult.MISS, createdHostToken, 10);
-        game.updateScore(ShotResult.HIT, createdHostToken, 10);
+        game.changeCurrentTurn(ShotResult.MISS);
 
-        assertEquals(40, game.getScore(createdHostToken));
+        assertNotEquals(currentPlayer, game.getCurrentTurn());
     }
 
     @Test
-    void addScore_sunk_appliesMultiplierAndAddsBonusPoints()
+    void updateScore_firstHit_addsBaseScore()
+    {
+        createGameWithTwoPlayers();
+        UUID hostToken = game.getHostToken();
+
+        game.updateScore(ShotResult.HIT, hostToken, Game.BASE_SCORE_PER_HIT);
+
+        assertEquals(10, game.getScore(hostToken));
+    }
+
+    @Test
+    void updateScore_consecutiveHits_increaseMultiplier()
+    {
+        createGameWithTwoPlayers();
+        UUID hostToken = game.getHostToken();
+
+        game.updateScore(ShotResult.HIT, hostToken, Game.BASE_SCORE_PER_HIT);
+        game.updateScore(ShotResult.HIT, hostToken, Game.BASE_SCORE_PER_HIT);
+        game.updateScore(ShotResult.HIT, hostToken, Game.BASE_SCORE_PER_HIT);
+
+        assertEquals(60, game.getScore(hostToken));
+    }
+
+    @Test
+    void updateScore_miss_resetsHitStreak()
+    {
+        createGameWithTwoPlayers();
+        UUID hostToken = game.getHostToken();
+
+        game.updateScore(ShotResult.HIT, hostToken, Game.BASE_SCORE_PER_HIT);
+        game.updateScore(ShotResult.HIT, hostToken, Game.BASE_SCORE_PER_HIT);
+        game.updateScore(ShotResult.MISS, hostToken, Game.BASE_SCORE_PER_HIT);
+        game.updateScore(ShotResult.HIT, hostToken, Game.BASE_SCORE_PER_HIT);
+
+        assertEquals(40, game.getScore(hostToken));
+    }
+
+    @Test
+    void updateScore_sunk_addsStreakScoreAndSunkBonus()
+    {
+        createGameWithTwoPlayers();
+        UUID hostToken = game.getHostToken();
+
+        game.updateScore(ShotResult.HIT, hostToken, Game.BASE_SCORE_PER_HIT);
+        game.updateScore(ShotResult.SUNK, hostToken, Game.BASE_SCORE_PER_HIT);
+
+        assertEquals(45, game.getScore(hostToken));
+    }
+
+    @Test
+    void getUsername_guestAndAuthenticatedPlayers_returnsExpectedNames()
+    {
+        createGameWithTwoPlayers();
+        UUID hostToken = game.getHostToken();
+        UUID opponentToken = game.getOpponentToken();
+
+        assertEquals("Guest", game.getUsername(hostToken));
+        assertEquals("Guest", game.getUsername(opponentToken));
+
+        game.setHostUser(new AuthUser(1, "alice"));
+        game.setOpponentUser(new AuthUser(2, "bob"));
+
+        assertEquals("alice", game.getUsername(hostToken));
+        assertEquals("bob", game.getUsername(opponentToken));
+        assertNull(game.getUsername(UUID.randomUUID()));
+    }
+
+    @Test
+    void statsRecorded_isFalseByDefaultAndCanBeMarkedRecorded()
     {
         game.createGame();
-        UUID createdHostToken = game.getHostToken();
 
-        game.updateScore(ShotResult.HIT, createdHostToken, 10);
-        game.updateScore(ShotResult.SUNK, createdHostToken, 10);
+        assertFalse(game.isStatsRecorded());
 
-        assertEquals(45, game.getScore(createdHostToken));
+        game.markStatsRecorded();
+
+        assertTrue(game.isStatsRecorded());
     }
 
     private void createGameWithTwoPlayers()
     {
         game.createGame();
-        hostToken = game.getHostToken();
-        opponentToken = game.addPlayer();
+        game.addPlayer();
+    }
+
+    private void createCombatGame()
+    {
+        createGameWithTwoPlayers();
+        game.setReady(game.getHostToken());
+        game.setReady(game.getOpponentToken());
     }
 }

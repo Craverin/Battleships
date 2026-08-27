@@ -345,7 +345,7 @@ export const GamePage = ({
                         : <FriendGamePanel
                             inviteCode={inviteCode}
                             opponentJoined={opponentJoined}
-                            isHost={!invCode}
+                            isHost={isHost}
                             initializeGame={initializeGame}
                           />
                     }

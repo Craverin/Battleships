@@ -1,10 +1,12 @@
 import styles from "./FriendGamePanel.module.css"
 import {useState} from "react";
+import {useNavigate} from "react-router";
 
 export const FriendGamePanel = ({inviteCode, opponentJoined, isHost, initializeGame}) => {
     const [joinCode, setJoinCode] = useState("");
     const [isInviteCopied, setIsInviteCopied] = useState(false);
     const inviteLink = inviteCode ? `${window.location.origin}/games/${inviteCode}/join` : "";
+    const navigate = useNavigate();
 
     const copyInviteLink = async () => {
         if (!inviteLink) return;
@@ -83,7 +85,7 @@ export const FriendGamePanel = ({inviteCode, opponentJoined, isHost, initializeG
                     <button
                         type="button"
                         className={styles.secondaryButton}
-                        disabled={joinCode.trim().length !== 6}
+                        disabled={joinCode.trim().length !== 6 || isHost}
                         onClick={() => navigate(`/games/${joinCode.trim()}/join`)}
                     >
                         Join by code
