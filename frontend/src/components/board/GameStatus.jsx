@@ -1,5 +1,5 @@
 import styles from "./GameStatus.module.css";
-import React, {useState} from "react";
+import React from "react";
 import {setReady} from "../../api/gameApi.js";
 
 export const GameStatus = ({opponentJoined,
@@ -12,7 +12,6 @@ export const GameStatus = ({opponentJoined,
                            playerToken,
                            score,
                            opponentName}) => {
-    console.log(`GAMESTATUS RECEIVED ${opponentName}`);
     const isBattlePhase = opponentReady && isReady;
     const getOpponentStatus = () => {
         if (opponentDisconnected)

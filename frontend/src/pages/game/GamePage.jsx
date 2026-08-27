@@ -97,11 +97,14 @@ export const GamePage = ({
 
         if (status === 'MATCHED')
         {
+            setGameId(id);
+            setPlayerToken(token);
+
             setIsHost(false);
-            console.log(`SET ${opponentUsername}`);
             setHostUsername(opponentUsername);
             setOpponentJoined(true);
             setMatchmakingStatus('MATCHED');
+
             return;
         }
 
