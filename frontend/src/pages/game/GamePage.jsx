@@ -26,8 +26,7 @@ export const BOARD_SIZE = 10;
 export const GamePage = ({
                         gameId: gameUUID,
                         playerToken: token,
-                        inviteCode: invCode,
-                        hostUsername: hostName}) => {
+                        inviteCode: invCode}) => {
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -99,9 +98,11 @@ export const GamePage = ({
         if (status === 'MATCHED')
         {
             setIsHost(false);
+            console.log(`SET ${opponentUsername}`);
             setHostUsername(opponentUsername);
             setOpponentJoined(true);
             setMatchmakingStatus('MATCHED');
+            return;
         }
 
         setIsHost(true);
@@ -425,7 +426,7 @@ export const GamePage = ({
                             <AuthPanel
                                 signingUp={true}
                                 setUser={setUser}
-                                onAuthSuccess={() => setActiveTab("Play")}
+                                onAuthSuccess={() =>  setActiveTab("Play")}
                             />
                         }
 
