@@ -5,13 +5,14 @@ export const request = async(path, options = {}) => {
         body = null,
     } = options;
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     const headers = {};
 
     if (body !== null) headers['Content-Type'] = 'application/json';
     if (token) headers['Player-Token'] = token;
 
-    console.log(`Sending ${method} to \`/api${path}\``);
-    const response = await fetch(`/api${path}`, {
+    const response = await fetch(`${API_URL}${path}`, {
         method: method,
         headers: headers,
         credentials: "include",

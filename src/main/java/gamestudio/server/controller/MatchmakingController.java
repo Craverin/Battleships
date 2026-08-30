@@ -3,7 +3,6 @@ package gamestudio.server.controller;
 import gamestudio.server.domain.Game;
 import gamestudio.server.dto.MatchmakingResponse;
 import gamestudio.server.dto.MatchmakingStatus;
-import gamestudio.server.security.principal.ApplicationPrincipal;
 import gamestudio.server.service.GameService;
 import gamestudio.server.service.MatchmakingService;
 import gamestudio.server.service.SseService;

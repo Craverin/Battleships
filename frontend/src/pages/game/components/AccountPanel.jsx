@@ -24,7 +24,10 @@ export const AccountPanel = ({user, opponentJoined, onLogin, onLogout, onSignUp,
                     <button
                         type="button"
                         className={styles.accountLogoutButton}
-                        onClick={() => onLogout()}
+                        onClick={event => {
+                            event.stopPropagation();
+                            onLogout();
+                        }}
                     >
                         Logout
                     </button>
